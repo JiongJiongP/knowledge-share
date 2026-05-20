@@ -1,0 +1,29 @@
+# Build output
+target/
+dist/
+*.class
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# Docker runtime data
+data/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Maven wrapper (optional)
+!.mvn/wrapper/maven-wrapper.jar
