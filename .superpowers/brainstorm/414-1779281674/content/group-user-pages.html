@@ -1,0 +1,370 @@
+<h2>群组相关页面 + 登录页 + 收藏 + 通知中心</h2>
+<p class="subtitle">群组管理、用户认证、个人功能页面设计</p>
+
+<style>
+  .page { background: #f5f7fa; min-height: 500px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin-bottom: 24px; border-radius: 8px; overflow: hidden; }
+  .topnav { background: #fff; height: 52px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #e4e7ed; gap: 12px; font-size: 13px; }
+  .logo { font-size: 18px; font-weight: 700; color: #409eff; }
+  .nav-link { color: #606266; padding: 4px 10px; border-radius: 4px; text-decoration: none; }
+  .nav-link:hover, .nav-link.active { background: #f0f2f5; color: #409eff; }
+  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .av { width: 32px; height: 32px; background: #409eff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 600; }
+  .btn { padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid #e4e7ed; background: #fff; color: #606266; display: inline-flex; align-items: center; gap: 4px; }
+  .btn-primary { background: #409eff; border-color: #409eff; color: #fff; }
+  .btn-danger { color: #f56c6c; border-color: #f56c6c; background: #fef0f0; }
+  .btn-success { background: #67c23a; border-color: #67c23a; color: #fff; }
+  .btn-warning { background: #e6a23c; border-color: #e6a23c; color: #fff; }
+  .card { background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #ebeef5; }
+  .group-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 20px 24px; }
+  .group-card { background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #ebeef5; cursor: pointer; transition: all .2s; }
+  .group-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  .group-name { font-size: 15px; font-weight: 600; color: #303133; margin-bottom: 6px; }
+  .group-desc { font-size: 12px; color: #909399; line-height: 1.5; margin-bottom: 10px; }
+  .group-meta { font-size: 11px; color: #c0c4cc; display: flex; gap: 14px; }
+  .status-badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; }
+  .status-pending { background: #fdf6ec; color: #e6a23c; }
+  .status-approved { background: #f0f9eb; color: #67c23a; }
+  .status-rejected { background: #fef0f0; color: #f56c6c; }
+  .login-container { display: flex; min-height: 500px; align-items: center; justify-content: center; background: linear-gradient(135deg, #e8f4fd 0%, #f0f2f5 100%); }
+  .login-card { background: #fff; border-radius: 12px; padding: 40px; width: 400px; box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+  .login-card h2 { font-size: 22px; text-align: center; margin: 0 0 8px 0; color: #303133; }
+  .login-sub { text-align: center; font-size: 13px; color: #909399; margin-bottom: 28px; }
+  .input-group { margin-bottom: 16px; }
+  .input-group input { width: 100%; padding: 10px 14px; border: 1px solid #dcdfe6; border-radius: 6px; font-size: 14px; outline: none; box-sizing: border-box; }
+  .divider { display: flex; align-items: center; margin: 20px 0; color: #c0c4cc; font-size: 12px; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #ebeef5; }
+  .divider span { padding: 0 12px; }
+  .sso-btn { width: 100%; padding: 10px; border: 1px solid #dcdfe6; border-radius: 6px; background: #fff; font-size: 14px; cursor: pointer; margin-bottom: 10px; }
+  .favorite-list { display: flex; flex-direction: column; gap: 10px; padding: 20px 24px; }
+  .fav-item { background: #fff; border-radius: 8px; padding: 14px 18px; border: 1px solid #ebeef5; display: flex; align-items: center; gap: 14px; cursor: pointer; }
+  .fav-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+  .fav-type { width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .fav-info { flex: 1; }
+  .fav-title { font-size: 14px; font-weight: 600; color: #303133; }
+  .fav-author { font-size: 12px; color: #909399; margin-top: 2px; }
+  .fav-time { font-size: 11px; color: #c0c4cc; }
+  .notif-list { display: flex; flex-direction: column; }
+  .notif-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #f0f2f5; cursor: pointer; background: #fff; }
+  .notif-item.unread { background: #ecf5ff; }
+  .notif-dot { width: 8px; height: 8px; background: #409eff; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+  .notif-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+  .notif-body { flex: 1; }
+  .notif-title { font-size: 13px; font-weight: 600; color: #303133; }
+  .notif-desc { font-size: 12px; color: #909399; margin-top: 2px; }
+  .notif-time { font-size: 11px; color: #c0c4cc; }
+  .tab-bar { display: flex; gap: 0; border-bottom: 1px solid #e4e7ed; background: #fff; padding: 0 20px; }
+  .tab-item { padding: 12px 16px; font-size: 13px; color: #606266; cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab-item.active { color: #409eff; border-bottom-color: #409eff; }
+  .manage-layout { display: flex; min-height: 500px; }
+  .manage-sidebar { width: 200px; background: #fff; border-right: 1px solid #e4e7ed; padding: 16px 0; }
+  .manage-menu-item { padding: 10px 20px; font-size: 13px; color: #606266; cursor: pointer; display: block; text-decoration: none; }
+  .manage-menu-item.active { color: #409eff; background: #ecf5ff; }
+  .manage-content { flex: 1; padding: 20px 24px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 12px; background: #fafafa; border-bottom: 1px solid #ebeef5; font-weight: 600; color: #303133; }
+  td { padding: 10px 12px; border-bottom: 1px solid #ebeef5; color: #606266; }
+  tr:hover td { background: #fafafa; }
+</style>
+
+<!-- PAGE 1: Group List -->
+<h3 style="margin-bottom:12px;">群组列表页</h3>
+<div class="page">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <a class="nav-link" href="#">首页</a>
+    <a class="nav-link active" href="#">群组</a>
+    <input style="flex:1;max-width:300px;height:32px;border:1px solid #dcdfe6;border-radius:16px;padding:0 12px;background:#f5f7fa;font-size:12px;outline:none;margin-left:auto;" placeholder="搜索群组..." />
+    <button class="btn btn-primary">+ 创建群组</button>
+    <div class="nav-right"><span>&#128276;</span><div class="av">李</div></div>
+  </div>
+
+  <div style="padding:16px 24px;background:#fff;border-bottom:1px solid #ebeef5;">
+    <div style="display:flex;gap:12px;font-size:13px;">
+      <span style="color:#409eff;font-weight:600;">全部</span>
+      <span style="color:#909399;">我的群组</span>
+      <span style="color:#909399;">已加入</span>
+    </div>
+  </div>
+
+  <div class="group-grid">
+    <div class="group-card">
+      <div class="group-name">前端技术组</div>
+      <div class="group-desc">聚焦前端技术分享，涵盖 Vue/React/TypeScript/性能优化等话题，每周技术分享...</div>
+      <div class="group-meta">
+        <span>&#128100; 128 成员</span><span>&#128196; 34 内容</span><span>&#128101; 公开群组</span><span class="status-badge status-approved">已加入</span>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-name">基础架构设计</div>
+      <div class="group-desc">分布式系统、微服务、容器化等技术架构设计讨论，分享架构演进经验...</div>
+      <div class="group-meta">
+        <span>&#128100; 86 成员</span><span>&#128196; 19 内容</span><span>&#128101; 公开群组</span><span class="status-badge status-pending">申请中</span>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-name">AI 与机器学习</div>
+      <div class="group-desc">关注 AI/ML 领域最新进展，分享论文解读、工程实践和模型部署经验...</div>
+      <div class="group-meta">
+        <span>&#128100; 56 成员</span><span>&#128196; 12 内容</span><span>&#128101; 公开群组</span>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="group-name">数据库技术讨论</div>
+      <div class="group-desc">MySQL/PostgreSQL/Redis/ES 数据库选型、性能调优、运维经验交流...</div>
+      <div class="group-meta">
+        <span>&#128100; 72 成员</span><span>&#128196; 25 内容</span><span>&#128101; 仅成员可见</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: Group Detail + Management -->
+<h3 style="margin:24px 0 12px 0;">群组详情 &amp; 管理页</h3>
+<div class="page">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <span style="color:#909399;">/ 群组 / 前端技术组</span>
+    <div class="nav-right">
+      <button class="btn" style="font-size:11px;">申请加入</button>
+      <button class="btn" style="font-size:11px;">管理群组</button>
+      <div class="av">李</div>
+    </div>
+  </div>
+
+  <!-- Group header -->
+  <div style="background:#fff;padding:24px;border-bottom:1px solid #ebeef5;">
+    <h2 style="margin:0 0 8px 0;font-size:20px;">前端技术组</h2>
+    <p style="margin:0 0 12px 0;color:#909399;font-size:13px;">聚焦前端技术分享，涵盖 Vue/React/TypeScript/性能优化等话题</p>
+    <div style="display:flex;gap:20px;font-size:12px;color:#909399;">
+      <span>&#128100; 群主: 李明</span><span>128 成员</span><span>34 篇内容</span><span>创建于 2025-08</span>
+    </div>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <div class="tab-item active">群组内容</div>
+    <div class="tab-item">成员列表</div>
+    <div class="tab-item">关于群组</div>
+  </div>
+
+  <div style="display:flex;min-height:400px;">
+    <!-- Content list within group -->
+    <div style="flex:1;padding:16px 24px;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="card" style="cursor:pointer;">
+          <div style="font-weight:600;font-size:14px;">Vue 3 Composition API 最佳实践指南</div>
+          <div style="font-size:12px;color:#909399;margin-top:4px;">李明 · 2天前 · 342 阅读 · 56 收藏</div>
+        </div>
+        <div class="card" style="cursor:pointer;">
+          <div style="font-weight:600;font-size:14px;">TypeScript 高级类型体操分享</div>
+          <div style="font-size:12px;color:#909399;margin-top:4px;">张架构 · 5天前 · 567 阅读 · 89 收藏</div>
+        </div>
+        <div class="card" style="cursor:pointer;">
+          <div style="font-weight:600;font-size:14px;">React Server Components 深度解析</div>
+          <div style="font-size:12px;color:#909399;margin-top:4px;">王运维 · 1周前 · 234 阅读 · 45 收藏</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Members sidebar -->
+    <div style="width:260px;background:#fff;border-left:1px solid #ebeef5;padding:16px;">
+      <h4 style="font-size:13px;margin:0 0 12px 0;">成员 (128)</h4>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:6px 8px;border-radius:4px;font-size:12px;">
+        <div style="width:28px;height:28px;background:#409eff;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;">李</div>
+        <span style="font-weight:600;">李明</span><span style="color:#409eff;font-size:10px;">群主</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:6px 8px;border-radius:4px;font-size:12px;">
+        <div style="width:28px;height:28px;background:#67c23a;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;">张</div>
+        <span>张架构</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:4px;font-size:12px;">
+        <div style="width:28px;height:28px;background:#e6a23c;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;">王</div>
+        <span>王运维</span>
+      </div>
+      <div style="text-align:center;margin-top:10px;font-size:12px;color:#909399;">查看全部 128 人 &gt;</div>
+    </div>
+  </div>
+</div>
+
+<!-- Group Management Modal inline -->
+<h4 style="margin:16px 0 8px 0;">群组管理 — 成员审批</h4>
+<div class="page">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <span style="color:#909399;">/ 群组 / 前端技术组 / 管理</span>
+    <div class="nav-right"><div class="av">李</div></div>
+  </div>
+
+  <div class="manage-layout">
+    <div class="manage-sidebar">
+      <a class="manage-menu-item active" href="#">成员审批</a>
+      <a class="manage-menu-item" href="#">成员管理</a>
+      <a class="manage-menu-item" href="#">群组设置</a>
+      <a class="manage-menu-item" href="#">可见性管理</a>
+      <a class="manage-menu-item" href="#">群主转让</a>
+      <a class="manage-menu-item" href="#" style="color:#f56c6c;">解散群组</a>
+    </div>
+    <div class="manage-content">
+      <h4 style="font-size:14px;margin:0 0 12px 0;">待审批申请</h4>
+      <table>
+        <thead><tr><th>申请人</th><th>部门</th><th>申请时间</th><th>申请理由</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>赵DBA</td><td>数据平台组</td><td>2026-05-19</td><td>希望学习前端知识，用于数据可视化开发</td>
+            <td>
+              <button class="btn btn-success" style="font-size:11px;padding:3px 10px;">通过</button>
+              <button class="btn btn-danger" style="font-size:11px;padding:3px 10px;">拒绝</button>
+            </td>
+          </tr>
+          <tr>
+            <td>陈搜索</td><td>搜索推荐组</td><td>2026-05-18</td><td>前端是搜索页面优化的基础</td>
+            <td>
+              <button class="btn btn-success" style="font-size:11px;padding:3px 10px;">通过</button>
+              <button class="btn btn-danger" style="font-size:11px;padding:3px 10px;">拒绝</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Login Page -->
+<h3 style="margin:24px 0 12px 0;">登录页</h3>
+<div class="page" style="background:transparent;">
+  <div class="login-container">
+    <div class="login-card">
+      <h2>&#9670; 知享 Knowledge Hub</h2>
+      <div class="login-sub">企业内部知识分享平台</div>
+
+      <div class="input-group"><input type="text" placeholder="用户名 / 工号" /></div>
+      <div class="input-group"><input type="password" placeholder="密码" /></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <label style="font-size:12px;color:#909399;"><input type="checkbox" /> 记住我</label>
+        <a href="#" style="font-size:12px;color:#409eff;">忘记密码?</a>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;font-size:14px;">登 录</button>
+
+      <div class="divider"><span>或</span></div>
+
+      <button class="sso-btn">&#127760; 企业 SSO 登录 (OAuth2)</button>
+      <button class="sso-btn">&#128274; LDAP 域账号登录</button>
+
+      <div style="text-align:center;margin-top:16px;font-size:12px;color:#909399;">
+        还没有账号? <a href="#" style="color:#409eff;">注册本地账号</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notifications Page -->
+<h3 style="margin:24px 0 12px 0;">通知中心</h3>
+<div class="page">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <span style="color:#909399;">/ 通知中心</span>
+    <div class="nav-right" style="font-size:12px;">
+      <button class="btn" style="font-size:11px;">全部已读</button>
+      <div class="av">李</div>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab-item active">全部 (15)</div>
+    <div class="tab-item">评论回复 (5)</div>
+    <div class="tab-item">群组 (4)</div>
+    <div class="tab-item">系统 (3)</div>
+    <div class="tab-item">审核 (3)</div>
+  </div>
+
+  <div class="notif-list">
+    <div class="notif-item unread">
+      <div class="notif-icon" style="background:#f0f9eb;">&#9993;</div>
+      <div class="notif-body">
+        <div class="notif-title">张架构 回复了你的评论</div>
+        <div class="notif-desc">"总结得很到位！补充一点：在 setup 中使用 toRefs 解构..."</div>
+      </div>
+      <div class="notif-time">昨天 16:20</div>
+    </div>
+    <div class="notif-item unread">
+      <div class="notif-icon" style="background:#ecf5ff;">&#128101;</div>
+      <div class="notif-body">
+        <div class="notif-title">入群申请通过</div>
+        <div class="notif-desc">你已成功加入「AI 与机器学习」群组</div>
+      </div>
+      <div class="notif-time">昨天 10:30</div>
+    </div>
+    <div class="notif-item unread">
+      <div class="notif-icon" style="background:#fdf6ec;">&#9888;</div>
+      <div class="notif-body">
+        <div class="notif-title">内容审核通过</div>
+        <div class="notif-desc">你的内容《Vue 3 Composition API 最佳实践指南》审核已通过</div>
+      </div>
+      <div class="notif-time">5月18日</div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon" style="background:#f0f2f5;">&#128276;</div>
+      <div class="notif-body">
+        <div class="notif-title">系统公告</div>
+        <div class="notif-desc">知识分享平台 v3.0 版本将于 6月1日上线，新增评论互动、数据分析等模块</div>
+      </div>
+      <div class="notif-time">5月16日</div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon" style="background:#f0f2f5;">&#128100;</div>
+      <div class="notif-body">
+        <div class="notif-title">王运维 申请加入「前端技术组」</div>
+        <div class="notif-desc">申请理由：希望了解前端技术栈，促进跨团队协作</div>
+      </div>
+      <div class="notif-time">5月15日</div>
+    </div>
+  </div>
+</div>
+
+<!-- Favorites Page -->
+<h3 style="margin:24px 0 12px 0;">个人收藏</h3>
+<div class="page">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <span style="color:#909399;">/ 我的收藏</span>
+    <div class="nav-right"><div class="av">李</div></div>
+  </div>
+
+  <div style="padding:12px 24px;display:flex;gap:12px;font-size:12px;background:#fff;border-bottom:1px solid #ebeef5;">
+    <span style="color:#409eff;font-weight:600;">全部 (23)</span>
+    <span style="color:#909399;">Markdown (12)</span>
+    <span style="color:#909399;">PPT (5)</span>
+    <span style="color:#909399;">外部链接 (4)</span>
+    <span style="color:#909399;">内部引用 (2)</span>
+  </div>
+
+  <div class="favorite-list">
+    <div class="fav-item">
+      <div class="fav-type" style="background:#ecf5ff;color:#409eff;">MD</div>
+      <div class="fav-info">
+        <div class="fav-title">Vue 3 Composition API 最佳实践指南</div>
+        <div class="fav-author">李明 · 前端技术组 · 342 阅读 · 56 收藏</div>
+      </div>
+      <div class="fav-time">收藏于 5月18日</div>
+      <button class="btn btn-danger" style="font-size:11px;padding:3px 8px;">取消收藏</button>
+    </div>
+    <div class="fav-item">
+      <div class="fav-type" style="background:#fef0f0;color:#f56c6c;">PPT</div>
+      <div class="fav-info">
+        <div class="fav-title">2026 Q1 技术架构演进复盘</div>
+        <div class="fav-author">张架构 · 基础架构组 · 891 阅读 · 203 收藏</div>
+      </div>
+      <div class="fav-time">收藏于 5月16日</div>
+      <button class="btn btn-danger" style="font-size:11px;padding:3px 8px;">取消收藏</button>
+    </div>
+    <div class="fav-item">
+      <div class="fav-type" style="background:#f0f9eb;color:#67c23a;">URL</div>
+      <div class="fav-info">
+        <div class="fav-title">Google SRE: 分布式系统监控的黄金信号</div>
+        <div class="fav-author">王运维 · 运维保障组 · 567 阅读 · 89 收藏</div>
+      </div>
+      <div class="fav-time">收藏于 5月14日</div>
+      <button class="btn btn-danger" style="font-size:11px;padding:3px 8px;">取消收藏</button>
+    </div>
+  </div>
+</div>

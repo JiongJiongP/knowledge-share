@@ -1,0 +1,369 @@
+<h2>内容详情页 + 编辑页 + 版本历史 + 模板中心</h2>
+<p class="subtitle">内容模块核心页面设计</p>
+
+<style>
+  .page { background: #f5f7fa; min-height: 600px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin-bottom: 24px; }
+  .topnav { background: #fff; height: 52px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #e4e7ed; gap: 12px; font-size: 13px; }
+  .logo { font-size: 18px; font-weight: 700; color: #409eff; }
+  .nav-link { color: #606266; padding: 4px 10px; border-radius: 4px; }
+  .nav-link:hover { background: #f0f2f5; }
+  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .badge-dot { position: relative; }
+  .badge-dot::after { content: ''; position: absolute; top: -2px; right: -4px; width: 7px; height: 7px; background: #f56c6c; border-radius: 50%; }
+  .av { width: 32px; height: 32px; background: #409eff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 600; }
+  .content-layout { display: flex; min-height: 600px; }
+  .main-content { flex: 1; padding: 24px; max-width: 860px; }
+  .article { background: #fff; border-radius: 8px; padding: 28px 32px; border: 1px solid #ebeef5; }
+  .article h1 { font-size: 22px; margin: 0 0 12px 0; }
+  .article-meta { display: flex; align-items: center; gap: 14px; font-size: 12px; color: #909399; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #ebeef5; }
+  .article-tags { display: flex; gap: 6px; }
+  .article-body { font-size: 14px; color: #303133; line-height: 1.8; }
+  .article-body p { margin: 10px 0; }
+  .article-body code { background: #f0f2f5; padding: 2px 6px; border-radius: 3px; font-size: 13px; }
+  .article-body pre { background: #f8f9fa; padding: 14px; border-radius: 6px; border: 1px solid #ebeef5; overflow-x: auto; font-size: 13px; }
+  .action-bar { display: flex; align-items: center; gap: 16px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #ebeef5; }
+  .btn { padding: 7px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid #e4e7ed; background: #fff; color: #606266; display: inline-flex; align-items: center; gap: 4px; }
+  .btn-primary { background: #409eff; border-color: #409eff; color: #fff; }
+  .btn-danger { color: #f56c6c; border-color: #f56c6c; }
+  .btn-text { border: none; background: none; }
+  .comment-section { margin-top: 24px; }
+  .comment-input-box { background: #fff; border-radius: 8px; padding: 16px; border: 1px solid #ebeef5; }
+  .comment-input-box textarea { width: 100%; border: 1px solid #e4e7ed; border-radius: 6px; padding: 10px 12px; font-size: 13px; resize: vertical; min-height: 80px; outline: none; font-family: inherit; }
+  .comment-item { background: #fff; border-radius: 8px; padding: 14px 16px; border: 1px solid #ebeef5; margin-bottom: 8px; display: flex; gap: 12px; }
+  .comment-avatar { width: 36px; height: 36px; border-radius: 50%; background: #ecf5ff; color: #409eff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+  .comment-body { flex: 1; }
+  .comment-user { font-size: 13px; font-weight: 600; color: #303133; }
+  .comment-time { font-size: 11px; color: #c0c4cc; margin-left: 8px; }
+  .comment-text { font-size: 13px; color: #606266; margin: 4px 0 8px 0; }
+  .comment-actions { font-size: 12px; color: #909399; display: flex; gap: 14px; }
+  .reply-item { margin-left: 44px; background: #fafafa; }
+  .editor-toolbar { display: flex; gap: 4px; padding: 8px; border: 1px solid #e4e7ed; border-radius: 6px 6px 0 0; background: #fafafa; }
+  .toolbar-btn { padding: 4px 8px; font-size: 12px; border-radius: 3px; border: none; background: none; cursor: pointer; color: #606266; }
+  .toolbar-btn:hover { background: #e4e7ed; }
+  .editor-area { border: 1px solid #e4e7ed; border-top: none; border-radius: 0 0 6px 6px; min-height: 300px; padding: 16px; font-size: 14px; outline: none; }
+  .side-panel { width: 280px; background: #fff; border-left: 1px solid #e4e7ed; padding: 20px 16px; font-size: 13px; flex-shrink: 0; }
+  .side-panel h4 { font-size: 13px; font-weight: 600; margin: 0 0 10px 0; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; color: #909399; margin-bottom: 4px; }
+  .form-group input, .form-group select { width: 100%; padding: 6px 10px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 13px; outline: none; }
+  .checkbox-list { display: flex; flex-direction: column; gap: 6px; }
+  .checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #606266; }
+  .version-list { background: #fff; border-radius: 8px; border: 1px solid #ebeef5; }
+  .version-row { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f0f2f5; font-size: 13px; }
+  .version-num { font-weight: 600; width: 50px; color: #409eff; }
+  .version-summary { flex: 1; color: #606266; }
+  .version-time { color: #c0c4cc; font-size: 12px; width: 120px; }
+  .version-actions { display: flex; gap: 8px; }
+  .diff-view { display: flex; border: 1px solid #ebeef5; border-radius: 8px; overflow: hidden; }
+  .diff-pane { flex: 1; padding: 14px; font-size: 13px; font-family: monospace; line-height: 1.6; }
+  .diff-pane:first-child { border-right: 1px solid #ebeef5; }
+  .diff-add { background: #e6ffed; color: #1a7f37; }
+  .diff-remove { background: #ffebe9; color: #cf222e; }
+  .template-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .template-card { background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #ebeef5; cursor: pointer; text-align: center; transition: box-shadow .2s; }
+  .template-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  .template-icon { font-size: 36px; margin-bottom: 10px; }
+  .template-name { font-size: 14px; font-weight: 600; color: #303133; }
+  .template-desc { font-size: 12px; color: #909399; margin-top: 4px; }
+</style>
+
+<!-- PAGE 1: Content Detail -->
+<div class="page">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <a class="nav-link" href="#">首页</a>
+    <a class="nav-link" href="#">群组</a>
+    <a class="nav-link" href="#">模板</a>
+    <input style="flex:1;max-width:360px;height:32px;border:1px solid #dcdfe6;border-radius:16px;padding:0 12px;background:#f5f7fa;font-size:12px;outline:none;margin:0 auto;" placeholder="搜索内容、标签、作者..." />
+    <div class="nav-right">
+      <span class="badge-dot">&#128276;</span>
+      <div class="av">李</div>
+    </div>
+  </div>
+
+  <div class="content-layout">
+    <div class="main-content">
+      <div class="article">
+        <h1>Vue 3 Composition API 最佳实践指南</h1>
+        <div class="article-meta">
+          <span>&#128100; 李明 · 前端技术组</span>
+          <span>&#128339; 2026-05-18 14:30</span>
+          <span>&#128065; 342 阅读</span>
+          <span>&#10084; 56 收藏</span>
+          <div class="article-tags" style="margin-left:auto;">
+            <span style="background:#ecf5ff;color:#409eff;padding:2px 8px;border-radius:3px;font-size:11px;">前端</span>
+            <span style="background:#ecf5ff;color:#409eff;padding:2px 8px;border-radius:3px;font-size:11px;">Vue</span>
+            <span style="background:#ecf5ff;color:#409eff;padding:2px 8px;border-radius:3px;font-size:11px;">最佳实践</span>
+          </div>
+        </div>
+
+        <div class="article-body">
+          <h2>一、引言</h2>
+          <p>Vue 3 的 Composition API 提供了更灵活的代码组织方式。本文总结了在实际项目中沉淀的实践经验...</p>
+          <h2>二、响应式系统</h2>
+          <p><code>ref()</code> 和 <code>reactive()</code> 是 Composition API 的核心响应式原语。对于基本类型使用 <code>ref</code>，对于对象类型则根据使用场景选择...</p>
+          <pre><code>import { ref, reactive, computed, watch } from 'vue'
+
+const count = ref(0)
+const state = reactive({ name: '', items: [] })</code></pre>
+          <h2>三、自定义 Hooks</h2>
+          <p>将可复用的逻辑封装为 <code>useXxx</code> 函数，实现逻辑层面的关注点分离...</p>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-primary">&#10084; 收藏 (56)</button>
+          <button class="btn">&#128172; 评论 (12)</button>
+          <button class="btn">&#128279; 分享</button>
+          <button class="btn btn-text" style="margin-left:auto;">&#9888; 举报</button>
+        </div>
+      </div>
+
+      <!-- Comment Section -->
+      <div class="comment-section">
+        <h3 style="font-size:15px;">评论 (12)</h3>
+        <div class="comment-input-box" style="margin-bottom:16px;">
+          <textarea placeholder="写下你的评论... 使用 @ 提及其他用户"></textarea>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+            <button class="btn btn-primary" style="font-size:12px;">发表评论</button>
+          </div>
+        </div>
+
+        <!-- Comment 1 -->
+        <div class="comment-item">
+          <div class="comment-avatar">张</div>
+          <div class="comment-body">
+            <span class="comment-user">张架构</span><span class="comment-time">昨天 16:20</span>
+            <div class="comment-text">总结得很到位！补充一点：在 setup 中使用 <code>toRefs</code> 解构 reactive 对象时需要注意...</div>
+            <div class="comment-actions">
+              <span>&#128077; 8</span><span>回复</span><span>举报</span>
+            </div>
+          </div>
+        </div>
+        <!-- Reply -->
+        <div class="comment-item reply-item">
+          <div class="comment-avatar" style="background:#f0f9eb;color:#67c23a;">李</div>
+          <div class="comment-body">
+            <span class="comment-user">李明 (作者)</span><span class="comment-time">昨天 17:05</span>
+            <div class="comment-text">@张架构 感谢补充！<code>toRefs</code> 确实是个容易踩坑的地方，我在第四节会展开讲。</div>
+            <div class="comment-actions"><span>&#128077; 3</span><span>回复</span></div>
+          </div>
+        </div>
+        <!-- Comment 2 -->
+        <div class="comment-item">
+          <div class="comment-avatar" style="background:#fdf6ec;color:#e6a23c;">王</div>
+          <div class="comment-body">
+            <span class="comment-user">王运维</span><span class="comment-time">昨天 20:45</span>
+            <div class="comment-text">请问 TypeScript 集成部分能展开讲讲吗？特别是 <code>defineProps</code> 的类型推导。</div>
+            <div class="comment-actions"><span>&#128077; 1</span><span>回复</span><span>举报</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side panel (author info + table of contents) -->
+    <div class="side-panel">
+      <div style="text-align:center;padding-bottom:16px;border-bottom:1px solid #ebeef5;margin-bottom:16px;">
+        <div style="width:56px;height:56px;background:#409eff;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:600;">李</div>
+        <div style="font-weight:600;font-size:14px;">李明</div>
+        <div style="font-size:12px;color:#909399;">前端技术组</div>
+        <div style="font-size:12px;color:#c0c4cc;margin-top:4px;">发布 34 篇 · 获收藏 1.2k</div>
+      </div>
+      <h4>目录</h4>
+      <div style="font-size:12px;color:#606266;line-height:2;">
+        <div>一、引言</div>
+        <div style="padding-left:12px;color:#409eff;">二、响应式系统</div>
+        <div style="padding-left:12px;">三、自定义 Hooks</div>
+        <div style="padding-left:12px;">四、TypeScript 集成</div>
+        <div style="padding-left:12px;">五、总结</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: Content Edit -->
+<h3 style="margin:24px 0 12px 0;">内容编辑页</h3>
+<div class="page">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <span style="color:#909399;">/ 编辑内容</span>
+    <div class="nav-right">
+      <button class="btn" style="font-size:12px;">保存草稿</button>
+      <button class="btn btn-primary" style="font-size:12px;">提交审核</button>
+    </div>
+  </div>
+
+  <div class="content-layout">
+    <div class="main-content" style="padding:16px 20px;">
+      <input style="width:100%;padding:10px 14px;font-size:18px;border:1px solid #e4e7ed;border-radius:6px 6px 0 0;outline:none;font-weight:600;" placeholder="请输入标题..." value="Vue 3 Composition API 最佳实践指南" />
+      <div class="editor-toolbar">
+        <button class="toolbar-btn" title="加粗"><b>B</b></button>
+        <button class="toolbar-btn" title="斜体"><i>I</i></button>
+        <button class="toolbar-btn" title="标题">H</button>
+        <button class="toolbar-btn" title="代码">&lt;/&gt;</button>
+        <button class="toolbar-btn" title="链接">&#128279;</button>
+        <button class="toolbar-btn" title="图片">&#128247;</button>
+        <button class="toolbar-btn" title="表格">&#9634;</button>
+        <span style="border-left:1px solid #e4e7ed;margin:0 6px;"></span>
+        <button class="toolbar-btn" title="预览">预览</button>
+        <button class="toolbar-btn" title="全屏">&#9974;</button>
+      </div>
+      <div class="editor-area" contenteditable style="background:#fff;">
+        <p style="margin:0;color:#303133;">## 一、引言</p>
+        <p style="color:#303133;">Vue 3 的 Composition API 提供了更灵活的代码组织方式...</p>
+        <p style="color:#303133;"></p>
+        <p style="color:#303133;">## 二、响应式系统</p>
+        <p style="color:#303133;"><code>ref()</code> 和 <code>reactive()</code> 是 Composition API 的核心响应式原语...</p>
+      </div>
+    </div>
+
+    <!-- Edit side panel -->
+    <div class="side-panel">
+      <h4>发布设置</h4>
+      <div class="form-group">
+        <label>内容类型</label>
+        <select><option>Markdown</option><option>PPT文件</option><option>外部链接</option><option>内部引用</option></select>
+      </div>
+      <div class="form-group">
+        <label>发布到群组</label>
+        <div class="checkbox-list">
+          <div class="checkbox-item"><input type="checkbox" checked /> 前端技术组</div>
+          <div class="checkbox-item"><input type="checkbox" checked /> 技术分享大群</div>
+          <div class="checkbox-item"><input type="checkbox" /> 架构设计讨论</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>选择标签</label>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;">
+          <span style="background:#ecf5ff;color:#409eff;padding:2px 8px;border-radius:3px;font-size:11px;">前端 &times;</span>
+          <span style="background:#ecf5ff;color:#409eff;padding:2px 8px;border-radius:3px;font-size:11px;">Vue &times;</span>
+          <span style="background:#f0f2f5;color:#c0c4cc;padding:2px 8px;border-radius:3px;font-size:11px;">+ 添加</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>可见性</label>
+        <select><option>公开 (所有人可见)</option><option>仅群组成员可见</option></select>
+      </div>
+      <div class="form-group">
+        <label>定时发布</label>
+        <input type="datetime-local" style="font-size:12px;" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: Version History -->
+<h3 style="margin:24px 0 12px 0;">版本历史 &amp; 差异对比</h3>
+<div class="page">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <span style="color:#909399;">/ Vue 3最佳实践 / 版本历史</span>
+    <div class="nav-right"><button class="btn" style="font-size:12px;">返回内容</button></div>
+  </div>
+
+  <div style="padding:20px 24px;">
+    <!-- Version list -->
+    <div class="version-list" style="margin-bottom:20px;">
+      <div style="padding:12px 16px;background:#fafafa;border-bottom:1px solid #ebeef5;font-weight:600;font-size:13px;">版本历史 (共 5 个版本)</div>
+      <div class="version-row" style="background:#ecf5ff;">
+        <span class="version-num">v5</span>
+        <span class="version-summary" style="color:#409eff;">当前版本 · 补充 TypeScript 集成章节</span>
+        <span class="version-time">2026-05-18 14:30</span>
+        <span style="font-size:11px;color:#c0c4cc;">李明</span>
+      </div>
+      <div class="version-row">
+        <span class="version-num">v4</span>
+        <span class="version-summary">修复代码示例中的错误，优化排版</span>
+        <span class="version-time">2026-05-17 10:15</span>
+        <div class="version-actions"><button class="btn" style="font-size:11px;padding:3px 8px;">对比</button><button class="btn" style="font-size:11px;padding:3px 8px;">回滚</button></div>
+      </div>
+      <div class="version-row">
+        <span class="version-num">v3</span>
+        <span class="version-summary">新增自定义 Hooks 章节</span>
+        <span class="version-time">2026-05-16 09:00</span>
+        <div class="version-actions"><button class="btn" style="font-size:11px;padding:3px 8px;">对比</button><button class="btn" style="font-size:11px;padding:3px 8px;">回滚</button></div>
+      </div>
+      <div class="version-row">
+        <span class="version-num">v2</span>
+        <span class="version-summary">初稿完成</span>
+        <span class="version-time">2026-05-15 18:00</span>
+        <div class="version-actions"><button class="btn" style="font-size:11px;padding:3px 8px;">对比</button><button class="btn" style="font-size:11px;padding:3px 8px;">回滚</button></div>
+      </div>
+      <div class="version-row">
+        <span class="version-num">v1</span>
+        <span class="version-summary">草稿</span>
+        <span class="version-time">2026-05-15 14:00</span>
+        <div class="version-actions"><button class="btn" style="font-size:11px;padding:3px 8px;">对比</button></div>
+      </div>
+    </div>
+
+    <!-- Diff view -->
+    <h4 style="font-size:14px;margin:0 0 8px 0;">差异对比: v4 vs 当前版本 (v5)</h4>
+    <div class="diff-view">
+      <div class="diff-pane" style="background:#fff;">
+        <div style="font-size:11px;color:#909399;margin-bottom:8px;">v4 — 2026-05-17</div>
+        <div>### 三、自定义 Hooks</div>
+        <div>将可复用的逻辑封装为 <code style="background:#ffebe9;color:#cf222e;">composable</code> 函数。</div>
+        <div class="diff-remove">- const data = await fetchItems()</div>
+      </div>
+      <div class="diff-pane" style="background:#fff;">
+        <div style="font-size:11px;color:#909399;margin-bottom:8px;">v5 (当前) — 2026-05-18</div>
+        <div>### 三、自定义 Hooks</div>
+        <div>将可复用的逻辑封装为 <code style="background:#e6ffed;color:#1a7f37;">useXxx</code> 函数。</div>
+        <div class="diff-add">+ const data = await fetchItems({ page, size })</div>
+        <div style="margin-top:12px;">### 四、TypeScript 集成 <span style="background:#e6ffed;color:#1a7f37;font-size:11px;"> 新增</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 4: Template Center -->
+<h3 style="margin:24px 0 12px 0;">模板中心</h3>
+<div class="page">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <span style="color:#909399;">/ 模板中心</span>
+    <input style="flex:1;max-width:300px;height:32px;border:1px solid #dcdfe6;border-radius:16px;padding:0 12px;background:#f5f7fa;font-size:12px;outline:none;margin-left:auto;" placeholder="搜索模板..." />
+    <button class="btn btn-primary" style="font-size:12px;margin-left:12px;">+ 创建模板</button>
+    <div class="nav-right"><div class="av">李</div></div>
+  </div>
+
+  <div style="padding:20px 24px;">
+    <div class="template-grid">
+      <div class="template-card">
+        <div class="template-icon">&#128196;</div>
+        <div class="template-name">技术文档</div>
+        <div class="template-desc">背景 · 方案 · 实现 · 总结</div>
+        <div style="font-size:11px;color:#c0c4cc;margin-top:6px;">系统预置</div>
+      </div>
+      <div class="template-card">
+        <div class="template-icon">&#128220;</div>
+        <div class="template-name">产品说明</div>
+        <div class="template-desc">概述 · 功能清单 · 使用指南</div>
+        <div style="font-size:11px;color:#c0c4cc;margin-top:6px;">系统预置</div>
+      </div>
+      <div class="template-card">
+        <div class="template-icon">&#128221;</div>
+        <div class="template-name">会议纪要</div>
+        <div class="template-desc">议题 · 决策 · 待办 · 附件</div>
+        <div style="font-size:11px;color:#c0c4cc;margin-top:6px;">系统预置</div>
+      </div>
+      <div class="template-card">
+        <div class="template-icon">&#128200;</div>
+        <div class="template-name">季度复盘</div>
+        <div class="template-desc">目标回顾 · 数据分析 · 改进计划</div>
+        <div style="font-size:11px;color:#c0c4cc;margin-top:6px;">系统预置</div>
+      </div>
+      <div class="template-card">
+        <div class="template-icon">&#128187;</div>
+        <div class="template-name">故障报告</div>
+        <div class="template-desc">影响范围 · 根因分析 · 修复措施</div>
+        <div style="font-size:11px;color:#c0c4cc;margin-top:6px;">系统预置</div>
+      </div>
+      <div class="template-card" style="border-style:dashed;border-color:#dcdfe6;">
+        <div class="template-icon" style="color:#c0c4cc;">+</div>
+        <div class="template-name" style="color:#909399;">创建自定义模板</div>
+        <div class="template-desc">从零开始创建自己的模板</div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,533 @@
+<h2>审核中心 + 管理后台 + 数据分析看板</h2>
+<p class="subtitle">管理员功能页面设计</p>
+
+<style>
+  .page { background: #f5f7fa; min-height: 500px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin-bottom: 24px; border-radius: 8px; overflow: hidden; }
+  .topnav { background: #fff; height: 52px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #e4e7ed; gap: 12px; font-size: 13px; }
+  .logo { font-size: 18px; font-weight: 700; color: #409eff; }
+  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .av { width: 32px; height: 32px; background: #409eff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 600; }
+  .btn { padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid #e4e7ed; background: #fff; color: #606266; display: inline-flex; align-items: center; gap: 4px; }
+  .btn-primary { background: #409eff; border-color: #409eff; color: #fff; }
+  .btn-success { background: #67c23a; border-color: #67c23a; color: #fff; }
+  .btn-danger { color: #f56c6c; border-color: #f56c6c; background: #fef0f0; }
+  .btn-warning { background: #e6a23c; border-color: #e6a23c; color: #fff; }
+  .admin-layout { display: flex; min-height: 600px; }
+  .admin-sidebar { width: 200px; background: #304156; color: #bfcbd9; padding: 12px 0; flex-shrink: 0; }
+  .admin-menu-title { padding: 10px 20px; font-size: 11px; color: #97a8be; text-transform: uppercase; letter-spacing: 1px; }
+  .admin-menu-item { padding: 10px 20px; font-size: 13px; cursor: pointer; display: block; text-decoration: none; color: #bfcbd9; }
+  .admin-menu-item:hover, .admin-menu-item.active { background: #263445; color: #fff; }
+  .admin-content { flex: 1; padding: 20px 24px; overflow-y: auto; }
+  .card { background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #ebeef5; }
+  .stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+  .stat-card { background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #ebeef5; }
+  .stat-value { font-size: 28px; font-weight: 700; color: #303133; }
+  .stat-label { font-size: 12px; color: #909399; margin-top: 4px; }
+  .stat-change { font-size: 11px; margin-top: 4px; }
+  .stat-up { color: #67c23a; }
+  .stat-down { color: #f56c6c; }
+  .chart-placeholder { background: #fafafa; border-radius: 6px; border: 1px dashed #e4e7ed; display: flex; align-items: center; justify-content: center; color: #c0c4cc; font-size: 13px; }
+  .chart-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .chart-row.equal { grid-template-columns: 1fr 1fr; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 12px; background: #fafafa; border-bottom: 1px solid #ebeef5; font-weight: 600; color: #303133; }
+  td { padding: 10px 12px; border-bottom: 1px solid #ebeef5; color: #606266; }
+  tr:hover td { background: #fafafa; }
+  .rank-num { width: 24px; height: 24px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+  .rank-1 { background: #fff3cd; color: #e6a23c; }
+  .rank-2 { background: #f0f2f5; color: #909399; }
+  .rank-3 { background: #fdf6ec; color: #e6a23c; }
+  .status-pending { background: #fdf6ec; color: #e6a23c; padding: 2px 8px; border-radius: 3px; font-size: 11px; }
+  .status-approved { background: #f0f9eb; color: #67c23a; padding: 2px 8px; border-radius: 3px; font-size: 11px; }
+  .status-rejected { background: #fef0f0; color: #f56c6c; padding: 2px 8px; border-radius: 3px; font-size: 11px; }
+  .tag-color-dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-right: 6px; vertical-align: middle; }
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid #e4e7ed; margin-bottom: 16px; }
+  .tab { padding: 10px 16px; font-size: 13px; color: #606266; cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab.active { color: #409eff; border-bottom-color: #409eff; }
+  .form-row { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .form-row input, .form-row select { padding: 6px 10px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 12px; outline: none; }
+  .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 16px; }
+  .page-btn { width: 28px; height: 28px; border-radius: 4px; border: 1px solid #e4e7ed; background: #fff; cursor: pointer; font-size: 12px; color: #606266; display: flex; align-items: center; justify-content: center; }
+  .page-btn.active { background: #409eff; border-color: #409eff; color: #fff; }
+</style>
+
+<!-- PAGE 1: Audit Center -->
+<h3 style="margin-bottom:12px;">审核中心</h3>
+<div class="page">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <span style="color:#909399;">/ 审核中心</span>
+    <div class="nav-right">
+      <span class="badge-dot" style="position:relative;">&#128276;<span style="position:absolute;top:-2px;right:-4px;width:7px;height:7px;background:#f56c6c;border-radius:50%;"></span></span>
+      <div class="av" style="background:#e6a23c;">管</div>
+    </div>
+  </div>
+
+  <div class="tabs" style="background:#fff;padding:0 20px;">
+    <div class="tab active">内容审核 (3)</div>
+    <div class="tab">评论审核 (5)</div>
+    <div class="tab">群组创建申请 (2)</div>
+    <div class="tab">已处理</div>
+  </div>
+
+  <div style="padding:0 24px;">
+    <!-- Content audit table -->
+    <h4 style="font-size:14px;margin:0 0 12px 0;">待审核内容</h4>
+    <table>
+      <thead><tr><th>内容标题</th><th>类型</th><th>作者</th><th>提交时间</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:500;">React Server Components 深度解析</td>
+          <td><span style="background:#ecf5ff;color:#409eff;padding:2px 8px;border-radius:3px;font-size:11px;">MD</span></td>
+          <td>王运维</td>
+          <td>2026-05-19 16:00</td>
+          <td>
+            <button class="btn btn-success" style="font-size:11px;padding:3px 10px;">通过</button>
+            <button class="btn btn-danger" style="font-size:11px;padding:3px 10px;">驳回</button>
+            <button class="btn" style="font-size:11px;padding:3px 10px;">查看</button>
+          </td>
+        </tr>
+        <tr>
+          <td style="font-weight:500;">MySQL 索引优化实战</td>
+          <td><span style="background:#ecf5ff;color:#409eff;padding:2px 8px;border-radius:3px;font-size:11px;">MD</span></td>
+          <td>赵DBA</td>
+          <td>2026-05-19 14:30</td>
+          <td>
+            <button class="btn btn-success" style="font-size:11px;padding:3px 10px;">通过</button>
+            <button class="btn btn-danger" style="font-size:11px;padding:3px 10px;">驳回</button>
+            <button class="btn" style="font-size:11px;padding:3px 10px;">查看</button>
+          </td>
+        </tr>
+        <tr>
+          <td style="font-weight:500;">企业级 CI/CD 流水线搭建</td>
+          <td><span style="background:#fef0f0;color:#f56c6c;padding:2px 8px;border-radius:3px;font-size:11px;">PPT</span></td>
+          <td>陈搜索</td>
+          <td>2026-05-19 10:00</td>
+          <td>
+            <button class="btn btn-success" style="font-size:11px;padding:3px 10px;">通过</button>
+            <button class="btn btn-danger" style="font-size:11px;padding:3px 10px;">驳回</button>
+            <button class="btn" style="font-size:11px;padding:3px 10px;">查看</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Reject dialog (inline mock) -->
+    <div style="margin-top:20px;background:#fff;border:1px solid #f56c6c;border-radius:8px;padding:20px;">
+      <h4 style="margin:0 0 12px 0;color:#f56c6c;font-size:14px;">驳回 — React Server Components 深度解析</h4>
+      <div class="form-row">
+        <label style="font-size:12px;color:#606266;width:80px;">驳回原因：</label>
+        <textarea style="flex:1;border:1px solid #dcdfe6;border-radius:4px;padding:8px 10px;font-size:12px;min-height:60px;outline:none;" placeholder="请填写驳回原因（必填）">内容中部分代码示例存在安全风险，请移除 eval() 调用后重新提交</textarea>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn" style="font-size:11px;">取消</button>
+        <button class="btn btn-danger" style="font-size:11px;">确认驳回</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: Admin Dashboard / Analytics -->
+<h3 style="margin:24px 0 12px 0;">管理后台 — 数据分析看板</h3>
+<div class="page" style="background:#fff;">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <span style="color:#409eff;font-weight:600;">管理后台</span>
+    <div class="nav-right">
+      <div class="av" style="background:#e6a23c;">管</div>
+    </div>
+  </div>
+
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="admin-menu-title">管理功能</div>
+      <a class="admin-menu-item active" href="#">&#128200; 数据分析看板</a>
+      <a class="admin-menu-item" href="#">&#128100; 用户管理</a>
+      <a class="admin-menu-item" href="#">&#127970; 部门管理</a>
+      <a class="admin-menu-item" href="#">&#127991; 标签管理</a>
+      <a class="admin-menu-item" href="#">&#128681; 敏感词管理</a>
+      <a class="admin-menu-item" href="#">&#9881; 系统配置</a>
+    </div>
+
+    <div class="admin-content">
+      <!-- Stat Cards -->
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-value">1,286</div>
+          <div class="stat-label">总内容数</div>
+          <div class="stat-change stat-up">&#8593; 12% 较上月</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">342</div>
+          <div class="stat-label">今日发布</div>
+          <div class="stat-change stat-up">&#8593; 8% 较昨日</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">5,823</div>
+          <div class="stat-label">总用户数</div>
+          <div class="stat-change stat-up">&#8593; 5% 较上月</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">1,204</div>
+          <div class="stat-label">今日活跃用户</div>
+          <div class="stat-change stat-down">&#8595; 3% 较昨日</div>
+        </div>
+      </div>
+
+      <!-- Content Trend Chart -->
+      <div class="chart-row">
+        <div class="card">
+          <h4 style="font-size:14px;margin:0 0 4px 0;">内容发布趋势</h4>
+          <div style="font-size:11px;color:#c0c4cc;margin-bottom:12px;">
+            <span style="color:#409eff;font-weight:600;">日</span> ·
+            <span>周</span> · <span>月</span>
+          </div>
+          <div class="chart-placeholder" style="height:220px;">
+            <div style="text-align:center;">
+              <div style="font-size:24px;margin-bottom:4px;">&#128200;</div>
+              <div style="font-size:12px;">折线图 · 内容发布量趋势</div>
+              <div style="font-size:10px;color:#dcdfe6;">(ECharts 渲染: Markdown / PPT / 链接 / 引用 分组)</div>
+              <div style="display:flex;align-items:flex-end;justify-content:center;gap:12px;margin-top:8px;height:80px;">
+                <div style="width:24px;height:35px;background:#c6e2ff;border-radius:3px 3px 0 0;"></div>
+                <div style="width:24px;height:52px;background:#c6e2ff;border-radius:3px 3px 0 0;"></div>
+                <div style="width:24px;height:40px;background:#c6e2ff;border-radius:3px 3px 0 0;"></div>
+                <div style="width:24px;height:60px;background:#c6e2ff;border-radius:3px 3px 0 0;"></div>
+                <div style="width:24px;height:48px;background:#c6e2ff;border-radius:3px 3px 0 0;"></div>
+                <div style="width:24px;height:68px;background:#409eff;border-radius:3px 3px 0 0;"></div>
+                <div style="width:24px;height:55px;background:#409eff;border-radius:3px 3px 0 0;"></div>
+                <div style="width:24px;height:45px;background:#c6e2ff;border-radius:3px 3px 0 0;"></div>
+                <div style="width:24px;height:72px;background:#c6e2ff;border-radius:3px 3px 0 0;"></div>
+                <div style="width:24px;height:62px;background:#c6e2ff;border-radius:3px 3px 0 0;"></div>
+                <div style="width:24px;height:78px;background:#c6e2ff;border-radius:3px 3px 0 0;"></div>
+                <div style="width:24px;height:50px;background:#c6e2ff;border-radius:3px 3px 0 0;"></div>
+              </div>
+              <div style="display:flex;justify-content:center;gap:8px;font-size:9px;color:#c0c4cc;margin-top:4px;">
+                <span>5/1</span><span>5/5</span><span>5/10</span><span>5/15</span><span>5/20</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 style="font-size:14px;margin:0 0 12px 0;">热门内容 Top 5</h4>
+          <table>
+            <thead><tr><th>#</th><th>标题</th><th>阅读</th></tr></thead>
+            <tbody>
+              <tr><td><span class="rank-num rank-1">1</span></td><td>2026 Q1 技术架构演进复盘</td><td>891</td></tr>
+              <tr><td><span class="rank-num rank-2">2</span></td><td>Google SRE: 分布式监控黄金信号</td><td>567</td></tr>
+              <tr><td><span class="rank-num rank-3">3</span></td><td>Elasticsearch 8.x 中文分词实战</td><td>456</td></tr>
+              <tr><td><span class="rank-num" style="background:#f0f2f5;">4</span></td><td>Vue 3 最佳实践指南</td><td>342</td></tr>
+              <tr><td><span class="rank-num" style="background:#f0f2f5;">5</span></td><td>MySQL 索引优化实战</td><td>289</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Search hot words + Group activity -->
+      <div class="chart-row equal">
+        <div class="card">
+          <h4 style="font-size:14px;margin:0 0 12px 0;">搜索热词 Top 10</h4>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="width:20px;font-size:12px;font-weight:600;color:#e6a23c;">1</span>
+              <span style="font-size:13px;color:#303133;">Vue 3</span>
+              <span style="flex:1;height:6px;background:#ecf5ff;border-radius:3px;position:relative;">
+                <span style="position:absolute;left:0;top:0;height:100%;width:85%;background:#409eff;border-radius:3px;"></span>
+              </span>
+              <span style="font-size:11px;color:#909399;width:40px;">245次</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="width:20px;font-size:12px;font-weight:600;color:#e6a23c;">2</span>
+              <span style="font-size:13px;color:#303133;">微服务架构</span>
+              <span style="flex:1;height:6px;background:#ecf5ff;border-radius:3px;position:relative;">
+                <span style="position:absolute;left:0;top:0;height:100%;width:72%;background:#409eff;border-radius:3px;"></span>
+              </span>
+              <span style="font-size:11px;color:#909399;width:40px;">189次</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="width:20px;font-size:12px;font-weight:600;color:#e6a23c;">3</span>
+              <span style="font-size:13px;color:#303133;">Elasticsearch</span>
+              <span style="flex:1;height:6px;background:#ecf5ff;border-radius:3px;position:relative;">
+                <span style="position:absolute;left:0;top:0;height:100%;width:65%;background:#409eff;border-radius:3px;"></span>
+              </span>
+              <span style="font-size:11px;color:#909399;width:40px;">156次</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="width:20px;font-size:12px;color:#909399;">4</span>
+              <span style="font-size:13px;color:#303133;">MySQL 索引优化</span>
+              <span style="flex:1;height:6px;background:#ecf5ff;border-radius:3px;position:relative;">
+                <span style="position:absolute;left:0;top:0;height:100%;width:52%;background:#a0cfff;border-radius:3px;"></span>
+              </span>
+              <span style="font-size:11px;color:#909399;width:40px;">134次</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="width:20px;font-size:12px;color:#909399;">5</span>
+              <span style="font-size:13px;color:#303133;">CI/CD</span>
+              <span style="flex:1;height:6px;background:#ecf5ff;border-radius:3px;position:relative;">
+                <span style="position:absolute;left:0;top:0;height:100%;width:45%;background:#a0cfff;border-radius:3px;"></span>
+              </span>
+              <span style="font-size:11px;color:#909399;width:40px;">112次</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 style="font-size:14px;margin:0 0 12px 0;">群组活跃度排行</h4>
+          <table>
+            <thead><tr><th>群组</th><th>内容</th><th>成员</th><th>活跃</th></tr></thead>
+            <tbody>
+              <tr><td>1. 前端技术组</td><td>34</td><td>128</td><td><span style="color:#67c23a;">活跃</span></td></tr>
+              <tr><td>2. 基础架构设计</td><td>19</td><td>86</td><td><span style="color:#67c23a;">活跃</span></td></tr>
+              <tr><td>3. 数据库技术讨论</td><td>25</td><td>72</td><td><span style="color:#e6a23c;">一般</span></td></tr>
+              <tr><td>4. AI 与机器学习</td><td>12</td><td>56</td><td><span style="color:#e6a23c;">一般</span></td></tr>
+              <tr><td>5. DevOps 运维</td><td>8</td><td>45</td><td><span style="color:#f56c6c;">低迷</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: Tag Management + Sensitive Words + User Management -->
+<h3 style="margin:24px 0 12px 0;">管理后台 — 标签管理 / 敏感词管理 / 用户管理</h3>
+<div class="page" style="background:#fff;">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <span style="color:#409eff;font-weight:600;">管理后台</span>
+    <div class="nav-right"><div class="av" style="background:#e6a23c;">管</div></div>
+  </div>
+
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="admin-menu-title">管理功能</div>
+      <a class="admin-menu-item" href="#">&#128200; 数据分析看板</a>
+      <a class="admin-menu-item" href="#">&#128100; 用户管理</a>
+      <a class="admin-menu-item" href="#">&#127970; 部门管理</a>
+      <a class="admin-menu-item active" href="#">&#127991; 标签管理</a>
+      <a class="admin-menu-item" href="#">&#128681; 敏感词管理</a>
+      <a class="admin-menu-item" href="#">&#9881; 系统配置</a>
+    </div>
+
+    <div class="admin-content">
+      <!-- Tag Management -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h3 style="font-size:16px;margin:0;">标签管理</h3>
+        <button class="btn btn-primary">+ 新增标签</button>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 14px;background:#ecf5ff;border:1px solid #c6e2ff;border-radius:6px;font-size:12px;">
+            <span class="tag-color-dot" style="background:#409eff;"></span>前端 <span style="color:#c0c4cc;">· 34篇</span>
+            <span style="cursor:pointer;color:#c0c4cc;">&#9998;</span>
+            <span style="cursor:pointer;color:#f56c6c;">&times;</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 14px;background:#fef0f0;border:1px solid #fbc4c4;border-radius:6px;font-size:12px;">
+            <span class="tag-color-dot" style="background:#f56c6c;"></span>后端 <span style="color:#c0c4cc;">· 28篇</span>
+            <span style="cursor:pointer;color:#c0c4cc;">&#9998;</span>
+            <span style="cursor:pointer;color:#f56c6c;">&times;</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 14px;background:#f0f9eb;border:1px solid #c2e7b0;border-radius:6px;font-size:12px;">
+            <span class="tag-color-dot" style="background:#67c23a;"></span>架构 <span style="color:#c0c4cc;">· 19篇</span>
+            <span style="cursor:pointer;color:#c0c4cc;">&#9998;</span>
+            <span style="cursor:pointer;color:#f56c6c;">&times;</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 14px;background:#fdf6ec;border:1px solid #f5dab1;border-radius:6px;font-size:12px;">
+            <span class="tag-color-dot" style="background:#e6a23c;"></span>DevOps <span style="color:#c0c4cc;">· 15篇</span>
+            <span style="cursor:pointer;color:#c0c4cc;">&#9998;</span>
+            <span style="cursor:pointer;color:#f56c6c;">&times;</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 14px;background:#f5f3ff;border:1px solid #d3c5f3;border-radius:6px;font-size:12px;">
+            <span class="tag-color-dot" style="background:#9b59b6;"></span>AI/ML <span style="color:#c0c4cc;">· 12篇</span>
+            <span style="cursor:pointer;color:#c0c4cc;">&#9998;</span>
+            <span style="cursor:pointer;color:#f56c6c;">&times;</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 14px;background:#f0f2f5;border:1px dashed #e4e7ed;border-radius:6px;font-size:12px;cursor:pointer;color:#909399;">
+            + 新增
+          </div>
+        </div>
+      </div>
+
+      <!-- Sensitive Words Management -->
+      <h3 style="font-size:16px;margin:24px 0 12px 0;">敏感词管理</h3>
+      <div style="display:flex;gap:12px;margin-bottom:12px;">
+        <input style="flex:1;height:34px;padding:0 12px;border:1px solid #dcdfe6;border-radius:6px;font-size:13px;outline:none;" placeholder="输入敏感词..." />
+        <select style="width:120px;border:1px solid #dcdfe6;border-radius:6px;font-size:13px;padding:0 8px;">
+          <option>全部类别</option><option>通用</option><option>政治</option><option>广告</option>
+        </select>
+        <button class="btn btn-primary">添加</button>
+        <button class="btn">批量导入</button>
+      </div>
+      <table>
+        <thead><tr><th>敏感词</th><th>类别</th><th>添加时间</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td>****</td><td><span style="background:#fef0f0;color:#f56c6c;padding:2px 8px;border-radius:3px;font-size:11px;">政治</span></td><td>2026-05-15</td><td><button class="btn btn-danger" style="font-size:11px;padding:2px 8px;">删除</button></td></tr>
+          <tr><td>******</td><td><span style="background:#fdf6ec;color:#e6a23c;padding:2px 8px;border-radius:3px;font-size:11px;">广告</span></td><td>2026-05-12</td><td><button class="btn btn-danger" style="font-size:11px;padding:2px 8px;">删除</button></td></tr>
+          <tr><td>****</td><td><span style="background:#f0f2f5;color:#909399;padding:2px 8px;border-radius:3px;font-size:11px;">通用</span></td><td>2026-05-10</td><td><button class="btn btn-danger" style="font-size:11px;padding:2px 8px;">删除</button></td></tr>
+          <tr><td>******</td><td><span style="background:#f0f2f5;color:#909399;padding:2px 8px;border-radius:3px;font-size:11px;">通用</span></td><td>2026-05-08</td><td><button class="btn btn-danger" style="font-size:11px;padding:2px 8px;">删除</button></td></tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span style="font-size:12px;color:#909399;margin-right:12px;">共 42 条</span>
+        <button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button>
+      </div>
+
+      <!-- User Management -->
+      <h3 style="font-size:16px;margin:24px 0 12px 0;">用户管理</h3>
+      <div style="display:flex;gap:12px;margin-bottom:12px;">
+        <input style="width:240px;height:34px;padding:0 12px;border:1px solid #dcdfe6;border-radius:6px;font-size:13px;outline:none;" placeholder="搜索用户/工号/部门..." />
+        <select style="width:120px;border:1px solid #dcdfe6;border-radius:6px;font-size:13px;padding:0 8px;">
+          <option>全部角色</option><option>系统管理员</option><option>普通用户</option>
+        </select>
+      </div>
+      <table>
+        <thead><tr><th>用户</th><th>部门</th><th>角色</th><th>内容数</th><th>注册时间</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:28px;height:28px;background:#409eff;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;">李</div> 李明</div></td>
+            <td>前端技术组</td><td>普通用户</td><td>34</td><td>2025-08-15</td>
+            <td><button class="btn" style="font-size:11px;padding:2px 8px;">编辑</button><button class="btn btn-danger" style="font-size:11px;padding:2px 8px;">禁用</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:28px;height:28px;background:#e6a23c;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;">管</div> 管理员</div></td>
+            <td>技术管理部</td><td><span style="background:#fdf6ec;color:#e6a23c;padding:2px 8px;border-radius:3px;font-size:11px;">系统管理员</span></td><td>--</td><td>2025-06-01</td>
+            <td><button class="btn" style="font-size:11px;padding:2px 8px;">编辑</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:28px;height:28px;background:#67c23a;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;">张</div> 张架构</div></td>
+            <td>基础架构组</td><td>普通用户</td><td>19</td><td>2025-07-20</td>
+            <td><button class="btn" style="font-size:11px;padding:2px 8px;">编辑</button><button class="btn btn-danger" style="font-size:11px;padding:2px 8px;">禁用</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span style="font-size:12px;color:#909399;margin-right:12px;">共 5,823 条</span>
+        <button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">...</button><button class="page-btn">583</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 4: System Config + Department -->
+<h3 style="margin:24px 0 12px 0;">管理后台 — 部门管理 / 系统配置</h3>
+<div class="page" style="background:#fff;">
+  <div class="topnav">
+    <div class="logo">&#9670; 知享</div>
+    <span style="color:#409eff;font-weight:600;">管理后台</span>
+    <div class="nav-right"><div class="av" style="background:#e6a23c;">管</div></div>
+  </div>
+
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="admin-menu-title">管理功能</div>
+      <a class="admin-menu-item" href="#">&#128200; 数据分析看板</a>
+      <a class="admin-menu-item" href="#">&#128100; 用户管理</a>
+      <a class="admin-menu-item active" href="#">&#127970; 部门管理</a>
+      <a class="admin-menu-item" href="#">&#127991; 标签管理</a>
+      <a class="admin-menu-item" href="#">&#128681; 敏感词管理</a>
+      <a class="admin-menu-item" href="#">&#9881; 系统配置</a>
+    </div>
+
+    <div class="admin-content">
+      <!-- Department Tree -->
+      <div style="display:flex;gap:24px;">
+        <div style="width:300px;">
+          <h4 style="font-size:14px;margin:0 0 12px 0;">部门组织架构</h4>
+          <div class="card" style="font-size:13px;color:#606266;line-height:2.2;">
+            <div style="cursor:pointer;">&#9660; <b>技术中心</b> <span style="color:#c0c4cc;font-size:11px;">(342人)</span></div>
+            <div style="padding-left:18px;">
+              <div style="cursor:pointer;color:#409eff;">&#9654; 前端技术组 <span style="color:#c0c4cc;font-size:11px;">(56人)</span></div>
+              <div style="cursor:pointer;">&#9654; 基础架构组 <span style="color:#c0c4cc;font-size:11px;">(48人)</span></div>
+              <div style="cursor:pointer;">&#9654; 搜索推荐组 <span style="color:#c0c4cc;font-size:11px;">(32人)</span></div>
+              <div style="cursor:pointer;">&#9654; 数据平台组 <span style="color:#c0c4cc;font-size:11px;">(28人)</span></div>
+              <div style="cursor:pointer;">&#9654; 运维保障组 <span style="color:#c0c4cc;font-size:11px;">(22人)</span></div>
+            </div>
+            <div style="cursor:pointer;margin-top:4px;">&#9654; <b>产品中心</b> <span style="color:#c0c4cc;font-size:11px;">(56人)</span></div>
+            <div style="cursor:pointer;">&#9654; <b>设计中心</b> <span style="color:#c0c4cc;font-size:11px;">(18人)</span></div>
+            <div style="cursor:pointer;">&#9654; <b>技术管理部</b> <span style="color:#c0c4cc;font-size:11px;">(12人)</span></div>
+          </div>
+          <div style="margin-top:12px;">
+            <button class="btn btn-primary" style="font-size:11px;">+ 新增部门</button>
+            <button class="btn" style="font-size:11px;">同步 LDAP</button>
+          </div>
+        </div>
+
+        <!-- System Settings -->
+        <div style="flex:1;">
+          <h4 style="font-size:14px;margin:0 0 12px 0;">系统配置</h4>
+          <div class="card">
+            <div class="form-row">
+              <label style="width:140px;font-size:12px;color:#606266;">平台名称</label>
+              <input style="flex:1;" value="知享 Knowledge Hub" />
+            </div>
+            <div class="form-row">
+              <label style="width:140px;font-size:12px;color:#606266;">每页内容数量</label>
+              <select><option>10</option><option>20</option><option>50</option></select>
+            </div>
+            <div class="form-row">
+              <label style="width:140px;font-size:12px;color:#606266;">评论需审核</label>
+              <select><option>是</option><option>否</option></select>
+            </div>
+            <div class="form-row">
+              <label style="width:140px;font-size:12px;color:#606266;">内容需审核</label>
+              <select><option>是</option><option>否</option></select>
+            </div>
+            <div class="form-row">
+              <label style="width:140px;font-size:12px;color:#606266;">SSO 登录地址</label>
+              <input style="flex:1;" value="https://sso.company.com/oauth2" />
+            </div>
+            <div class="form-row">
+              <label style="width:140px;font-size:12px;color:#606266;">LDAP 服务器</label>
+              <input style="flex:1;" value="ldap://ldap.company.com:389" />
+            </div>
+            <div class="form-row">
+              <label style="width:140px;font-size:12px;color:#606266;">文件存储上限</label>
+              <input style="width:100px;" value="100" /> <span style="font-size:12px;color:#909399;">GB</span>
+            </div>
+            <div class="form-row">
+              <label style="width:140px;font-size:12px;color:#606266;">向量模型</label>
+              <select><option>BGE-base-zh (768维)</option><option>BGE-large-zh (1024维)</option><option>M3E-base</option></select>
+            </div>
+            <div style="margin-top:16px;text-align:right;">
+              <button class="btn btn-primary">保存配置</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 style="margin:32px 0 12px 0;">页面总览清单</h3>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:13px;">
+  <div class="card"><b>内容模块</b><br/><br/>
+    <span style="color:#409eff;">&#10003;</span> 内容列表（首页）<br/>
+    <span style="color:#409eff;">&#10003;</span> 内容详情 + 评论区<br/>
+    <span style="color:#409eff;">&#10003;</span> 内容编辑 + 发布设置<br/>
+    <span style="color:#409eff;">&#10003;</span> 版本历史 + 差异对比<br/>
+    <span style="color:#409eff;">&#10003;</span> 模板中心
+  </div>
+  <div class="card"><b>群组 &amp; 用户</b><br/><br/>
+    <span style="color:#409eff;">&#10003;</span> 群组列表<br/>
+    <span style="color:#409eff;">&#10003;</span> 群组详情 + 成员<br/>
+    <span style="color:#409eff;">&#10003;</span> 群组管理（审批）<br/>
+    <span style="color:#409eff;">&#10003;</span> 登录页<br/>
+    <span style="color:#409eff;">&#10003;</span> 通知中心<br/>
+    <span style="color:#409eff;">&#10003;</span> 个人收藏
+  </div>
+  <div class="card"><b>审核模块</b><br/><br/>
+    <span style="color:#409eff;">&#10003;</span> 审核中心（内容审核）<br/>
+    <span style="color:#409eff;">&#10003;</span> 评论审核<br/>
+    <span style="color:#409eff;">&#10003;</span> 群组创建申请审批<br/>
+    <span style="color:#409eff;">&#10003;</span> 驳回原因填写
+  </div>
+  <div class="card"><b>管理后台</b><br/><br/>
+    <span style="color:#409eff;">&#10003;</span> 数据分析看板<br/>
+    <span style="color:#409eff;">&#10003;</span> 标签管理<br/>
+    <span style="color:#409eff;">&#10003;</span> 敏感词管理<br/>
+    <span style="color:#409eff;">&#10003;</span> 用户管理<br/>
+    <span style="color:#409eff;">&#10003;</span> 部门管理<br/>
+    <span style="color:#409eff;">&#10003;</span> 系统配置
+  </div>
+</div>

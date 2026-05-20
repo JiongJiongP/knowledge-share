@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(curl -s \"https://api.github.com/repos/vercel-labs/skills/contents/skills/find-skills\")",
+      "Bash(curl -sL --connect-timeout 10 \"https://api.github.com/repos/vercel-labs/skills/git/trees/main?recursive=1\")",
+      "Bash(curl -v --connect-timeout 5 \"https://api.github.com\")",
+      "Bash(curl -sL --ssl-no-revoke --connect-timeout 10 \"https://api.github.com/repos/vercel-labs/skills/git/trees/main?recursive=1\")",
+      "Bash(curl *)",
+      "Bash(npx skills *)",
+      "WebSearch",
+      "Skill(superpowers:brainstorming)",
+      "Bash(bash *)",
+      "Skill(superpowers:writing-plans)",
+      "Bash(npm create *)",
+      "Bash(npm install *)",
+      "Bash(npx vite *)",
+      "Skill(superpowers:requesting-code-review)"
+    ]
+  }
+}

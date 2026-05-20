@@ -1,0 +1,271 @@
+<h2>内容列表首页 — 线框图</h2>
+<p class="subtitle">基于 Element Plus 设计规范的企业知识分享平台首页布局</p>
+
+<div class="mockup">
+  <div class="mockup-header">完整页面布局 (1440x900)</div>
+  <div class="mockup-body">
+    <style>
+      .page { background: #f5f7fa; min-height: 800px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+      .topnav { background: #fff; height: 60px; display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid #e4e7ed; gap: 16px; }
+      .logo { font-size: 20px; font-weight: 700; color: #409eff; white-space: nowrap; }
+      .logo span { color: #303133; font-weight: 500; font-size: 14px; margin-left: 4px; }
+      .search-box { flex: 1; max-width: 480px; margin: 0 auto; }
+      .search-input { width: 100%; height: 38px; border: 1px solid #dcdfe6; border-radius: 20px; padding: 0 16px; background: #f5f7fa; font-size: 14px; outline: none; }
+      .nav-icons { display: flex; align-items: center; gap: 20px; }
+      .bell { position: relative; width: 20px; height: 20px; }
+      .bell-badge { position: absolute; top: -4px; right: -6px; width: 8px; height: 8px; background: #f56c6c; border-radius: 50%; }
+      .avatar { width: 36px; height: 36px; background: #409eff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 600; }
+      .main { display: flex; height: calc(100vh - 60px); }
+      .sidebar { width: 240px; background: #fff; border-right: 1px solid #e4e7ed; padding: 20px 16px; overflow-y: auto; flex-shrink: 0; }
+      .sidebar h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #303133; }
+      .tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+      .tag { padding: 4px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; border: 1px solid #e4e7ed; background: #fafafa; color: #606266; transition: all .2s; }
+      .tag.active { background: #ecf5ff; border-color: #409eff; color: #409eff; }
+      .tag-count { font-size: 11px; color: #c0c4cc; margin-left: 2px; }
+      .content-area { flex: 1; padding: 20px 24px; overflow-y: auto; }
+      .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+      .sort-group { display: flex; gap: 4px; }
+      .sort-btn { padding: 6px 14px; border-radius: 4px; font-size: 13px; cursor: pointer; border: 1px solid #e4e7ed; background: #fff; color: #606266; }
+      .sort-btn.active { background: #409eff; border-color: #409eff; color: #fff; }
+      .result-count { font-size: 13px; color: #909399; }
+      .card-list { display: flex; flex-direction: column; gap: 12px; }
+      .card { background: #fff; border-radius: 8px; padding: 20px 24px; border: 1px solid #ebeef5; transition: box-shadow .2s; cursor: pointer; }
+      .card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+      .card-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+      .card-type-icon { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+      .type-md { background: #ecf5ff; color: #409eff; }
+      .type-ppt { background: #fef0f0; color: #f56c6c; }
+      .type-link { background: #f0f9eb; color: #67c23a; }
+      .type-ref { background: #fdf6ec; color: #e6a23c; }
+      .card-title { font-size: 16px; font-weight: 600; color: #303133; line-height: 1.4; flex: 1; }
+      .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+      .card-tag { padding: 2px 8px; border-radius: 3px; font-size: 11px; background: #f0f2f5; color: #909399; }
+      .card-meta { display: flex; align-items: center; gap: 16px; font-size: 12px; color: #c0c4cc; }
+      .card-desc { font-size: 13px; color: #909399; line-height: 1.5; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; padding: 16px 0; }
+      .page-btn { width: 32px; height: 32px; border-radius: 4px; border: 1px solid #e4e7ed; background: #fff; cursor: pointer; font-size: 13px; color: #606266; display: flex; align-items: center; justify-content: center; }
+      .page-btn.active { background: #409eff; border-color: #409eff; color: #fff; }
+      .page-btn.disabled { color: #c0c4cc; cursor: default; }
+      .label-tag { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 3px; font-size: 11px; font-weight: 500; }
+      .label-new { background: #ecf5ff; color: #409eff; margin-left: 8px; }
+      .label-hot { background: #fef0f0; color: #f56c6c; margin-left: 8px; }
+    </style>
+
+    <div class="page">
+      <!-- Top Navigation -->
+      <div class="topnav">
+        <div class="logo">&#9670; 知享<span>Knowledge Hub</span></div>
+        <div class="search-box">
+          <input class="search-input" placeholder="搜索内容、标签、作者..." />
+        </div>
+        <div class="nav-icons">
+          <div class="bell" style="background:#c0c4cc;border-radius:50%;">&#128276;</div>
+          <div class="avatar">李</div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main">
+        <!-- Left Sidebar - Tag Filter -->
+        <div class="sidebar">
+          <h4>标签筛选</h4>
+          <div class="tag-list">
+            <div class="tag active">全部 <span class="tag-count">128</span></div>
+            <div class="tag">前端 <span class="tag-count">34</span></div>
+            <div class="tag">后端 <span class="tag-count">28</span></div>
+            <div class="tag">架构 <span class="tag-count">19</span></div>
+            <div class="tag">DevOps <span class="tag-count">15</span></div>
+            <div class="tag">AI/ML <span class="tag-count">12</span></div>
+            <div class="tag">产品 <span class="tag-count">10</span></div>
+            <div class="tag">设计 <span class="tag-count">8</span></div>
+            <div class="tag">数据库 <span class="tag-count">7</span></div>
+            <div class="tag">安全 <span class="tag-count">5</span></div>
+            <div class="tag">测试 <span class="tag-count">4</span></div>
+            <div class="tag">运维 <span class="tag-count">3</span></div>
+          </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+          <!-- Toolbar -->
+          <div class="toolbar">
+            <div class="sort-group">
+              <button class="sort-btn active">最新发布</button>
+              <button class="sort-btn">最热</button>
+              <button class="sort-btn">最多收藏</button>
+            </div>
+            <div class="result-count">共 128 条内容</div>
+          </div>
+
+          <!-- Content Cards -->
+          <div class="card-list">
+            <!-- Card 1: Markdown -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-type-icon type-md">MD</div>
+                <div>
+                  <div class="card-title">Vue 3 Composition API 最佳实践指南</div>
+                  <div class="card-tags" style="margin-top:6px;">
+                    <span class="card-tag">前端</span>
+                    <span class="card-tag">Vue</span>
+                    <span class="card-tag">最佳实践</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-desc">本文总结了在项目中实际运用 Vue 3 Composition API 的经验，涵盖响应式系统、生命周期、自定义 Hooks 以及与 TypeScript 的集成方案...</div>
+              <div class="card-meta">
+                <span>&#128100; 李明 · 前端技术组</span>
+                <span>&#128339; 2小时前</span>
+                <span>&#128065; 342 阅读</span>
+                <span>&#10084; 56 收藏</span>
+                <span>&#128172; 12 评论</span>
+              </div>
+            </div>
+
+            <!-- Card 2: PPT -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-type-icon type-ppt">PPT</div>
+                <div>
+                  <div class="card-title">2026 Q1 技术架构演进复盘 <span class="label-tag label-hot">热门</span></div>
+                  <div class="card-tags" style="margin-top:6px;">
+                    <span class="card-tag">架构</span>
+                    <span class="card-tag">复盘</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-desc">Q1 季度微服务拆分、ES 升级、向量检索引入等关键技术决策的完整复盘 PPT，含架构图和指标对比...</div>
+              <div class="card-meta">
+                <span>&#128100; 张架构 · 基础架构组</span>
+                <span>&#128339; 昨天</span>
+                <span>&#128065; 891 阅读</span>
+                <span>&#10084; 203 收藏</span>
+                <span>&#128172; 35 评论</span>
+              </div>
+            </div>
+
+            <!-- Card 3: External Link -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-type-icon type-link">URL</div>
+                <div>
+                  <div class="card-title">Google SRE: 分布式系统监控的黄金信号</div>
+                  <div class="card-tags" style="margin-top:6px;">
+                    <span class="card-tag">SRE</span>
+                    <span class="card-tag">监控</span>
+                    <span class="card-tag">分布式</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-desc">原文链接：sre.google/srebook/monitoring-distributed-systems/ — 详细阐述延迟、流量、错误、饱和度四大黄金信号的监控实践...</div>
+              <div class="card-meta">
+                <span>&#128100; 王运维 · 运维保障组</span>
+                <span>&#128339; 3天前</span>
+                <span>&#128065; 567 阅读</span>
+                <span>&#10084; 89 收藏</span>
+                <span>&#128172; 8 评论</span>
+              </div>
+            </div>
+
+            <!-- Card 4: Internal Reference -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-type-icon type-ref">REF</div>
+                <div>
+                  <div class="card-title">MySQL 索引优化实战 (引用自《数据库规范手册》) <span class="label-tag label-new">新</span></div>
+                  <div class="card-tags" style="margin-top:6px;">
+                    <span class="card-tag">MySQL</span>
+                    <span class="card-tag">优化</span>
+                    <span class="card-tag">索引</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-desc">本文引用并补充了公司内部的《数据库规范手册》中关于联合索引、覆盖索引、索引下推的实战案例，包含慢查询分析和 EXPLAIN 解读...</div>
+              <div class="card-meta">
+                <span>&#128100; 赵DBA · 数据平台组</span>
+                <span>&#128339; 5天前</span>
+                <span>&#128065; 234 阅读</span>
+                <span>&#10084; 45 收藏</span>
+                <span>&#128172; 3 评论</span>
+              </div>
+            </div>
+
+            <!-- Card 5: Markdown -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-type-icon type-md">MD</div>
+                <div>
+                  <div class="card-title">Elasticsearch 8.x 中文分词与语义检索实战</div>
+                  <div class="card-tags" style="margin-top:6px;">
+                    <span class="card-tag">Elasticsearch</span>
+                    <span class="card-tag">检索</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-desc">详细介绍 ES 8.x 配合 IK 分词器进行中文全文检索的配置优化，以及如何通过 dense_vector 融合向量相似度评分...</div>
+              <div class="card-meta">
+                <span>&#128100; 陈搜索 · 搜索推荐组</span>
+                <span>&#128339; 1周前</span>
+                <span>&#128065; 456 阅读</span>
+                <span>&#10084; 67 收藏</span>
+                <span>&#128172; 9 评论</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <button class="page-btn disabled">&lt;</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">...</button>
+            <button class="page-btn">13</button>
+            <button class="page-btn">&gt;</button>
+            <span style="margin-left: 12px; font-size: 13px; color: #909399;">共 128 条，每页 10 条</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 style="margin-top: 32px;">布局要点说明</h3>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
+  <div style="background:#fff;border:1px solid #ebeef5;border-radius:8px;padding:16px;">
+    <h4 style="margin:0 0 8px 0;font-size:14px;">顶部导航栏 (60px)</h4>
+    <ul style="margin:0;padding-left:18px;font-size:13px;color:#606266;line-height:1.8;">
+      <li>Logo + 平台名称 左对齐</li>
+      <li>全局搜索框居中 (max-width:480px)</li>
+      <li>通知铃铛 + 用户头像 右对齐</li>
+      <li>搜索框支持全文检索 + 语义搜索</li>
+    </ul>
+  </div>
+  <div style="background:#fff;border:1px solid #ebeef5;border-radius:8px;padding:16px;">
+    <h4 style="margin:0 0 8px 0;font-size:14px;">左侧标签面板 (240px)</h4>
+    <ul style="margin:0;padding-left:18px;font-size:13px;color:#606266;line-height:1.8;">
+      <li>管理员统一管理的全局标签</li>
+      <li>每个标签显示关联内容数量</li>
+      <li>点击标签筛选，支持多选</li>
+      <li>"全部"显示平台全部内容数</li>
+    </ul>
+  </div>
+  <div style="background:#fff;border:1px solid #ebeef5;border-radius:8px;padding:16px;">
+    <h4 style="margin:0 0 8px 0;font-size:14px;">内容卡片设计</h4>
+    <ul style="margin:0;padding-left:18px;font-size:13px;color:#606266;line-height:1.8;">
+      <li>类型图标：MD(蓝)/PPT(红)/URL(绿)/REF(黄)</li>
+      <li>标题 + 标签徽章 + 摘要(2行截断)</li>
+      <li>作者 · 时间 · 阅读量 · 收藏数 · 评论数</li>
+      <li>悬停阴影效果，点击跳转详情页</li>
+    </ul>
+  </div>
+  <div style="background:#fff;border:1px solid #ebeef5;border-radius:8px;padding:16px;">
+    <h4 style="margin:0 0 8px 0;font-size:14px;">排序与分页</h4>
+    <ul style="margin:0;padding-left:18px;font-size:13px;color:#606266;line-height:1.8;">
+      <li>排序：最新发布(默认) / 最热 / 最多收藏</li>
+      <li>分页：标准页码 + 省略号 + 总数统计</li>
+      <li>每页默认 10 条，可配置</li>
+    </ul>
+  </div>
+</div>
