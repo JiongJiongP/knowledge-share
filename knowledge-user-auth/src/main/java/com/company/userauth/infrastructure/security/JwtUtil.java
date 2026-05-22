@@ -16,8 +16,11 @@ public class JwtUtil {
     private final SecretKey key;
     private final long expirationMs;
 
-    public JwtUtil(@Value("${jwt.secret:knowledge-platform-secret-key-min-256-bits!!}") String secret,
+    public JwtUtil(@Value("${jwt.secret}") String secret,
                    @Value("${jwt.expiration:86400000}") long expirationMs) {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalArgumentException("jwt.secret must be configured");
+        }
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMs = expirationMs;
     }

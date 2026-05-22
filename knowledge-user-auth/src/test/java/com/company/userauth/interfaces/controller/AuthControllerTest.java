@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(value = AuthController.class, excludeAutoConfiguration = {
         org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class
-})
+}, properties = "jwt.secret=test-secret-key-for-controller-test-min-256-bits!!")
 class AuthControllerTest {
 
     @Autowired

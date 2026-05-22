@@ -39,6 +39,9 @@ public class AuthService {
             throw new BizException(401, "用户名或密码错误");
         }
         String role = roleMapper.findRoleByUserId(user.getId());
+        if (role == null || role.isBlank()) {
+            role = "USER";
+        }
         return jwtUtil.generate(user.getId(), user.getUsername(), role);
     }
 

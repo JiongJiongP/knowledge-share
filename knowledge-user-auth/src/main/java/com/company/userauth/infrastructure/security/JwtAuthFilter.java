@@ -34,8 +34,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
+        String token = header.substring(7);
+        if (token.isBlank()) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         try {
-            Claims claims = jwtUtil.parse(header.substring(7));
+            Claims claims = jwtUtil.parse(token);
             Long userId = jwtUtil.getUserId(claims);
             String role = claims.get("role", String.class);
             List<SimpleGrantedAuthority> authorities = List.of(
@@ -44,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(userId, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
-        } catch (JwtException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             // Token invalid, continue without authentication
         }
 

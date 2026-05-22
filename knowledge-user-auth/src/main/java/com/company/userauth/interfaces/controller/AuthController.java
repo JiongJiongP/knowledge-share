@@ -27,6 +27,9 @@ public class AuthController {
 
     @GetMapping("/me")
     public Result<User> me(Authentication auth) {
+        if (auth == null) {
+            return Result.fail(401, "未认证");
+        }
         Long userId = (Long) auth.getPrincipal();
         return Result.ok(authService.getCurrentUser(userId));
     }

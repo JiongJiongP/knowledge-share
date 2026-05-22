@@ -24,6 +24,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
@@ -44,7 +45,7 @@ async function handleLogin() {
     await userStore.login(form)
     router.push('/')
   } catch {
-    // 拦截器已处理 toast
+    ElMessage.error('登录失败，请检查网络连接')
   } finally {
     loading.value = false
   }
