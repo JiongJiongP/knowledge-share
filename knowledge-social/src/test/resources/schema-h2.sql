@@ -21,3 +21,32 @@ CREATE TABLE IF NOT EXISTS group_member (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT uk_group_user UNIQUE (group_id, user_id)
 );
+
+CREATE TABLE IF NOT EXISTS comment (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  content_id BIGINT NOT NULL,
+  parent_id BIGINT,
+  reply_to_id BIGINT,
+  reply_to_user_id BIGINT,
+  user_id BIGINT NOT NULL,
+  body TEXT NOT NULL,
+  like_count INT DEFAULT 0,
+  status VARCHAR(16) NOT NULL DEFAULT 'PUBLISHED',
+  audit_status VARCHAR(16) NOT NULL DEFAULT 'APPROVED',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS comment_like (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  comment_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT uk_comment_user UNIQUE (comment_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS comment_mention (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  comment_id BIGINT NOT NULL,
+  mentioned_user_id BIGINT NOT NULL
+);
