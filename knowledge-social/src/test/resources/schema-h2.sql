@@ -50,3 +50,23 @@ CREATE TABLE IF NOT EXISTS comment_mention (
   comment_id BIGINT NOT NULL,
   mentioned_user_id BIGINT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS favorite (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  content_id BIGINT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT uk_fav_user_content UNIQUE (user_id, content_id)
+);
+
+CREATE TABLE IF NOT EXISTS notification (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  type VARCHAR(32) NOT NULL,
+  title VARCHAR(256) NOT NULL,
+  content VARCHAR(512),
+  related_id BIGINT,
+  related_type VARCHAR(32),
+  is_read TINYINT DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

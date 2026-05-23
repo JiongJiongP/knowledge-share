@@ -36,3 +36,11 @@ CREATE TABLE IF NOT EXISTS content_tag_relation (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT uk_content_tag UNIQUE (content_id, tag_id)
 );
+
+CREATE TABLE IF NOT EXISTS sensitive_word (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  word VARCHAR(64) NOT NULL,
+  category VARCHAR(32) NOT NULL DEFAULT 'GENERAL',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT uk_sw_word UNIQUE (word)
+);

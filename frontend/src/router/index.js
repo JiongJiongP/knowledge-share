@@ -57,6 +57,41 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/admin/sensitive-words',
+    name: 'AdminSensitiveWords',
+    component: () => import('@/views/admin/SensitiveWordManage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/admin/analytics',
+    name: 'AdminAnalytics',
+    component: () => import('@/views/admin/AnalyticsDashboard.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/admin/audit',
+    name: 'AdminAudit',
+    component: () => import('@/views/admin/AuditCenter.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/audit',
+    name: 'AuditCenter',
+    redirect: '/admin/audit',
+  },
+  {
+    path: '/favorites',
+    name: 'Favorites',
+    component: () => import('@/views/FavoritesPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/notifications',
+    name: 'Notifications',
+    component: () => import('@/views/NotificationsPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFound.vue'),
