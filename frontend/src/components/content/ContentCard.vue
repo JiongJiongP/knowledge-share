@@ -8,8 +8,15 @@
     </template>
     <p class="excerpt">{{ excerpt }}</p>
     <div class="card-footer">
-      <span class="author">{{ content.createdBy }}</span>
-      <span class="time">{{ formatTime(content.publishedAt) }}</span>
+      <div class="footer-left">
+        <span class="author">{{ content.createdBy }}</span>
+        <span class="time">{{ formatTime(content.publishedAt) }}</span>
+      </div>
+      <div class="footer-stats">
+        <span class="stat-item" v-if="content.viewCount != null">👁️ {{ content.viewCount }}</span>
+        <span class="stat-item" v-if="content.favoriteCount != null">⭐ {{ content.favoriteCount }}</span>
+        <span class="stat-item" v-if="content.commentCount != null">💬 {{ content.commentCount }}</span>
+      </div>
     </div>
   </el-card>
 </template>
@@ -85,5 +92,21 @@ function goDetail() {
   margin-top: 12px;
   font-size: 12px;
   color: #c0c4cc;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.footer-left {
+  display: flex;
+  gap: 12px;
+}
+.footer-stats {
+  display: flex;
+  gap: 12px;
+}
+.stat-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #909399;
 }
 </style>
