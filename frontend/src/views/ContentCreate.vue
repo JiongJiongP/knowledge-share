@@ -77,7 +77,7 @@
 import { ref, reactive, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { createContent, saveDraft, publishContent, schedulePublish } from '@/api/content'
+import { createContent, publishContent, schedulePublish } from '@/api/content'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import TagSelector from '@/components/content/TagSelector.vue'
 import { setContentTags } from '@/api/tag'
@@ -136,7 +136,7 @@ async function handleSaveDraft() {
     const id = res.data?.id
     if (id) {
       if (form.tagIds.length > 0) {
-        await setContentTags(id, form.tagIds).catch(() => {})
+        await setContentTags(id, form.tagIds).catch(() => ElMessage.warning('标签保存失败'))
       }
       ElMessage.success('草稿已保存')
       router.push(`/content/${id}`)
@@ -159,11 +159,11 @@ async function handleSubmit() {
     const id = res.data?.id
     if (id) {
       if (form.tagIds.length > 0) {
-        await setContentTags(id, form.tagIds).catch(() => {})
+        await setContentTags(id, form.tagIds).catch(() => ElMessage.warning('标签保存失败'))
       }
-      await publishContent(id).catch(() => {})
+      await publishContent(id).catch(() => ElMessage.warning('发布失败'))
       if (form.scheduledAt) {
-        await schedulePublish(id, form.scheduledAt).catch(() => {})
+        await schedulePublish(id, form.scheduledAt).catch(() => ElMessage.warning('定时发布设置失败'))
       }
       ElMessage.success('内容已提交')
       router.push(`/content/${id}`)
