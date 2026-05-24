@@ -27,3 +27,7 @@ export function saveDraft(id, data) {
 export function deleteContent(id) {
   return request.delete(`/contents/${id}`)
 }
+
+export function schedulePublish(id, scheduledAt) {
+  return request.post(`/contents/${id}/schedule`, { scheduledAt })
+}

@@ -47,7 +47,6 @@
               <el-button size="small" text @click="insertMarkdown('\n> ', '')">❝</el-button>
             </div>
             <el-input
-              ref="editorRef"
               v-model="form.body"
               type="textarea"
               :rows="15"
@@ -64,21 +63,6 @@
           <TagSelector v-model="form.tagIds" />
         </div>
 
-        <!-- Publish to groups -->
-        <div class="form-group">
-          <label class="form-label">发布到群组</label>
-          <div class="group-checkboxes">
-            <el-checkbox
-              v-for="g in groups"
-              :key="g.id"
-              v-model="form.groupIds"
-              :label="g.id"
-              :value="g.id"
-            >{{ g.name }}</el-checkbox>
-            <span v-if="groups.length === 0" class="no-groups">暂无可用群组</span>
-          </div>
-        </div>
-
         <!-- Scheduled publish -->
         <div class="form-group">
           <label class="form-label">定时发布（可选）</label>
@@ -90,13 +74,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { createContent, saveDraft, publishContent } from '@/api/content'
-import { getGroupList } from '@/api/group'
+import { createContent, saveDraft, publishContent, schedulePublish } from '@/api/content'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import TagSelector from '@/components/content/TagSelector.vue'
+import { setContentTags } from '@/api/tag'
 
 const router = useRouter()
 
@@ -112,20 +96,11 @@ const form = reactive({
   body: '',
   contentType: 'MARKDOWN',
   tagIds: [],
-  groupIds: [],
   scheduledAt: ''
 })
 
-const groups = ref([])
 const saving = ref(false)
 const submitting = ref(false)
-
-onMounted(async () => {
-  try {
-    const res = await getGroupList({ size: 100 })
-    groups.value = res.data?.records || res.data || []
-  } catch { groups.value = [] }
-})
 
 function insertMarkdown(before, after) {
   const el = document.querySelector('.editor-textarea textarea, .editor-textarea .el-textarea__inner')
@@ -160,7 +135,9 @@ async function handleSaveDraft() {
     const res = await createContent(payload)
     const id = res.data?.id
     if (id) {
-      await saveDraft(id, payload).catch(() => {})
+      if (form.tagIds.length > 0) {
+        await setContentTags(id, form.tagIds).catch(() => {})
+      }
       ElMessage.success('草稿已保存')
       router.push(`/content/${id}`)
     }
@@ -181,7 +158,13 @@ async function handleSubmit() {
     const res = await createContent(payload)
     const id = res.data?.id
     if (id) {
+      if (form.tagIds.length > 0) {
+        await setContentTags(id, form.tagIds).catch(() => {})
+      }
       await publishContent(id).catch(() => {})
+      if (form.scheduledAt) {
+        await schedulePublish(id, form.scheduledAt).catch(() => {})
+      }
       ElMessage.success('内容已提交')
       router.push(`/content/${id}`)
     }
