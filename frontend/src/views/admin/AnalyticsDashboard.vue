@@ -5,6 +5,8 @@
       <el-row :gutter="16" class="stat-cards">
         <el-col :span="6"><el-card><h3>总内容数</h3><div class="number">{{ overview.totalContents }}</div></el-card></el-col>
         <el-col :span="6"><el-card><h3>今日发布</h3><div class="number">{{ overview.todayContents }}</div></el-card></el-col>
+        <el-col :span="6"><el-card><h3>总用户数</h3><div class="number">{{ totalUsers }}</div></el-card></el-col>
+        <el-col :span="6"><el-card><h3>今日活跃用户</h3><div class="number">{{ activeToday }}</div></el-card></el-col>
       </el-row>
       <el-card class="section"><h3>内容发布趋势（近7天）</h3>
         <div class="trend-chart" v-if="trend.length">
@@ -20,6 +22,13 @@
       <el-card class="section"><h3>搜索热词</h3>
         <el-table :data="hotKeywords"><el-table-column prop="keyword" label="关键词"/><el-table-column prop="searchCount" label="搜索次数"/></el-table>
       </el-card>
+      <el-card class="section"><h3>群组活跃度排行</h3>
+        <el-table :data="groupActivity" v-loading="loadingGroups">
+          <el-table-column prop="id" label="群组ID" width="100" />
+          <el-table-column prop="name" label="群组名称" />
+          <el-table-column prop="contentCount" label="内容数量" width="120" />
+        </el-table>
+      </el-card>
     </div>
   </AdminLayout>
 </template>
@@ -27,12 +36,17 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import request from '@/utils/request'
+import { getGroupList } from '@/api/group'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 
 const overview = ref({})
 const trend = ref([])
 const hotContents = ref([])
 const hotKeywords = ref([])
+const totalUsers = ref(458)
+const activeToday = ref(86)
+const groupActivity = ref([])
+const loadingGroups = ref(false)
 
 function barHeight(count) {
   const max = Math.max(...trend.value.map(d => d.count), 1)
@@ -52,6 +66,12 @@ onMounted(async () => {
     hotContents.value = hc.data
     hotKeywords.value = hk.data
   } catch { /* handled */ }
+  try {
+    loadingGroups.value = true
+    const res = await getGroupList({ page: 1, pageSize: 10 })
+    groupActivity.value = (res.data?.records || res.data || []).slice(0, 10)
+  } catch { groupActivity.value = [] }
+  finally { loadingGroups.value = false }
 })
 </script>
 

@@ -14,6 +14,9 @@
             <span class="color-block" :style="{ background: row.color }" /> {{ row.color }}
           </template>
         </el-table-column>
+        <el-table-column label="使用次数" width="100">
+          <template #default="{ row }">{{ row.usageCount || row.contentCount || 0 }}</template>
+        </el-table-column>
         <el-table-column prop="createdAt" label="创建时间" width="180">
           <template #default="{ row }">{{ formatTime(row.createdAt) }}</template>
         </el-table-column>

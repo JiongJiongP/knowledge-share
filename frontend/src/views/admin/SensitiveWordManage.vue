@@ -9,6 +9,15 @@
         </div>
       </div>
 
+      <div class="filter-bar">
+        <el-select v-model="filterCategory" placeholder="全部分类" @change="onFilterChange" style="width:160px">
+          <el-option label="全部分类" value="" />
+          <el-option label="通用敏感词" value="GENERAL" />
+          <el-option label="政治敏感" value="POLITICAL" />
+          <el-option label="广告推广" value="ADVERTISING" />
+        </el-select>
+        <el-input v-model="searchKeyword" placeholder="搜索敏感词" clearable @input="onFilterChange" style="width:220px" />
+      </div>
       <el-table :data="words" style="width: 100%" v-loading="loading">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="word" label="敏感词" width="200" />
@@ -80,6 +89,8 @@ const words = ref([])
 const loading = ref(false)
 const saving = ref(false)
 const importing = ref(false)
+const filterCategory = ref('')
+const searchKeyword = ref('')
 
 const showAdd = ref(false)
 const addFormRef = ref(null)
@@ -100,10 +111,15 @@ function categoryLabel(cat) {
 async function fetchWords() {
   loading.value = true
   try {
-    const res = await getSensitiveWords()
+    const params = {}
+    if (filterCategory.value) params.category = filterCategory.value
+    if (searchKeyword.value) params.keyword = searchKeyword.value
+    const res = await getSensitiveWords(params)
     words.value = res.data || []
   } finally { loading.value = false }
 }
+
+function onFilterChange() { fetchWords() }
 
 async function handleAdd() {
   const valid = await addFormRef.value.validate().catch(() => false)
@@ -158,4 +174,5 @@ onMounted(fetchWords)
 .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .toolbar h2 { margin: 0; font-size: 18px; }
 .toolbar-right { display: flex; gap: 10px; }
+.filter-bar { display: flex; gap: 12px; margin-bottom: 16px; }
 </style>

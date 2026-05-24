@@ -2,6 +2,13 @@
   <AdminLayout>
     <div class="audit-center">
       <h2>审核中心</h2>
+      <div class="filter-bar">
+        <el-select v-model="filterType" placeholder="全部" @change="onFilterChange" style="width:160px">
+          <el-option label="全部" value="" />
+          <el-option label="内容审核" value="CONTENT" />
+          <el-option label="评论审核" value="COMMENT" />
+        </el-select>
+      </div>
       <el-table :data="audits" v-loading="loading">
         <el-table-column prop="id" label="ID" width="80"/>
         <el-table-column prop="targetType" label="类型" width="100"/>
@@ -38,15 +45,23 @@ import AdminLayout from '@/components/layout/AdminLayout.vue'
 
 const audits = ref([])
 const loading = ref(false)
+const filterType = ref('')
 const rejectVisible = ref(false)
 const rejectReason = ref('')
 const currentId = ref(null)
 
 async function fetch() {
   loading.value = true
-  try { const res = await request.get('/admin/audit/pending'); audits.value = res.data } catch { /* handled */ }
+  try {
+    const params = {}
+    if (filterType.value) params.type = filterType.value
+    const res = await request.get('/admin/audit/pending', { params })
+    audits.value = res.data
+  } catch { /* handled */ }
   finally { loading.value = false }
 }
+
+function onFilterChange() { fetch() }
 
 async function handleApprove(row) {
   await request.post(`/admin/audit/${row.id}/approve`)
@@ -68,4 +83,5 @@ onMounted(fetch)
 <style scoped>
 .audit-center { background: #fff; border-radius: 8px; padding: 20px; }
 .audit-center h2 { margin: 0 0 20px; }
+.filter-bar { display: flex; margin-bottom: 16px; }
 </style>
