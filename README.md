@@ -71,6 +71,391 @@ knowledge-platform/
 
 ---
 
+## 数据库表结构 (DDL)
+
+> 以下 DDL 由 Flyway 在首次启动时自动执行（`knowledge-web/src/main/resources/db/migration/` 下的各模块迁移文件）。
+> 也可手动执行以下完整 DDL 初始化数据库。
+
+### 创建数据库
+
+```sql
+CREATE DATABASE IF NOT EXISTS knowledge_platform
+  DEFAULT CHARSET utf8mb4
+  DEFAULT COLLATE utf8mb4_general_ci;
+```
+
+### V1 — 用户认证 (`user`, `department`, `role`, `permission`, `user_role`, `role_permission`)
+
+```sql
+CREATE TABLE IF NOT EXISTS `user` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(64) NOT NULL UNIQUE,
+  password VARCHAR(256) NOT NULL,
+  display_name VARCHAR(64) NOT NULL,
+  email VARCHAR(128),
+  sso_id VARCHAR(128),
+  department_id BIGINT,
+  status VARCHAR(16) NOT NULL DEFAULT 'ACTIVE',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_username (username),
+  INDEX idx_department (department_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `department` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(128) NOT NULL,
+  parent_id BIGINT DEFAULT 0,
+  sort_order INT DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `role` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  code VARCHAR(32) NOT NULL UNIQUE,
+  name VARCHAR(64) NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `permission` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  code VARCHAR(64) NOT NULL UNIQUE,
+  name VARCHAR(64) NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `user_role` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  role_id BIGINT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_user_role (user_id, role_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `role_permission` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  role_id BIGINT NOT NULL,
+  permission_id BIGINT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_role_permission (role_id, permission_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### V2 — 知识内容 (`knowledge_content`, `content_group_relation`)
+
+```sql
+CREATE TABLE IF NOT EXISTS `knowledge_content` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(256) NOT NULL,
+  body LONGTEXT,
+  content_type VARCHAR(16) NOT NULL DEFAULT 'MARKDOWN',
+  status VARCHAR(20) NOT NULL DEFAULT 'DRAFT',
+  created_by BIGINT NOT NULL,
+  published_at DATETIME,
+  is_deleted TINYINT DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_created_by (created_by),
+  INDEX idx_status_published (status, published_at),
+  INDEX idx_is_deleted (is_deleted)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `content_group_relation` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  content_id BIGINT NOT NULL,
+  group_id BIGINT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_content_group (content_id, group_id),
+  INDEX idx_group_id (group_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### V3 — 群组 (`group_info`, `group_member`)
+
+```sql
+CREATE TABLE IF NOT EXISTS `group_info` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(128) NOT NULL,
+  description VARCHAR(512),
+  owner_id BIGINT NOT NULL,
+  visibility VARCHAR(16) NOT NULL DEFAULT 'PUBLIC',
+  status VARCHAR(16) NOT NULL DEFAULT 'APPROVED',
+  is_deleted TINYINT DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_owner (owner_id),
+  INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `group_member` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  group_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL,
+  role VARCHAR(16) NOT NULL DEFAULT 'MEMBER',
+  status VARCHAR(16) NOT NULL DEFAULT 'PENDING',
+  joined_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_group_user (group_id, user_id),
+  INDEX idx_user_status (user_id, status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### V4 — 标签 (`tag`, `content_tag_relation`)
+
+```sql
+CREATE TABLE IF NOT EXISTS `tag` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(64) NOT NULL UNIQUE,
+  color VARCHAR(7) NOT NULL DEFAULT '#409EFF',
+  created_by BIGINT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `content_tag_relation` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  content_id BIGINT NOT NULL,
+  tag_id BIGINT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_content_tag (content_id, tag_id),
+  INDEX idx_content_id (content_id),
+  INDEX idx_tag_id (tag_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### V5 — 评论 (`comment`, `comment_like`, `comment_mention`)
+
+```sql
+CREATE TABLE IF NOT EXISTS `comment` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  content_id BIGINT NOT NULL,
+  parent_id BIGINT,
+  reply_to_id BIGINT,
+  reply_to_user_id BIGINT,
+  user_id BIGINT NOT NULL,
+  body TEXT NOT NULL,
+  like_count INT DEFAULT 0,
+  status VARCHAR(16) NOT NULL DEFAULT 'PUBLISHED',
+  audit_status VARCHAR(16) NOT NULL DEFAULT 'APPROVED',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_content_id (content_id),
+  INDEX idx_parent_id (parent_id),
+  INDEX idx_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `comment_like` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  comment_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_comment_user (comment_id, user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `comment_mention` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  comment_id BIGINT NOT NULL,
+  mentioned_user_id BIGINT NOT NULL,
+  INDEX idx_comment_id (comment_id),
+  INDEX idx_mentioned_user (mentioned_user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### V6 — 敏感词 (`sensitive_word`)
+
+```sql
+CREATE TABLE IF NOT EXISTS `sensitive_word` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  word VARCHAR(64) NOT NULL,
+  category VARCHAR(32) NOT NULL DEFAULT 'GENERAL',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_word (word)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### V7 — 收藏 (`favorite`)
+
+```sql
+CREATE TABLE IF NOT EXISTS `favorite` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  content_id BIGINT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_user_content (user_id, content_id),
+  INDEX idx_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### V8 — 通知 (`notification`)
+
+```sql
+CREATE TABLE IF NOT EXISTS `notification` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  type VARCHAR(32) NOT NULL,
+  title VARCHAR(256) NOT NULL,
+  content VARCHAR(512),
+  related_id BIGINT,
+  related_type VARCHAR(32),
+  is_read TINYINT DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_user_read (user_id, is_read),
+  INDEX idx_created (created_at DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### V9 — 内容工具链 (`content_version`, `audit_record`, `content_template`, `scheduled_publish`)
+
+```sql
+CREATE TABLE IF NOT EXISTS `content_version` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  content_id BIGINT NOT NULL,
+  version_number INT NOT NULL,
+  title VARCHAR(256) NOT NULL,
+  body LONGTEXT,
+  change_summary VARCHAR(512),
+  created_by BIGINT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_content_id (content_id),
+  UNIQUE KEY uk_content_version (content_id, version_number)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `audit_record` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  target_type VARCHAR(32) NOT NULL,
+  target_id BIGINT NOT NULL,
+  submitter_id BIGINT NOT NULL,
+  reviewer_id BIGINT,
+  status VARCHAR(16) NOT NULL DEFAULT 'PENDING',
+  reject_reason VARCHAR(512),
+  submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  reviewed_at DATETIME,
+  INDEX idx_status (status),
+  INDEX idx_target (target_type, target_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `content_template` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(128) NOT NULL,
+  description VARCHAR(512),
+  content_type VARCHAR(16) NOT NULL DEFAULT 'MARKDOWN',
+  body LONGTEXT,
+  is_system TINYINT DEFAULT 0,
+  created_by BIGINT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `scheduled_publish` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  content_id BIGINT NOT NULL,
+  scheduled_at DATETIME NOT NULL,
+  status VARCHAR(16) NOT NULL DEFAULT 'PENDING',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_scheduled (status, scheduled_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### V10 — 数据分析 (`user_action_log`, `content_stats`, `search_hot_keyword`)
+
+```sql
+CREATE TABLE IF NOT EXISTS `user_action_log` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT,
+  action_type VARCHAR(32) NOT NULL,
+  target_type VARCHAR(32),
+  target_id BIGINT,
+  extra_data JSON,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_created (created_at DESC),
+  INDEX idx_action (action_type, created_at DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `content_stats` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  content_id BIGINT NOT NULL,
+  view_count BIGINT DEFAULT 0,
+  favorite_count BIGINT DEFAULT 0,
+  comment_count BIGINT DEFAULT 0,
+  download_count BIGINT DEFAULT 0,
+  stat_date DATE NOT NULL,
+  UNIQUE KEY uk_content_date (content_id, stat_date),
+  INDEX idx_date (stat_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `search_hot_keyword` (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  keyword VARCHAR(128) NOT NULL,
+  search_count INT DEFAULT 1,
+  stat_date DATE NOT NULL,
+  UNIQUE KEY uk_keyword_date (keyword, stat_date),
+  INDEX idx_count (stat_date, search_count DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### 种子数据
+
+```sql
+-- 部门
+INSERT INTO department (id, name, parent_id, sort_order) VALUES
+  (1, '技术管理部', 0, 1),
+  (2, '技术中心', 0, 2),
+  (3, '前端技术组', 2, 1),
+  (4, '基础架构组', 2, 2),
+  (5, '产品中心', 0, 3);
+
+-- 角色
+INSERT INTO role (code, name) VALUES ('ADMIN', '系统管理员');
+INSERT INTO role (code, name) VALUES ('USER', '普通用户');
+
+-- 权限
+INSERT INTO permission (code, name) VALUES
+  ('content:view', '查看内容'),
+  ('content:create', '创建内容'),
+  ('content:edit', '编辑内容'),
+  ('content:delete', '删除内容'),
+  ('content:audit', '审核内容'),
+  ('tag:manage', '管理标签'),
+  ('user:manage', '管理用户'),
+  ('group:approve', '审批群组'),
+  ('analytics:view', '查看数据分析'),
+  ('system:config', '系统配置'),
+  ('sensitive:manage', '管理敏感词');
+
+-- 管理员拥有所有权限
+INSERT INTO role_permission (role_id, permission_id)
+SELECT (SELECT id FROM role WHERE code = 'ADMIN'), id FROM permission;
+
+-- 普通用户拥有基础权限
+INSERT INTO role_permission (role_id, permission_id)
+SELECT (SELECT id FROM role WHERE code = 'USER'), id FROM permission
+WHERE code IN ('content:view', 'content:create', 'content:edit', 'content:delete');
+
+-- 默认用户 (密码: admin123 / user123)
+INSERT INTO user (username, password, display_name, department_id) VALUES
+  ('admin', '$2a$10$KkrV5Vq1WZ.06JZGEar3Jec2SHzZ70tFyldyY1wZWh4cJZmzPW4cu', '管理员', 1),
+  ('lisan', '$2a$10$/mibGlql.jsDNe5C39yVL.wy5eunnU/.gtk7LKwoYEuJdb1JwDxPW', '李三', 2);
+
+-- 用户-角色关联
+INSERT INTO user_role (user_id, role_id)
+SELECT u.id, r.id FROM user u, role r
+WHERE u.username = 'admin' AND r.code = 'ADMIN';
+
+INSERT INTO user_role (user_id, role_id)
+SELECT u.id, r.id FROM user u, role r
+WHERE u.username = 'lisan' AND r.code = 'USER';
+```
+
+---
+
 ## 配置参数
 
 ### 🔴 必须修改（生产环境上线前）

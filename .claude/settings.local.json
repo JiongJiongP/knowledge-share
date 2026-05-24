@@ -15,7 +15,25 @@
       "Bash(npm create *)",
       "Bash(npm install *)",
       "Bash(npx vite *)",
-      "Skill(superpowers:requesting-code-review)"
+      "Skill(superpowers:requesting-code-review)",
+      "Bash(git -C D:\\\\work\\\\code\\\\knowledge-share log --oneline -20)",
+      "Bash(mvn clean *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(mvn test *)",
+      "Bash(git push *)",
+      "Bash(mvn install *)",
+      "Bash(mvn test-compile *)",
+      "Bash(mvn dependency:build-classpath -pl knowledge-user-auth -DincludeScope=compile -Dmdep.outputFile=/tmp/cp.txt)",
+      "Bash(python3 -c \"import bcrypt; print\\(bcrypt.hashpw\\(b'admin123', bcrypt.gensalt\\(rounds=10\\)\\).decode\\(\\)\\)\")",
+      "Bash(python -c \"import bcrypt; print\\(bcrypt.hashpw\\(b'admin123', bcrypt.gensalt\\(rounds=10\\)\\).decode\\(\\)\\)\")",
+      "Bash(java -cp '.;D:/work/maven/respository/org/springframework/security/spring-security-crypto/6.2.0/spring-security-crypto-6.2.0.jar;D:/work/maven/respository/org/apache/logging/log4j/log4j-api/2.21.1/log4j-api-2.21.1.jar' BcryptGen admin123 user123)",
+      "Bash(java -cp '.;D:/work/maven/respository/org/springframework/security/spring-security-crypto/6.2.0/spring-security-crypto-6.2.0.jar;D:/work/maven/respository/org/apache/logging/log4j/log4j-api/2.21.1/log4j-api-2.21.1.jar;D:/work/maven/respository/org/springframework/spring-jcl/6.1.1/spring-jcl-6.1.1.jar;D:/work/maven/respository/org/springframework/spring-core/6.1.1/spring-core-6.1.1.jar' BcryptGen admin123 user123)",
+      "Bash(git reset *)",
+      "Bash(mvn compile *)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(git commit *)",
+      "Bash(mvn dependency:tree -pl knowledge-search)"
     ]
   }
 }

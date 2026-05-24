@@ -5,6 +5,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root123
       MYSQL_DATABASE: knowledge_platform
+      MYSQL_ROOT_HOST: '%'        # 👉 关键：允许远程连接
     ports:
       - "3306:3306"
     volumes:
@@ -13,6 +14,7 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       retries: 5
+    command: --default-authentication-plugin=mysql_native_password  # 👉 关键：解决公钥报错
 
   redis:
     image: redis:6-alpine
