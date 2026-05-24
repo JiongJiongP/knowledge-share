@@ -5,7 +5,10 @@
     <div class="main-layout">
       <div class="toolbar">
         <h2>群组列表</h2>
-        <el-button type="primary" @click="showCreate = true">创建群组</el-button>
+        <div style="display:flex;gap:8px;">
+          <el-input v-model="searchKeyword" placeholder="搜索群组..." size="small" style="width:200px;" clearable @input="onSearch" />
+          <el-button type="primary" @click="showCreate = true">创建群组</el-button>
+        </div>
       </div>
 
       <div v-if="loading" class="loading-wrapper">
@@ -15,13 +18,24 @@
       <el-empty v-else-if="list.length === 0" description="暂无公开群组" />
 
       <el-row v-else :gutter="16">
-        <el-col v-for="group in list" :key="group.id" :span="8">
-          <el-card class="group-card" shadow="hover" @click="$router.push(`/group/${group.id}`)">
-            <h3 class="group-name">{{ group.name }}</h3>
-            <p class="group-desc">{{ group.description || '暂无描述' }}</p>
-            <div class="group-meta">
-              <span>创建者: {{ group.ownerId }}</span>
+        <el-col v-for="group in list" :key="group.id" :span="12">
+          <el-card class="group-card" shadow="hover">
+            <div class="group-header">
+              <div>
+                <h3 class="group-name" @click="$router.push(`/group/${group.id}`)">{{ group.name }}</h3>
+                <div class="group-meta">
+                  <span>群主: {{ group.ownerId }}</span>
+                  <span>{{ group.memberCount || 0 }} 成员</span>
+                  <span>{{ group.contentCount || 0 }} 内容</span>
+                </div>
+              </div>
+              <el-button
+                :type="group.joined ? 'default' : 'primary'"
+                size="small"
+                @click.stop="handleJoin(group)"
+              >{{ group.joined ? '已加入' : '申请加入' }}</el-button>
             </div>
+            <p class="group-desc">{{ group.description || '暂无描述' }}</p>
           </el-card>
         </el-col>
       </el-row>
@@ -59,7 +73,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { getGroupList, createGroup } from '@/api/group'
+import { getGroupList, createGroup, joinGroup } from '@/api/group'
 import AppHeader from '@/components/layout/AppHeader.vue'
 
 const router = useRouter()
@@ -69,6 +83,7 @@ const total = ref(0)
 const loading = ref(false)
 const page = ref(1)
 const size = ref(12)
+const searchKeyword = ref('')
 
 const showCreate = ref(false)
 const creating = ref(false)
@@ -81,12 +96,27 @@ const rules = {
 async function fetchList() {
   loading.value = true
   try {
-    const res = await getGroupList({ page: page.value, size: size.value })
+    const params = { page: page.value, size: size.value }
+    if (searchKeyword.value) params.keyword = searchKeyword.value
+    const res = await getGroupList(params)
     list.value = res.data.records
     total.value = res.data.total
   } finally {
     loading.value = false
   }
+}
+
+function onSearch() {
+  page.value = 1
+  fetchList()
+}
+
+async function handleJoin(group) {
+  try {
+    await joinGroup(group.id)
+    group.joined = true
+    ElMessage.success('已申请加入')
+  } catch { /* handled by interceptor */ }
 }
 
 async function handleCreate() {
@@ -117,7 +147,8 @@ onMounted(fetchList)
 .group-card { margin-bottom: 16px; cursor: pointer; }
 .group-name { margin: 0 0 8px; font-size: 16px; color: #303133; }
 .group-desc { color: #909399; font-size: 13px; margin: 0 0 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.group-meta { font-size: 12px; color: #c0c4cc; }
+.group-meta { font-size: 12px; color: #c0c4cc; display:flex; gap:12px; margin-top:4px; }
+.group-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
 .pagination-wrapper { display: flex; justify-content: center; margin-top: 24px; }
 .loading-wrapper { padding: 40px 0; }
 </style>
