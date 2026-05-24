@@ -33,7 +33,14 @@
       "Bash(mvn compile *)",
       "Bash(echo \"Exit: $?\")",
       "Bash(git commit *)",
-      "Bash(mvn dependency:tree -pl knowledge-search)"
+      "Bash(mvn dependency:tree -pl knowledge-search)",
+      "Bash(npm run *)",
+      "Bash(node -e \"const m = require\\('marked'\\); console.log\\(typeof m.marked, typeof m.parse\\)\")",
+      "Bash(node -e \"import\\('marked'\\).then\\(m => console.log\\(typeof m.marked, typeof m.parse\\)\\)\")",
+      "Bash(node -e \"const p = require\\('marked/package.json'\\); console.log\\(p.version\\)\")",
+      "Bash(npm ls *)",
+      "Bash(node -e \"const {marked} = require\\('marked'\\); const r = marked\\('<script>alert\\(1\\)</script>'\\); console.log\\(r\\)\")",
+      "Bash(node -e ' *)"
     ]
   }
 }

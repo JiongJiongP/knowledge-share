@@ -1,3 +1,53 @@
+# Step 1: ContentDetail Page Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Replace the ContentDetail.vue placeholder with a full implementation matching `ui/index.html` design, including markdown body rendering and CommentSection integration.
+
+**Architecture:** Single-page component using Vue 3 Composition API. Fetches content by ID from route params, displays markdown body (rendered via `marked` library), integrates existing `CommentSection.vue` component. Uses existing API modules (`content.js`, `tag.js`, `favorite.js`).
+
+**Tech Stack:** Vue 3 + Element Plus + Pinia + marked (new dep) + existing Axios API layer
+
+---
+
+## File Structure
+
+| Action | File | Purpose |
+|--------|------|---------|
+| Modify | `frontend/package.json` | Add `marked` dependency |
+| Replace | `frontend/src/views/ContentDetail.vue` | Full page implementation |
+
+---
+
+## Prerequisites
+
+The following already exist and work:
+- `@/api/content.js` — `getContent(id)` returns `{ id, title, body, contentType, status, createdBy, publishedAt, createdAt, updatedAt }`
+- `@/api/tag.js` — `getContentTags(contentId)` returns tag array
+- `@/api/favorite.js` — `favoriteContent(id)`, `unfavoriteContent(id)`, `checkFavorite(id)`
+- `@/api/comment.js` — full comment CRUD (used by CommentSection)
+- `@/stores/user.js` — `useUserStore()` provides `info.id`, `isAdmin`
+- `@/components/content/CommentSection.vue` — fully working, takes `contentId` prop
+- `@/components/layout/AppHeader.vue` — top nav bar
+- Router: `/content/:id` maps to `ContentDetail`
+
+---
+
+### Task 1: Add marked dependency and implement ContentDetail page
+
+**Files:**
+- Modify: `frontend/package.json`
+- Replace: `frontend/src/views/ContentDetail.vue`
+
+- [ ] **Step 1: Install `marked` dependency**
+
+```bash
+cd frontend && npm install marked
+```
+
+- [ ] **Step 2: Create the full ContentDetail.vue**
+
+```vue
 <template>
   <div class="content-detail-page">
     <AppHeader />
@@ -91,7 +141,6 @@ import { getContentTags } from '@/api/tag'
 import { checkFavorite, favoriteContent, unfavoriteContent } from '@/api/favorite'
 import { useUserStore } from '@/stores/user'
 import AppHeader from '@/components/layout/AppHeader.vue'
-import DOMPurify from 'dompurify'
 import CommentSection from '@/components/content/CommentSection.vue'
 
 const route = useRoute()
@@ -129,15 +178,13 @@ const typeLabel = computed(() => typeLabels[content.value.contentType] || 'Markd
 const typeEmoji = computed(() => typeEmojis[content.value.contentType] || '📝')
 const typeBadgeClass = computed(() => typeBadgeClasses[content.value.contentType] || 'type-markdown')
 const canEdit = computed(() => {
-  return userStore.info?.id === content.value.createdBy ||
-    userStore.info?.username === content.value.createdBy ||
-    userStore.isAdmin
+  return userStore.info?.id === content.value.createdBy || userStore.isAdmin
 })
 
 const renderedBody = computed(() => {
   const raw = content.value.body || ''
   if (!raw) return '<p style="color:#909399;">暂无正文</p>'
-  return DOMPurify.sanitize(marked(raw))
+  return marked(raw)
 })
 
 function formatDate(dateStr) {
@@ -184,30 +231,24 @@ async function toggleFavorite() {
       favCount.value++
       ElMessage.success('收藏成功')
     }
-  } catch (e) {
-    ElMessage.error(e.response?.data?.message || '操作失败')
-  } finally { favLoading.value = false }
+  } catch { /* handled by interceptor */ }
+  finally { favLoading.value = false }
 }
 
 function handleShare() {
   const url = window.location.href
-  if (!navigator.clipboard) {
-    ElMessage.info(`分享链接: ${url}`)
-    return
-  }
-  navigator.clipboard.writeText(url)
+  navigator.clipboard?.writeText(url)
     .then(() => ElMessage.success('链接已复制到剪贴板'))
     .catch(() => ElMessage.info(`分享链接: ${url}`))
 }
 
 function handleDownload() {
   const blob = new Blob([content.value.body || ''], { type: 'text/markdown' })
-  const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
-  a.href = url
-  a.download = `${(content.value.title || 'content').replace(/[\\/:*?"<>|]/g, '_')}.md`
+  a.href = URL.createObjectURL(blob)
+  a.download = `${content.value.title || 'content'}.md`
   a.click()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
+  URL.revokeObjectURL(a.href)
   ElMessage.success('下载成功')
 }
 
@@ -297,3 +338,26 @@ onMounted(fetchContent)
 .markdown-body :deep(th) { background: #f5f7fa; font-weight: 600; }
 .markdown-body :deep(img) { max-width: 100%; border-radius: 6px; }
 </style>
+```
+
+- [ ] **Step 3: Verify the page works**
+
+```bash
+cd frontend && npm run dev
+```
+
+Navigate to `http://localhost:3000`, log in, go to the home page, click on a content item.
+Expected: ContentDetail page renders with:
+- Title, type badge, tags
+- Author and date meta
+- Action buttons (fav/share/download/edit)
+- Markdown body rendered as HTML
+- Comment section at bottom
+
+- [ ] **Step 4: Commit**
+
+```bash
+cd frontend && npm install marked
+git add frontend/package.json frontend/package-lock.json frontend/src/views/ContentDetail.vue
+git commit -m "feat: implement ContentDetail page with markdown rendering and comments"
+```

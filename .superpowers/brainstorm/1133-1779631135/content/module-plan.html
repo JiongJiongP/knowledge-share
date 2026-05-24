@@ -1,0 +1,116 @@
+<h2>逐个模块实现计划</h2>
+<p class="subtitle">从核心用户流程开始，每个模块做到与设计稿一致</p>
+
+<div class="section">
+  <h3>第一梯队：核心内容流程</h3>
+  <div class="options">
+    <div class="option" data-choice="tier1" onclick="toggleSelect(this)">
+      <div class="letter">1</div>
+      <div class="content">
+        <h3>内容详情页 ContentDetail</h3>
+        <p>标题 / 类型徽章 / 标签 / 作者日期 / 收藏&分享&下载&编辑 / Markdown 正文 / 评论区（连接已有 CommentSection 组件）</p>
+      </div>
+    </div>
+    <div class="option" data-choice="tier1" onclick="toggleSelect(this)">
+      <div class="letter">2</div>
+      <div class="content">
+        <h3>内容创建页 ContentCreate</h3>
+        <p>类型选择器 / 标题输入 / Markdown 编辑器工具栏 / 标签选择 / 群组勾选 / 定时发布 / 保存草稿&提交审核</p>
+      </div>
+    </div>
+    <div class="option" data-choice="tier1" onclick="toggleSelect(this)">
+      <div class="letter">3</div>
+      <div class="content">
+        <h3>内容编辑页 ContentEdit</h3>
+        <p>复用 ContentCreate 组件，预填已有内容数据，支持更新</p>
+      </div>
+    </div>
+    <div class="option" data-choice="tier1" onclick="toggleSelect(this)">
+      <div class="letter">4</div>
+      <div class="content">
+        <h3>首页增强 HomePage</h3>
+        <p>补群组过滤 / 标签筛选芯片 / 内容卡片补浏览量&星标&评论数</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>第二梯队：社交与互动</h3>
+  <div class="options">
+    <div class="option" data-choice="tier2" onclick="toggleSelect(this)">
+      <div class="letter">5</div>
+      <div class="content">
+        <h3>模板中心 Templates</h3>
+        <p>新建页面+路由 / 3列卡片网格 / 系统预置模板 / 使用模板跳转创建</p>
+      </div>
+    </div>
+    <div class="option" data-choice="tier2" onclick="toggleSelect(this)">
+      <div class="letter">6</div>
+      <div class="content">
+        <h3>群组列表增强 GroupList</h3>
+        <p>卡片补成员数&内容数 / 加入/已加入按钮状态 / 搜索输入框</p>
+      </div>
+    </div>
+    <div class="option" data-choice="tier2" onclick="toggleSelect(this)">
+      <div class="letter">7</div>
+      <div class="content">
+        <h3>收藏增强 + 通知增强</h3>
+        <p>收藏页补类型过滤 + 标题显示 / 通知页补分类标签页 + 图标</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>第三梯队：管理后台</h3>
+  <div class="options">
+    <div class="option" data-choice="tier3" onclick="toggleSelect(this)">
+      <div class="letter">8</div>
+      <div class="content">
+        <h3>审核中心 + 标签管理 + 敏感词 + 数据分析</h3>
+        <p>补充缺失的过滤栏/列/图表/排名</p>
+      </div>
+    </div>
+    <div class="option" data-choice="tier3" onclick="toggleSelect(this)">
+      <div class="letter">9</div>
+      <div class="content">
+        <h3>用户管理 + 部门管理 + 系统设置</h3>
+        <p>3个全新页面，从路由到组件完整实现</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">设计稿参考：内容详情页布局</div>
+    <div class="mockup-body">
+      <div style="background:var(--bg);padding:16px;border-radius:8px;">
+        <div style="font-size:20px;font-weight:600;margin-bottom:8px;">React 18 并发特性深入解析</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+          <span class="mock-button" style="background:#e6f7ff;color:#1890ff;font-size:11px;">📝 Markdown</span>
+          <span class="mock-button" style="background:#409EFF;color:#fff;font-size:11px;">技术</span>
+          <span class="mock-button" style="background:#722ed1;color:#fff;font-size:11px;">前端</span>
+          <span style="font-size:12px;color:var(--info);">👤 李明 · 📅 2026-05-12 · 👁️ 1.2k</span>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <span class="mock-button">⭐ 收藏 (86)</span>
+          <span class="mock-button">📤 分享</span>
+          <span class="mock-button">📥 下载</span>
+          <span class="mock-button">✏️ 编辑</span>
+        </div>
+        <div style="border-top:1px solid #eee;padding-top:12px;">
+          <div style="background:#f5f7fa;padding:12px;border-radius:4px;font-size:13px;color:#333;line-height:1.8;">
+            <h3 style="font-size:16px;">1. 并发渲染概述</h3>
+            <p>React 18 引入了全新的并发渲染机制...</p>
+          </div>
+        </div>
+        <div style="border-top:1px solid #eee;margin-top:12px;padding-top:12px;">
+          <div style="font-size:14px;font-weight:600;margin-bottom:8px;">评论 (23)</div>
+          <div class="placeholder" style="height:80px;">评论输入框 + 评论列表区域</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

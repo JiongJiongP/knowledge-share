@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企业内部知识分享平台 - 交互原型</title>
+<style>
+:root {
+  --primary: #409EFF; --success: #67C23A; --warning: #E6A23C; --danger: #F56C6C;
+  --info: #909399; --bg: #F5F7FA; --bg-white: #FFFFFF; --text: #303133;
+  --text-secondary: #606266; --border: #DCDFE6; --border-light: #E4E7ED;
+  --shadow: 0 2px 12px rgba(0,0,0,.08); --radius: 8px;
+  --sidebar-width: 220px; --header-height: 56px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background:var(--bg); color:var(--text); font-size:14px; line-height:1.6; }
+a { color:var(--primary); text-decoration:none; }
+.app { display:flex; min-height:100vh; }
+.sidebar { width:var(--sidebar-width); background:linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); color:#fff; position:fixed; top:0; left:0; bottom:0; z-index:100; overflow-y:auto; display:flex; flex-direction:column; }
+.sidebar-logo { padding:20px 24px; font-size:18px; font-weight:700; border-bottom:1px solid rgba(255,255,255,.1); display:flex; align-items:center; gap:10px; }
+.sidebar-logo .icon { width:32px; height:32px; background:var(--primary); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+.sidebar-nav { flex:1; padding:12px 0; }
+.nav-group-title { padding:8px 24px; font-size:11px; color:rgba(255,255,255,.4); text-transform:uppercase; letter-spacing:1px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:10px 24px; color:rgba(255,255,255,.7); cursor:pointer; transition:all .2s; font-size:14px; border-left:3px solid transparent; }
+.nav-item:hover { color:#fff; background:rgba(255,255,255,.05); }
+.nav-item.active { color:#fff; background:rgba(255,255,255,.1); border-left-color:var(--primary); }
+.nav-item .badge { margin-left:auto; background:var(--danger); color:#fff; font-size:11px; padding:1px 6px; border-radius:10px; min-width:18px; text-align:center; }
+.main { margin-left:var(--sidebar-width); flex:1; display:flex; flex-direction:column; }
+.header { height:var(--header-height); background:var(--bg-white); border-bottom:1px solid var(--border-light); display:flex; align-items:center; padding:0 24px; position:sticky; top:0; z-index:50; gap:16px; }
+.header-search { flex:1; max-width:480px; position:relative; }
+.header-search input { width:100%; height:36px; border:1px solid var(--border); border-radius:18px; padding:0 40px 0 16px; font-size:13px; outline:none; transition:border .2s; background:var(--bg); }
+.header-search input:focus { border-color:var(--primary); background:#fff; }
+.header-search .search-icon { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--info); cursor:pointer; font-size:16px; }
+.header-actions { display:flex; align-items:center; gap:16px; margin-left:auto; }
+.header-btn { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:background .2s; color:var(--text-secondary); font-size:18px; }
+.header-btn:hover { background:var(--bg); }
+.header-btn .dot { position:absolute; top:4px; right:4px; width:8px; height:8px; background:var(--danger); border-radius:50%; border:2px solid #fff; }
+.header-avatar { width:32px; height:32px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer; }
+.content { padding:24px; flex:1; }
+.page { display:none; }
+.page.active { display:block; }
+.card { background:var(--bg-white); border-radius:var(--radius); box-shadow:var(--shadow); padding:24px; margin-bottom:16px; }
+.card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.card-title { font-size:16px; font-weight:600; }
+.btn { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:6px; font-size:13px; cursor:pointer; border:1px solid transparent; transition:all .2s; font-family:inherit; }
+.btn-primary { background:var(--primary); color:#fff; border-color:var(--primary); }
+.btn-primary:hover { background:#66b1ff; }
+.btn-success { background:var(--success); color:#fff; }
+.btn-warning { background:var(--warning); color:#fff; }
+.btn-danger { background:var(--danger); color:#fff; }
+.btn-default { background:#fff; color:var(--text); border-color:var(--border); }
+.btn-default:hover { color:var(--primary); border-color:var(--primary); }
+.btn-text { background:transparent; border:none; color:var(--primary); padding:4px 8px; }
+.btn-sm { padding:4px 10px; font-size:12px; }
+.btn-group { display:flex; gap:8px; }
+.tag { display:inline-flex; align-items:center; padding:2px 10px; border-radius:4px; font-size:12px; color:#fff; margin:2px; }
+.tag-outline { background:transparent; border:1px solid; }
+.tag-sm { padding:1px 6px; font-size:11px; }
+.input { height:36px; border:1px solid var(--border); border-radius:6px; padding:0 12px; font-size:13px; outline:none; width:100%; transition:border .2s; font-family:inherit; }
+.input:focus { border-color:var(--primary); }
+.textarea { border:1px solid var(--border); border-radius:6px; padding:10px 12px; font-size:13px; outline:none; width:100%; resize:vertical; min-height:100px; font-family:inherit; transition:border .2s; }
+.textarea:focus { border-color:var(--primary); }
+.select { height:36px; border:1px solid var(--border); border-radius:6px; padding:0 12px; font-size:13px; outline:none; background:#fff; cursor:pointer; font-family:inherit; }
+.table { width:100%; border-collapse:collapse; }
+.table th { text-align:left; padding:12px 16px; font-size:12px; color:var(--info); font-weight:500; border-bottom:1px solid var(--border-light); background:var(--bg); }
+.table td { padding:12px 16px; border-bottom:1px solid var(--border-light); }
+.table tr:hover td { background:#f5f7fa; }
+.tabs { display:flex; gap:0; border-bottom:2px solid var(--border-light); margin-bottom:20px; }
+.tab-item { padding:10px 20px; cursor:pointer; color:var(--text-secondary); font-size:14px; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all .2s; }
+.tab-item:hover { color:var(--primary); }
+.tab-item.active { color:var(--primary); border-bottom-color:var(--primary); font-weight:500; }
+.content-list-item { display:flex; gap:16px; padding:20px 0; border-bottom:1px solid var(--border-light); cursor:pointer; transition:background .2s; }
+.content-list-item:hover { background:#fafbfc; margin:0 -24px; padding:20px 24px; }
+.content-list-item:last-child { border-bottom:none; }
+.content-item-main { flex:1; min-width:0; }
+.content-item-title { font-size:16px; font-weight:600; margin-bottom:6px; color:var(--text); }
+.content-item-title:hover { color:var(--primary); }
+.content-item-desc { color:var(--text-secondary); font-size:13px; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.content-item-meta { display:flex; align-items:center; gap:16px; font-size:12px; color:var(--info); flex-wrap:wrap; }
+.content-item-meta span { display:flex; align-items:center; gap:4px; }
+.content-type-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:500; }
+.type-markdown { background:#e6f7ff; color:#1890ff; }
+.type-ppt { background:#fff7e6; color:#fa8c16; }
+.type-link { background:#f6ffed; color:#52c41a; }
+.type-ref { background:#f9f0ff; color:#722ed1; }
+.stat-cards { display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:24px; }
+.stat-card { background:var(--bg-white); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); }
+.stat-card-label { font-size:13px; color:var(--text-secondary); margin-bottom:8px; }
+.stat-card-value { font-size:28px; font-weight:700; color:var(--text); }
+.stat-card-trend { font-size:12px; margin-top:4px; }
+.stat-card-trend.up { color:var(--success); }
+.stat-card-trend.down { color:var(--danger); }
+.chart-placeholder { background:var(--bg); border-radius:var(--radius); height:280px; display:flex; align-items:center; justify-content:center; color:var(--info); font-size:14px; border:2px dashed var(--border); }
+.comment-item { padding:16px 0; border-bottom:1px solid var(--border-light); }
+.comment-item:last-child { border-bottom:none; }
+.comment-header { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.comment-avatar { width:32px; height:32px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+.comment-user { font-weight:500; font-size:13px; }
+.comment-time { font-size:12px; color:var(--info); }
+.comment-body { font-size:14px; margin-bottom:8px; line-height:1.7; }
+.comment-actions { display:flex; gap:16px; font-size:12px; color:var(--info); }
+.comment-actions span { cursor:pointer; display:flex; align-items:center; gap:4px; }
+.comment-actions span:hover { color:var(--primary); }
+.comment-reply { margin-left:48px; padding:12px 16px; background:var(--bg); border-radius:6px; margin-top:8px; }
+.modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.5); z-index:200; align-items:center; justify-content:center; }
+.modal-overlay.show { display:flex; }
+.modal { background:#fff; border-radius:12px; width:520px; max-height:80vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,.15); }
+.modal-header { padding:20px 24px 0; font-size:16px; font-weight:600; }
+.modal-body { padding:20px 24px; }
+.modal-footer { padding:0 24px 20px; display:flex; justify-content:flex-end; gap:8px; }
+.form-group { margin-bottom:16px; }
+.form-label { display:block; font-size:13px; font-weight:500; margin-bottom:6px; color:var(--text); }
+.form-hint { font-size:12px; color:var(--info); margin-top:4px; }
+.empty-state { text-align:center; padding:60px 20px; color:var(--info); }
+.pagination { display:flex; align-items:center; justify-content:center; gap:4px; margin-top:20px; }
+.pagination button { width:32px; height:32px; border:1px solid var(--border); border-radius:4px; background:#fff; cursor:pointer; font-size:13px; transition:all .2s; }
+.pagination button:hover { color:var(--primary); border-color:var(--primary); }
+.pagination button.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+.filter-bar { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:20px; }
+.notification-item { display:flex; gap:12px; padding:14px 16px; border-bottom:1px solid var(--border-light); cursor:pointer; transition:background .2s; }
+.notification-item:hover { background:var(--bg); }
+.notification-item.unread { background:#ecf5ff; }
+.notification-item.unread:hover { background:#d9ecff; }
+.notification-icon { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.notification-content { flex:1; min-width:0; }
+.notification-title { font-size:14px; font-weight:500; margin-bottom:4px; }
+.notification-desc { font-size:12px; color:var(--text-secondary); }
+.notification-time { font-size:11px; color:var(--info); margin-top:4px; }
+.notification-panel { display:none; position:absolute; top:100%; right:0; background:#fff; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,.12); width:360px; z-index:150; margin-top:4px; max-height:400px; overflow-y:auto; }
+.notification-panel.show { display:block; }
+.notification-panel-header { padding:14px 16px; font-weight:600; font-size:14px; border-bottom:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:center; }
+.notification-panel-footer { padding:10px 16px; text-align:center; border-top:1px solid var(--border-light); }
+.dropdown { position:relative; }
+.dropdown-menu { display:none; position:absolute; top:100%; right:0; background:#fff; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,.12); min-width:180px; padding:8px 0; z-index:150; margin-top:4px; }
+.dropdown-menu.show { display:block; }
+.dropdown-item { padding:8px 16px; cursor:pointer; font-size:13px; display:flex; align-items:center; gap:8px; }
+.dropdown-item:hover { background:var(--bg); }
+.rank-list { }
+.rank-item { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border-light); }
+.rank-item:last-child { border-bottom:none; }
+.rank-num { width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+.rank-num.top { background:var(--warning); color:#fff; }
+.rank-num.normal { background:var(--bg); color:var(--text-secondary); }
+.color-dot { width:20px; height:20px; border-radius:50%; display:inline-block; }
+.toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#333; color:#fff; padding:12px 24px; border-radius:8px; z-index:300; display:none; font-size:14px; }
+.toast.show { display:block; animation:toastIn .3s ease; }
+@keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(-10px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+.tpl-card { border:1px solid var(--border); border-radius:8px; padding:20px; cursor:pointer; transition:all .2s; }
+.tpl-card:hover { border-color:var(--primary); box-shadow:var(--shadow); }
+.tpl-card .icon { font-size:28px; margin-bottom:8px; }
+.tpl-card .name { font-weight:600; margin-bottom:4px; }
+.tpl-card .desc { font-size:12px; color:var(--info); margin-bottom:12px; }
+.group-card { border:1px solid var(--border); border-radius:8px; padding:20px; }
+.group-card .header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; background:none; border:none; padding:0; height:auto; position:static; }
+.group-card .name { font-weight:600; font-size:15px; margin-bottom:4px; }
+.group-card .meta { font-size:12px; color:var(--info); }
+.group-card .desc { font-size:13px; color:var(--text-secondary); }
+@media (max-width:1200px) { .stat-cards { grid-template-columns:repeat(2, 1fr); } .grid-2 { grid-template-columns:1fr; } .grid-3 { grid-template-columns:1fr 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="icon">📚</div><span>知识平台</span></div>
+    <nav class="sidebar-nav">
+      <div class="nav-group-title">内容</div>
+      <div class="nav-item active" data-page="home">🏠 首页</div>
+      <div class="nav-item" data-page="content-create">✏️ 创建内容</div>
+      <div class="nav-item" data-page="templates">📋 模板中心</div>
+      <div class="nav-group-title">群组</div>
+      <div class="nav-item" data-page="groups">👥 群组列表</div>
+      <div class="nav-group-title">个人</div>
+      <div class="nav-item" data-page="favorites">⭐ 我的收藏</div>
+      <div class="nav-item" data-page="notifications">🔔 通知中心 <span class="badge">5</span></div>
+      <div class="nav-group-title">管理</div>
+      <div class="nav-item" data-page="audit">✅ 审核中心 <span class="badge">3</span></div>
+      <div class="nav-item" data-page="admin-tags">🏷️ 标签管理</div>
+      <div class="nav-item" data-page="admin-users">👤 用户管理</div>
+      <div class="nav-item" data-page="admin-words">🚫 敏感词管理</div>
+      <div class="nav-item" data-page="admin-analytics">📊 数据分析</div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="header">
+      <div class="header-search">
+        <input type="text" placeholder="搜索知识内容...（全文检索 + 语义搜索 + 标签筛选）" id="globalSearch">
+        <span class="search-icon" onclick="doSearch()">🔍</span>
+      </div>
+      <div class="header-actions">
+        <div class="dropdown" id="notifyDropdown">
+          <div class="header-btn" onclick="toggleNotifyPanel()">🔔<span class="dot"></span></div>
+          <div class="notification-panel" id="notifyPanel">
+            <div class="notification-panel-header"><span>通知</span><a href="#" onclick="navigateTo('notifications');return false;" style="font-size:12px;">查看全部</a></div>
+            <div class="notification-item unread" onclick="navigateTo('notifications')"><div class="notification-icon" style="background:#ecf5ff;color:#409EFF;">💬</div><div class="notification-content"><div class="notification-title">张三 评论了你的内容</div><div class="notification-desc">写得很好，学习了！</div><div class="notification-time">3分钟前</div></div></div>
+            <div class="notification-item unread" onclick="navigateTo('notifications')"><div class="notification-icon" style="background:#fef0f0;color:#F56C6C;">👥</div><div class="notification-content"><div class="notification-title">新成员申请加入「前端技术群」</div><div class="notification-desc">王五 申请加入群组</div><div class="notification-time">15分钟前</div></div></div>
+            <div class="notification-item" onclick="navigateTo('notifications')"><div class="notification-icon" style="background:#f0f9eb;color:#67C23A;">✅</div><div class="notification-content"><div class="notification-title">内容审核通过</div><div class="notification-desc">「React 18 新特性详解」已通过审核</div><div class="notification-time">1小时前</div></div></div>
+            <div class="notification-panel-footer"><a href="#" onclick="navigateTo('notifications');return false;">查看全部 12 条通知</a></div>
+          </div>
+        </div>
+        <div class="dropdown" id="userDropdown">
+          <div class="header-avatar" onclick="toggleUserMenu()">李</div>
+          <div class="dropdown-menu" id="userMenu">
+            <div class="dropdown-item">👤 个人信息</div>
+            <div class="dropdown-item">⚙️ 账号设置</div>
+            <div class="dropdown-item" style="color:var(--danger);">🚪 退出登录</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content" id="pageContent">
+
+      <!-- ====== 首页 - 内容列表 ====== -->
+      <div class="page active" id="page-home">
+        <div class="card">
+          <div class="card-header"><div class="card-title">知识内容流</div><button class="btn btn-primary" onclick="navigateTo('content-create')">+ 创建内容</button></div>
+          <div class="filter-bar">
+            <select class="select"><option>全部类型</option><option>Markdown</option><option>PPT文件</option><option>外部链接</option><option>内部引用</option></select>
+            <select class="select"><option>全部群组</option><option>前端技术群</option><option>后端架构群</option><option>产品设计群</option></select>
+            <select class="select"><option>按发布时间</option><option>按热度</option><option>按相关性</option></select>
+            <span class="tag tag-outline" style="color:#409EFF;border-color:#409EFF;cursor:pointer;">技术</span>
+            <span class="tag tag-outline" style="color:#67C23A;border-color:#67C23A;cursor:pointer;">产品</span>
+            <span class="tag tag-outline" style="color:#E6A23C;border-color:#E6A23C;cursor:pointer;">设计</span>
+            <span class="tag tag-outline" style="color:#F56C6C;border-color:#F56C6C;cursor:pointer;">管理</span>
+          </div>
+          <div class="content-list-item" onclick="navigateTo('content-detail')"><div class="content-item-main"><div class="content-item-title">React 18 并发特性深入解析</div><div class="content-item-desc">本文详细介绍了 React 18 中引入的并发渲染机制，包括 Suspense、useTransition、useDeferredValue 等核心 API 的使用场景和最佳实践...</div><div class="content-item-meta"><span class="content-type-badge type-markdown">📝 Markdown</span><span>👤 李明</span><span>📅 2026-05-12</span><span>👁️ 1.2k</span><span>⭐ 86</span><span>💬 23</span><span class="tag tag-sm" style="background:#409EFF;">技术</span><span class="tag tag-sm" style="background:#722ed1;">前端</span></div></div></div>
+          <div class="content-list-item" onclick="navigateTo('content-detail')"><div class="content-item-main"><div class="content-item-title">微服务架构设计实践指南</div><div class="content-item-desc">从单体应用到微服务的演进路径，涵盖服务拆分策略、通信协议选型、分布式事务处理等关键设计决策...</div><div class="content-item-meta"><span class="content-type-badge type-ppt">📊 PPT文件</span><span>👤 张伟</span><span>📅 2026-05-10</span><span>👁️ 856</span><span>⭐ 52</span><span>💬 15</span><span class="tag tag-sm" style="background:#409EFF;">技术</span><span class="tag tag-sm" style="background:#67C23A;">架构</span></div></div></div>
+          <div class="content-list-item" onclick="navigateTo('content-detail')"><div class="content-item-main"><div class="content-item-title">2026年AI Agent技术趋势报告</div><div class="content-item-desc">汇总了当前AI Agent领域的最新技术进展，包括多Agent协作、工具调用优化、长上下文处理等前沿方向...</div><div class="content-item-meta"><span class="content-type-badge type-link">🔗 外部链接</span><span>👤 王芳</span><span>📅 2026-05-08</span><span>👁️ 2.1k</span><span>⭐ 128</span><span>💬 41</span><span class="tag tag-sm" style="background:#409EFF;">技术</span><span class="tag tag-sm" style="background:#E6A23C;">AI</span></div></div></div>
+          <div class="content-list-item" onclick="navigateTo('content-detail')"><div class="content-item-main"><div class="content-item-title">产品需求文档编写规范 v3.0</div><div class="content-item-desc">标准化PRD模板与编写指南，包含用户故事地图、功能优先级矩阵、验收标准定义等核心模块...</div><div class="content-item-meta"><span class="content-type-badge type-ref">📎 内部引用</span><span>👤 陈静</span><span>📅 2026-05-05</span><span>👁️ 634</span><span>⭐ 45</span><span>💬 8</span><span class="tag tag-sm" style="background:#67C23A;">产品</span><span class="tag tag-sm" style="background:#E6A23C;">规范</span></div></div></div>
+          <div class="pagination"><button>‹</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>›</button></div>
+        </div>
+      </div>
+
+      <!-- ====== 内容详情 ====== -->
+      <div class="page" id="page-content-detail">
+        <div class="card">
+          <h1 style="font-size:24px;margin-bottom:12px;">React 18 并发特性深入解析</h1>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+            <span class="content-type-badge type-markdown">📝 Markdown</span>
+            <span class="tag tag-sm" style="background:#409EFF;">技术</span><span class="tag tag-sm" style="background:#722ed1;">前端</span>
+            <span style="color:var(--info);font-size:13px;">👤 李明 · 📅 2026-05-12 · 👁️ 1.2k 阅读</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:20px;">
+            <button class="btn btn-default btn-sm" id="favBtn" onclick="toggleFav()">⭐ 收藏 (86)</button>
+            <button class="btn btn-default btn-sm">📤 分享</button>
+            <button class="btn btn-default btn-sm">📥 下载</button>
+            <button class="btn btn-default btn-sm" onclick="navigateTo('content-create')">✏️ 编辑</button>
+          </div>
+          <div style="border-top:1px solid var(--border-light);padding-top:20px;line-height:2;font-size:15px;">
+            <h2>1. 并发渲染概述</h2><p>React 18 引入了全新的并发渲染机制，这是一个底层架构的重大升级。并发模式允许 React 同时准备多个版本的 UI，并根据优先级进行渲染...</p>
+            <h2>2. Suspense 改进</h2><p>在 React 18 中，Suspense 不再需要配合 SSR 使用，可以在纯客户端场景中独立工作。通过 fallback 属性，可以优雅地处理异步组件的加载状态...</p>
+            <h2>3. useTransition API</h2><p>useTransition 是 React 18 新增的核心 Hook，它允许将某些状态更新标记为非紧急更新（transition），从而避免阻塞用户交互...</p>
+            <pre style="background:#f5f7fa;padding:16px;border-radius:8px;overflow-x:auto;"><code>const [isPending, startTransition] = useTransition();
+startTransition(() => { setSearchQuery(input); });</code></pre>
+            <h2>4. useDeferredValue</h2><p>与 useTransition 类似，useDeferredValue 允许延迟更新某个值的渲染，适用于需要保持响应性的搜索/筛选场景...</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">评论 (23)</div><select class="select" style="width:auto;"><option>按热度排序</option><option>按时间排序</option></select></div>
+          <div style="margin-bottom:16px;"><textarea class="textarea" placeholder="发表评论...（支持 @提及用户）" style="min-height:80px;"></textarea><div style="display:flex;justify-content:flex-end;margin-top:8px;"><button class="btn btn-primary btn-sm">发表评论</button></div></div>
+          <div class="comment-item"><div class="comment-header"><div class="comment-avatar">张</div><span class="comment-user">张伟</span><span class="comment-time">2小时前</span></div><div class="comment-body">非常详细的解析！特别是 useTransition 的使用场景讲得很清楚，解决了我们项目中一直困扰的性能问题。</div><div class="comment-actions"><span>👍 12</span><span>💬 回复</span><span>🚩 举报</span></div>
+            <div class="comment-reply"><div class="comment-header"><div class="comment-avatar" style="background:var(--success);">李</div><span class="comment-user">李明（作者）</span><span class="comment-time">1小时前</span></div><div class="comment-body">感谢反馈！后续会补充更多实际项目中的性能优化案例。</div><div class="comment-actions"><span>👍 5</span><span>💬 回复</span></div></div></div>
+          <div class="comment-item"><div class="comment-header"><div class="comment-avatar" style="background:var(--warning);">王</div><span class="comment-user">王芳</span><span class="comment-time">5小时前</span></div><div class="comment-body">想问一下，Suspense 在数据获取场景中的最佳实践是什么？有没有推荐的错误边界处理方案？</div><div class="comment-actions"><span>👍 8</span><span>💬 回复</span><span>🚩 举报</span></div></div>
+        </div>
+      </div>
+
+      <!-- ====== 内容创建/编辑 ====== -->
+      <div class="page" id="page-content-create">
+        <div class="card">
+          <div class="card-header"><div class="card-title">创建新内容</div><div class="btn-group"><button class="btn btn-default btn-sm">💾 保存草稿</button><button class="btn btn-primary btn-sm">📤 提交审核</button></div></div>
+          <div class="form-group"><label class="form-label">内容类型</label><div style="display:flex;gap:8px;"><button class="btn btn-primary btn-sm">📝 Markdown</button><button class="btn btn-default btn-sm">📊 PPT文件</button><button class="btn btn-default btn-sm">🔗 外部链接</button><button class="btn btn-default btn-sm">📎 内部引用</button></div></div>
+          <div class="form-group"><label class="form-label">标题</label><input class="input" placeholder="请输入内容标题"></div>
+          <div class="form-group"><label class="form-label">正文（Markdown 编辑器）</label>
+            <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+              <div style="display:flex;gap:4px;padding:8px 12px;background:var(--bg);border-bottom:1px solid var(--border);flex-wrap:wrap;"><button class="btn btn-default btn-sm"><b>B</b></button><button class="btn btn-default btn-sm"><i>I</i></button><button class="btn btn-default btn-sm">H</button><button class="btn btn-default btn-sm">&lt;/&gt;</button><button class="btn btn-default btn-sm">🔗</button><button class="btn btn-default btn-sm">🖼️</button><button class="btn btn-default btn-sm">📊</button><button class="btn btn-default btn-sm">❝</button></div>
+              <textarea class="textarea" style="border:none;min-height:300px;border-radius:0;" placeholder="使用 Markdown 语法编写内容...&#10;&#10;## 概述&#10;在这里编写你的知识内容...&#10;&#10;支持：图片插入、代码块高亮、表格、视频嵌入"></textarea>
+            </div>
+            <div class="form-hint">支持 Markdown 语法：标题、粗体、斜体、代码块、表格、图片、视频嵌入</div>
+          </div>
+          <div class="form-group"><label class="form-label">选择标签</label><div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="tag tag-outline" style="color:#409EFF;border-color:#409EFF;cursor:pointer;">技术</span><span class="tag tag-outline" style="color:#67C23A;border-color:#67C23A;cursor:pointer;">产品</span><span class="tag tag-outline" style="color:#E6A23C;border-color:#E6A23C;cursor:pointer;">设计</span><span class="tag tag-outline" style="color:#F56C6C;border-color:#F56C6C;cursor:pointer;">管理</span><span class="tag tag-outline" style="color:#722ed1;border-color:#722ed1;cursor:pointer;">前端</span><span class="tag tag-outline" style="color:#E6A23C;border-color:#E6A23C;cursor:pointer;">AI</span></div></div>
+          <div class="form-group"><label class="form-label">发布到群组</label><div style="display:flex;gap:12px;"><label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" checked> 前端技术群</label><label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox"> 后端架构群</label><label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox"> 产品设计群</label></div></div>
+          <div class="form-group"><label class="form-label">定时发布（可选）</label><input class="input" type="datetime-local" style="width:260px;"></div>
+        </div>
+      </div>
+
+      <!-- ====== 模板中心 ====== -->
+      <div class="page" id="page-templates">
+        <div class="card"><div class="card-header"><div class="card-title">内容模板中心</div><button class="btn btn-primary btn-sm">+ 创建模板</button></div>
+          <div class="grid-3">
+            <div class="tpl-card"><div class="icon">📝</div><div class="name">技术文档模板</div><div class="desc">系统预置 · 包含背景、方案、实现细节等结构</div><button class="btn btn-primary btn-sm" style="width:100%;">使用模板</button></div>
+            <div class="tpl-card"><div class="icon">📋</div><div class="name">产品说明模板</div><div class="desc">系统预置 · 包含功能概述、使用指南、FAQ</div><button class="btn btn-primary btn-sm" style="width:100%;">使用模板</button></div>
+            <div class="tpl-card"><div class="icon">📅</div><div class="name">会议纪要模板</div><div class="desc">系统预置 · 包含议题、决议、待办事项</div><button class="btn btn-primary btn-sm" style="width:100%;">使用模板</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== 群组列表 ====== -->
+      <div class="page" id="page-groups">
+        <div class="card"><div class="card-header"><div class="card-title">群组列表</div><button class="btn btn-primary btn-sm" onclick="showToast('群组创建申请已提交，等待管理员审批')">+ 申请创建群组</button></div>
+          <div class="filter-bar"><input class="input" placeholder="搜索群组..." style="width:240px;"></div>
+          <div class="grid-2">
+            <div class="group-card"><div class="header"><div><div class="name">👥 前端技术群</div><div class="meta">群主：李明 · 128 成员 · 56 内容</div></div><button class="btn btn-primary btn-sm">申请加入</button></div><div class="desc">聚焦前端技术分享，涵盖 React、Vue、TypeScript、工程化等方向</div></div>
+            <div class="group-card"><div class="header"><div><div class="name">👥 后端架构群</div><div class="meta">群主：张伟 · 96 成员 · 42 内容</div></div><button class="btn btn-default btn-sm">已加入</button></div><div class="desc">讨论后端架构设计、微服务、分布式系统、数据库优化等话题</div></div>
+            <div class="group-card"><div class="header"><div><div class="name">👥 产品设计群</div><div class="meta">群主：陈静 · 64 成员 · 38 内容</div></div><button class="btn btn-primary btn-sm">申请加入</button></div><div class="desc">产品需求分析、用户体验设计、交互原型讨论</div></div>
+            <div class="group-card"><div class="header"><div><div class="name">👥 AI 技术探索群</div><div class="meta">群主：王芳 · 156 成员 · 72 内容</div></div><button class="btn btn-primary btn-sm">申请加入</button></div><div class="desc">探索 AI/LLM 技术在企业中的应用，包括 RAG、Agent、MCP 等</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== 我的收藏 ====== -->
+      <div class="page" id="page-favorites">
+        <div class="card"><div class="card-header"><div class="card-title">我的收藏</div><select class="select" style="width:auto;"><option>全部类型</option><option>Markdown</option><option>PPT文件</option><option>外部链接</option></select></div>
+          <div class="content-list-item"><div class="content-item-main"><div class="content-item-title">React 18 并发特性深入解析</div><div class="content-item-meta"><span class="content-type-badge type-markdown">📝 Markdown</span><span>👤 李明</span><span>⭐ 收藏于 2026-05-12</span></div></div><button class="btn btn-text" style="color:var(--danger);">取消收藏</button></div>
+          <div class="content-list-item"><div class="content-item-main"><div class="content-item-title">2026年AI Agent技术趋势报告</div><div class="content-item-meta"><span class="content-type-badge type-link">🔗 外部链接</span><span>👤 王芳</span><span>⭐ 收藏于 2026-05-08</span></div></div><button class="btn btn-text" style="color:var(--danger);">取消收藏</button></div>
+          <div class="content-list-item"><div class="content-item-main"><div class="content-item-title">微服务架构设计实践指南</div><div class="content-item-meta"><span class="content-type-badge type-ppt">📊 PPT文件</span><span>👤 张伟</span><span>⭐ 收藏于 2026-05-10</span></div></div><button class="btn btn-text" style="color:var(--danger);">取消收藏</button></div>
+        </div>
+      </div>
+
+      <!-- ====== 通知中心 ====== -->
+      <div class="page" id="page-notifications">
+        <div class="card"><div class="card-header"><div class="card-title">通知中心</div><button class="btn btn-default btn-sm">全部已读</button></div>
+          <div class="tabs"><div class="tab-item active">全部</div><div class="tab-item">评论回复</div><div class="tab-item">群组</div><div class="tab-item">系统</div></div>
+          <div class="notification-item unread"><div class="notification-icon" style="background:#ecf5ff;color:#409EFF;">💬</div><div class="notification-content"><div class="notification-title">张三 评论了你的内容「React 18 并发特性深入解析」</div><div class="notification-desc">写得很好，学习了！</div><div class="notification-time">3分钟前</div></div><button class="btn btn-text btn-sm" style="color:var(--info);">✕</button></div>
+          <div class="notification-item unread"><div class="notification-icon" style="background:#fef0f0;color:#F56C6C;">👥</div><div class="notification-content"><div class="notification-title">新成员申请加入「前端技术群」</div><div class="notification-desc">王五 申请加入群组，请及时审批</div><div class="notification-time">15分钟前</div></div><button class="btn btn-text btn-sm" style="color:var(--info);">✕</button></div>
+          <div class="notification-item"><div class="notification-icon" style="background:#f0f9eb;color:#67C23A;">✅</div><div class="notification-content"><div class="notification-title">内容审核通过</div><div class="notification-desc">「React 18 新特性详解」已通过审核并发布</div><div class="notification-time">1小时前</div></div><button class="btn btn-text btn-sm" style="color:var(--info);">✕</button></div>
+          <div class="notification-item"><div class="notification-icon" style="background:#fdf6ec;color:#E6A23C;">📢</div><div class="notification-content"><div class="notification-title">系统公告：平台版本更新通知</div><div class="notification-desc">平台将于本周六凌晨2:00-4:00进行版本升级</div><div class="notification-time">昨天</div></div><button class="btn btn-text btn-sm" style="color:var(--info);">✕</button></div>
+          <div class="notification-item"><div class="notification-icon" style="background:#ecf5ff;color:#409EFF;">💬</div><div class="notification-content"><div class="notification-title">王芳 在评论中@了你</div><div class="notification-desc">「@李明 这个问题你怎么看？」</div><div class="notification-time">昨天</div></div><button class="btn btn-text btn-sm" style="color:var(--info);">✕</button></div>
+        </div>
+      </div>
+
+      <!-- ====== 审核中心 ====== -->
+      <div class="page" id="page-audit">
+        <div class="card"><div class="card-header"><div class="card-title">审核中心</div><select class="select" style="width:auto;"><option>全部类型</option><option>内容审核</option><option>评论审核</option></select></div>
+          <table class="table"><thead><tr><th>类型</th><th>标题/摘要</th><th>提交人</th><th>提交时间</th><th>状态</th><th>操作</th></tr></thead><tbody>
+            <tr><td><span class="content-type-badge type-markdown">📝 内容</span></td><td>React 18 并发特性深入解析</td><td>李明</td><td>2026-05-12 14:30</td><td><span class="tag tag-sm" style="background:#E6A23C;">待审核</span></td><td><button class="btn btn-success btn-sm">通过</button> <button class="btn btn-danger btn-sm" onclick="showRejectModal()">驳回</button></td></tr>
+            <tr><td><span class="content-type-badge type-ppt">📊 内容</span></td><td>微服务架构设计实践指南</td><td>张伟</td><td>2026-05-12 10:15</td><td><span class="tag tag-sm" style="background:#E6A23C;">待审核</span></td><td><button class="btn btn-success btn-sm">通过</button> <button class="btn btn-danger btn-sm" onclick="showRejectModal()">驳回</button></td></tr>
+            <tr><td><span style="color:var(--info);">💬 评论</span></td><td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">这个方案有问题，根本不可行...</td><td>匿名用户</td><td>2026-05-12 09:45</td><td><span class="tag tag-sm" style="background:#E6A23C;">待审核</span></td><td><button class="btn btn-success btn-sm">通过</button> <button class="btn btn-warning btn-sm">隐藏</button> <button class="btn btn-danger btn-sm">驳回</button></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- ====== 标签管理 ====== -->
+      <div class="page" id="page-admin-tags">
+        <div class="card"><div class="card-header"><div class="card-title">标签管理</div><button class="btn btn-primary btn-sm" onclick="showTagModal()">+ 创建标签</button></div>
+          <table class="table"><thead><tr><th>标签名称</th><th>颜色</th><th>使用次数</th><th>创建时间</th><th>操作</th></tr></thead><tbody>
+            <tr><td><span class="tag" style="background:#409EFF;">技术</span></td><td><span class="color-dot" style="background:#409EFF;"></span> #409EFF</td><td>128</td><td>2026-04-01</td><td><button class="btn btn-text btn-sm">编辑</button><button class="btn btn-text btn-sm" style="color:var(--danger);">删除</button></td></tr>
+            <tr><td><span class="tag" style="background:#67C23A;">产品</span></td><td><span class="color-dot" style="background:#67C23A;"></span> #67C23A</td><td>86</td><td>2026-04-01</td><td><button class="btn btn-text btn-sm">编辑</button><button class="btn btn-text btn-sm" style="color:var(--danger);">删除</button></td></tr>
+            <tr><td><span class="tag" style="background:#E6A23C;">设计</span></td><td><span class="color-dot" style="background:#E6A23C;"></span> #E6A23C</td><td>54</td><td>2026-04-02</td><td><button class="btn btn-text btn-sm">编辑</button><button class="btn btn-text btn-sm" style="color:var(--danger);">删除</button></td></tr>
+            <tr><td><span class="tag" style="background:#F56C6C;">管理</span></td><td><span class="color-dot" style="background:#F56C6C;"></span> #F56C6C</td><td>32</td><td>2026-04-03</td><td><button class="btn btn-text btn-sm">编辑</button><button class="btn btn-text btn-sm" style="color:var(--danger);">删除</button></td></tr>
+            <tr><td><span class="tag" style="background:#722ed1;">前端</span></td><td><span class="color-dot" style="background:#722ed1;"></span> #722ED1</td><td>45</td><td>2026-04-05</td><td><button class="btn btn-text btn-sm">编辑</button><button class="btn btn-text btn-sm" style="color:var(--danger);">删除</button></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- ====== 用户管理 ====== -->
+      <div class="page" id="page-admin-users">
+        <div class="card"><div class="card-header"><div class="card-title">用户管理</div><input class="input" placeholder="搜索用户..." style="width:200px;"></div>
+          <table class="table"><thead><tr><th>用户名</th><th>部门</th><th>全局角色</th><th>群组</th><th>注册时间</th><th>操作</th></tr></thead><tbody>
+            <tr><td>李明</td><td>前端开发部</td><td><span class="tag tag-sm" style="background:#409EFF;">系统管理员</span></td><td>3个群组</td><td>2026-03-01</td><td><button class="btn btn-text btn-sm">编辑角色</button></td></tr>
+            <tr><td>张伟</td><td>后端开发部</td><td><span class="tag tag-sm" style="background:#909399;">普通用户</span></td><td>2个群组</td><td>2026-03-05</td><td><button class="btn btn-text btn-sm">编辑角色</button></td></tr>
+            <tr><td>王芳</td><td>AI 研究部</td><td><span class="tag tag-sm" style="background:#909399;">普通用户</span></td><td>4个群组</td><td>2026-03-10</td><td><button class="btn btn-text btn-sm">编辑角色</button></td></tr>
+            <tr><td>陈静</td><td>产品设计部</td><td><span class="tag tag-sm" style="background:#909399;">普通用户</span></td><td>1个群组</td><td>2026-03-15</td><td><button class="btn btn-text btn-sm">编辑角色</button></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- ====== 敏感词管理 ====== -->
+      <div class="page" id="page-admin-words">
+        <div class="card"><div class="card-header"><div class="card-title">敏感词管理</div><div class="btn-group"><button class="btn btn-primary btn-sm">+ 添加敏感词</button><button class="btn btn-default btn-sm">📥 批量导入</button></div></div>
+          <div class="filter-bar"><select class="select" style="width:auto;"><option>全部分类</option><option>通用敏感词</option><option>政治敏感</option><option>广告推广</option></select><input class="input" placeholder="搜索敏感词..." style="width:200px;"></div>
+          <table class="table"><thead><tr><th>敏感词</th><th>分类</th><th>创建时间</th><th>操作</th></tr></thead><tbody>
+            <tr><td>***</td><td><span class="tag tag-sm" style="background:#909399;">通用敏感词</span></td><td>2026-04-01</td><td><button class="btn btn-text btn-sm" style="color:var(--danger);">删除</button></td></tr>
+            <tr><td>***</td><td><span class="tag tag-sm" style="background:#F56C6C;">政治敏感</span></td><td>2026-04-01</td><td><button class="btn btn-text btn-sm" style="color:var(--danger);">删除</button></td></tr>
+            <tr><td>***</td><td><span class="tag tag-sm" style="background:#E6A23C;">广告推广</span></td><td>2026-04-02</td><td><button class="btn btn-text btn-sm" style="color:var(--danger);">删除</button></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- ====== 数据分析看板 ====== -->
+      <div class="page" id="page-admin-analytics">
+        <div class="stat-cards">
+          <div class="stat-card"><div class="stat-card-label">总内容数</div><div class="stat-card-value">1,286</div><div class="stat-card-trend up">↑ 12% 较上月</div></div>
+          <div class="stat-card"><div class="stat-card-label">总用户数</div><div class="stat-card-value">458</div><div class="stat-card-trend up">↑ 8% 较上月</div></div>
+          <div class="stat-card"><div class="stat-card-label">今日发布量</div><div class="stat-card-value">23</div><div class="stat-card-trend up">↑ 5% 较昨日</div></div>
+          <div class="stat-card"><div class="stat-card-label">今日活跃用户</div><div class="stat-card-value">86</div><div class="stat-card-trend down">↓ 3% 较昨日</div></div>
+        </div>
+        <div class="grid-2" style="margin-bottom:16px;">
+          <div class="card"><div class="card-title" style="margin-bottom:16px;">📈 内容发布趋势</div><div class="chart-placeholder"><div style="text-align:center;"><div style="font-size:32px;margin-bottom:8px;">📊</div><div>ECharts 折线图 — 内容发布趋势</div><div style="font-size:12px;margin-top:4px;">支持按日/周/月切换，按类型分组</div></div></div></div>
+          <div class="card"><div class="card-title" style="margin-bottom:16px;">🔥 搜索热词 Top 10</div><div class="rank-list">
+            <div class="rank-item"><span class="rank-num top">1</span><span style="flex:1;">React 18</span><span style="color:var(--info);">326次</span></div>
+            <div class="rank-item"><span class="rank-num top">2</span><span style="flex:1;">微服务</span><span style="color:var(--info);">258次</span></div>
+            <div class="rank-item"><span class="rank-num top">3</span><span style="flex:1;">AI Agent</span><span style="color:var(--info);">212次</span></div>
+            <div class="rank-item"><span class="rank-num normal">4</span><span style="flex:1;">DDD</span><span style="color:var(--info);">186次</span></div>
+            <div class="rank-item"><span class="rank-num normal">5</span><span style="flex:1;">TypeScript</span><span style="color:var(--info);">154次</span></div>
+          </div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card"><div class="card-title" style="margin-bottom:16px;">🏆 热门内容 Top 5</div><div class="rank-list">
+            <div class="rank-item"><span class="rank-num top">1</span><span style="flex:1;">React 18 并发特性深入解析</span><span style="color:var(--info);">1.2k 阅读</span></div>
+            <div class="rank-item"><span class="rank-num top">2</span><span style="flex:1;">2026年AI Agent技术趋势报告</span><span style="color:var(--info);">2.1k 阅读</span></div>
+            <div class="rank-item"><span class="rank-num top">3</span><span style="flex:1;">微服务架构设计实践指南</span><span style="color:var(--info);">856 阅读</span></div>
+            <div class="rank-item"><span class="rank-num normal">4</span><span style="flex:1;">产品需求文档编写规范 v3.0</span><span style="color:var(--info);">634 阅读</span></div>
+            <div class="rank-item"><span class="rank-num normal">5</span><span style="flex:1;">TypeScript 高级类型体操</span><span style="color:var(--info);">512 阅读</span></div>
+          </div></div>
+          <div class="card"><div class="card-title" style="margin-bottom:16px;">👥 群组活跃度排行</div><div class="rank-list">
+            <div class="rank-item"><span class="rank-num top">1</span><span style="flex:1;">AI 技术探索群</span><span style="color:var(--info);">72 内容 · 156 成员</span></div>
+            <div class="rank-item"><span class="rank-num top">2</span><span style="flex:1;">前端技术群</span><span style="color:var(--info);">56 内容 · 128 成员</span></div>
+            <div class="rank-item"><span class="rank-num top">3</span><span style="flex:1;">后端架构群</span><span style="color:var(--info);">42 内容 · 96 成员</span></div>
+            <div class="rank-item"><span class="rank-num normal">4</span><span style="flex:1;">产品设计群</span><span style="color:var(--info);">38 内容 · 64 成员</span></div>
+          </div></div>
+        </div>
+      </div>
+
+    </div><!-- /pageContent -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- 驳回弹窗 -->
+<div class="modal-overlay" id="rejectModal">
+  <div class="modal"><div class="modal-header">驳回原因</div><div class="modal-body"><div class="form-group"><label class="form-label">驳回原因（必填）</label><textarea class="textarea" placeholder="请填写驳回原因..."></textarea></div></div><div class="modal-footer"><button class="btn btn-default" onclick="closeRejectModal()">取消</button><button class="btn btn-danger" onclick="closeRejectModal();showToast('已驳回')">确认驳回</button></div></div>
+</div>
+
+<!-- 创建标签弹窗 -->
+<div class="modal-overlay" id="tagModal">
+  <div class="modal"><div class="modal-header">创建标签</div><div class="modal-body"><div class="form-group"><label class="form-label">标签名称</label><input class="input" placeholder="请输入标签名称"></div><div class="form-group"><label class="form-label">标签颜色</label><div style="display:flex;gap:8px;"><span class="color-dot" style="background:#409EFF;cursor:pointer;border:2px solid var(--text);"></span><span class="color-dot" style="background:#67C23A;cursor:pointer;"></span><span class="color-dot" style="background:#E6A23C;cursor:pointer;"></span><span class="color-dot" style="background:#F56C6C;cursor:pointer;"></span><span class="color-dot" style="background:#722ed1;cursor:pointer;"></span><span class="color-dot" style="background:#909399;cursor:pointer;"></span></div></div></div><div class="modal-footer"><button class="btn btn-default" onclick="closeTagModal()">取消</button><button class="btn btn-primary" onclick="closeTagModal();showToast('标签创建成功')">确认创建</button></div></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== 页面导航 ======
+function navigateTo(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById('page-' + pageId);
+  if (page) page.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navItem = document.querySelector(`.nav-item[data-page="${pageId}"]`);
+  if (navItem) navItem.classList.add('active');
+  document.getElementById('pageContent').scrollTop = 0;
+}
+
+// ====== 侧边栏导航 ======
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function() {
+    const pageId = this.getAttribute('data-page');
+    navigateTo(pageId);
+  });
+});
+
+// ====== 全局搜索 ======
+function doSearch() {
+  const keyword = document.getElementById('globalSearch').value.trim();
+  if (keyword) { showToast(`搜索: "${keyword}" — 正在执行全文检索 + 语义搜索...`); }
+  else { showToast('请输入搜索关键词'); }
+}
+document.getElementById('globalSearch').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doSearch();
+});
+
+// ====== 收藏切换 ======
+function toggleFav() {
+  const btn = document.getElementById('favBtn');
+  if (btn.textContent.includes('已收藏')) {
+    btn.innerHTML = '⭐ 收藏 (86)';
+    showToast('已取消收藏');
+  } else {
+    btn.innerHTML = '⭐ 已收藏 (87)';
+    btn.style.color = '#E6A23C';
+    showToast('收藏成功');
+  }
+}
+
+// ====== 通知面板 ======
+function toggleNotifyPanel() {
+  document.getElementById('notifyPanel').classList.toggle('show');
+  document.getElementById('userMenu').classList.remove('show');
+}
+
+// ====== 用户菜单 ======
+function toggleUserMenu() {
+  document.getElementById('userMenu').classList.toggle('show');
+  document.getElementById('notifyPanel').classList.remove('show');
+}
+
+// ====== 弹窗 ======
+function showRejectModal() { document.getElementById('rejectModal').classList.add('show'); }
+function closeRejectModal() { document.getElementById('rejectModal').classList.remove('show'); }
+function showTagModal() { document.getElementById('tagModal').classList.add('show'); }
+function closeTagModal() { document.getElementById('tagModal').classList.remove('show'); }
+
+// ====== Toast ======
+let toastTimer;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ====== 点击空白关闭 ======
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#notifyDropdown')) document.getElementById('notifyPanel').classList.remove('show');
+  if (!e.target.closest('#userDropdown')) document.getElementById('userMenu').classList.remove('show');
+});
+
+// ====== 弹窗点击遮罩关闭 ======
+document.getElementById('rejectModal').addEventListener('click', function(e) { if (e.target === this) closeRejectModal(); });
+document.getElementById('tagModal').addEventListener('click', function(e) { if (e.target === this) closeTagModal(); });
+
+// ====== Tab 切换 ======
+document.querySelectorAll('.tabs .tab-item').forEach(tab => {
+  tab.addEventListener('click', function() {
+    this.parentElement.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ====== 标签筛选点击 ======
+document.querySelectorAll('.tag-outline').forEach(tag => {
+  tag.addEventListener('click', function() {
+    this.classList.toggle('selected');
+    if (this.classList.contains('selected')) {
+      this.style.background = this.style.color;
+      this.style.color = '#fff';
+    } else {
+      this.style.background = 'transparent';
+      this.style.color = this.style.borderColor;
+    }
+  });
+});
+
+console.log('✅ 企业内部知识分享平台 - 交互原型已就绪');
+console.log('📋 覆盖页面: 首页 | 内容详情 | 内容创建 | 模板中心 | 群组列表 | 我的收藏 | 通知中心 | 审核中心 | 标签管理 | 用户管理 | 敏感词管理 | 数据分析看板');
+console.log('🧩 核心组件: CommentSection | CommentInput | TagSelector | MarkdownEditor | NotificationBell | AuditActionBar | AnalyticsChart');
+console.log('🖱️ 点击左侧导航切换页面，点击顶部铃铛查看通知');
+</script>
+
+</body>
+</html>

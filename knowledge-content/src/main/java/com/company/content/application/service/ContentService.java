@@ -75,9 +75,6 @@ public class ContentService {
     @Transactional
     public void publish(Long id, Long userId) {
         KnowledgeContent c = getOwned(id, userId);
-        if (!c.getCreatedBy().equals(userId)) {
-            throw BizException.forbidden();
-        }
         if (c.getStatus() == PublishStatus.PUBLISHED) {
             throw BizException.badRequest("内容已发布");
         }
@@ -88,19 +85,13 @@ public class ContentService {
 
     @Transactional
     public void softDelete(Long id, Long userId) {
-        KnowledgeContent c = getOwned(id, userId);
-        if (!c.getCreatedBy().equals(userId)) {
-            throw BizException.forbidden();
-        }
+        getOwned(id, userId);
         contentRepository.softDelete(id);
     }
 
     @Transactional
     public void saveDraft(Long id, Long userId, CreateContentRequest req) {
         KnowledgeContent c = getOwned(id, userId);
-        if (!c.getCreatedBy().equals(userId)) {
-            throw BizException.forbidden();
-        }
         if (c.getStatus() != PublishStatus.DRAFT) {
             throw BizException.badRequest("仅草稿可保存");
         }

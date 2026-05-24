@@ -31,7 +31,7 @@ public class ContentRepositoryImpl implements ContentRepository {
         qw.eq(KnowledgeContent::getStatus, PublishStatus.PUBLISHED);
 
         if (contentType != null && !contentType.isBlank()) {
-            qw.eq(KnowledgeContent::getContentType, ContentType.valueOf(contentType));
+            qw.eq(KnowledgeContent::getContentType, parseContentType(contentType));
         }
         if (keyword != null && !keyword.isBlank()) {
             qw.and(w -> w.like(KnowledgeContent::getTitle, keyword)
@@ -54,7 +54,7 @@ public class ContentRepositoryImpl implements ContentRepository {
         qw.eq(KnowledgeContent::getStatus, PublishStatus.PUBLISHED);
 
         if (contentType != null && !contentType.isBlank()) {
-            qw.eq(KnowledgeContent::getContentType, ContentType.valueOf(contentType));
+            qw.eq(KnowledgeContent::getContentType, parseContentType(contentType));
         }
         if (keyword != null && !keyword.isBlank()) {
             qw.and(w -> w.like(KnowledgeContent::getTitle, keyword)
@@ -78,5 +78,13 @@ public class ContentRepositoryImpl implements ContentRepository {
     @Override
     public void softDelete(Long id) {
         mapper.deleteById(id);
+    }
+
+    private ContentType parseContentType(String contentType) {
+        try {
+            return ContentType.valueOf(contentType.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new com.company.common.exception.BizException(400, "无效的内容类型: " + contentType);
+        }
     }
 }
