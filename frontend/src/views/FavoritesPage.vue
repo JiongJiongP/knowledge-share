@@ -11,12 +11,24 @@
         <el-skeleton :rows="3" animated />
       </div>
 
+      <div v-if="!loading" class="filter-bar">
+        <el-select v-model="filterType" placeholder="全部类型" size="small" style="width:140px;" @change="onFilterChange">
+          <el-option label="全部类型" value="" />
+          <el-option label="Markdown" value="MARKDOWN" />
+          <el-option label="PPT文件" value="PPT_FILE" />
+          <el-option label="外部链接" value="EXTERNAL_URL" />
+        </el-select>
+      </div>
+
       <el-empty v-else-if="list.length === 0" description="还没有收藏任何内容" />
 
       <div v-else class="fav-list">
         <div v-for="fav in list" :key="fav.id" class="fav-item" @click="goContent(fav.contentId)">
           <div class="fav-info">
-            <span class="fav-content-id">内容 #{{ fav.contentId }}</span>
+            <span class="fav-content-id">
+              <span v-if="fav.contentType" :class="['type-badge', badgeClass(fav.contentType)]">{{ typeLabel(fav.contentType) }}</span>
+              {{ fav.contentTitle || '内容 #' + fav.contentId }}
+            </span>
             <span class="fav-time">{{ formatTime(fav.createdAt) }}</span>
           </div>
           <el-button size="small" type="danger" plain @click.stop="handleUnfavorite(fav)">
@@ -52,14 +64,33 @@ const total = ref(0)
 const loading = ref(false)
 const page = ref(1)
 const size = ref(10)
+const filterType = ref('')
 
 async function fetchList() {
   loading.value = true
   try {
-    const res = await getFavorites({ page: page.value, size: size.value })
+    const params = { page: page.value, size: size.value }
+    if (filterType.value) params.contentType = filterType.value
+    const res = await getFavorites(params)
     list.value = res.data.records
     total.value = res.data.total
   } finally { loading.value = false }
+}
+
+function onFilterChange() {
+  page.value = 1
+  fetchList()
+}
+
+function typeLabel(t) {
+  return { MARKDOWN: '📝', PPT_FILE: '📊', EXTERNAL_URL: '🔗', INTERNAL_REF: '📎' }[t] || ''
+}
+
+function badgeClass(t) {
+  return {
+    MARKDOWN: 'type-markdown', PPT_FILE: 'type-ppt',
+    EXTERNAL_URL: 'type-link', INTERNAL_REF: 'type-ref'
+  }[t] || ''
 }
 
 function goContent(contentId) {
@@ -95,4 +126,10 @@ onMounted(fetchList)
 .fav-time { font-size: 12px; color: #c0c4cc; }
 .pagination-wrapper { display: flex; justify-content: center; margin-top: 24px; }
 .loading-wrapper { padding: 40px 0; }
+.filter-bar { display: flex; gap: 12px; margin-bottom: 16px; }
+.type-badge { display: inline-flex; align-items: center; padding: 1px 6px; border-radius: 3px; font-size: 11px; margin-right: 6px; font-weight: 500; }
+.type-markdown { background: #e6f7ff; color: #1890ff; }
+.type-ppt { background: #fff7e6; color: #fa8c16; }
+.type-link { background: #f6ffed; color: #52c41a; }
+.type-ref { background: #f9f0ff; color: #722ed1; }
 </style>

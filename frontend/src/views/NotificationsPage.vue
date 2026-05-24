@@ -10,6 +10,15 @@
     </AppHeader>
 
     <div class="main-layout">
+      <div v-if="!loading" class="notif-tabs">
+        <span
+          v-for="tab in tabs"
+          :key="tab.value"
+          :class="['tab-item', { active: activeTab === tab.value }]"
+          @click="switchTab(tab.value)"
+        >{{ tab.label }}</span>
+      </div>
+
       <div v-if="loading" class="loading-wrapper">
         <el-skeleton :rows="3" animated />
       </div>
@@ -24,6 +33,7 @@
           @click="handleClick(n)"
         >
           <div class="notif-dot" v-if="!n.isRead" />
+          <div class="notif-icon" :style="{ background: iconBg(n.type), color: iconColor(n.type) }">{{ iconEmoji(n.type) }}</div>
           <div class="notif-body">
             <div class="notif-title">{{ n.title }}</div>
             <div class="notif-content" v-if="n.content">{{ n.content }}</div>
@@ -60,14 +70,41 @@ const total = ref(0)
 const loading = ref(false)
 const page = ref(1)
 const size = ref(10)
+const activeTab = ref('all')
+
+const tabs = [
+  { value: 'all', label: '全部' },
+  { value: 'COMMENT', label: '评论回复' },
+  { value: 'GROUP', label: '群组' },
+  { value: 'SYSTEM', label: '系统' }
+]
 
 async function fetchList() {
   loading.value = true
   try {
-    const res = await getNotifications({ page: page.value, size: size.value })
+    const params = { page: page.value, size: size.value }
+    if (activeTab.value !== 'all') params.type = activeTab.value
+    const res = await getNotifications(params)
     list.value = res.data.records
     total.value = res.data.total
   } finally { loading.value = false }
+}
+
+function switchTab(val) {
+  activeTab.value = val
+  page.value = 1
+  fetchList()
+}
+
+function iconEmoji(type) {
+  const m = { COMMENT: '💬', COMMENT_REPLY: '💬', COMMENT_MENTION: '💬', GROUP_JOIN: '👥', GROUP_APPROVE: '👥', CONTENT_AUDIT: '✅', SYSTEM: '📢' }
+  return m[type] || '📢'
+}
+function iconBg(type) {
+  return type?.startsWith('COMMENT') ? '#ecf5ff' : type?.startsWith('GROUP') ? '#fef0f0' : type === 'CONTENT_AUDIT' ? '#f0f9eb' : '#fdf6ec'
+}
+function iconColor(type) {
+  return type?.startsWith('COMMENT') ? '#409EFF' : type?.startsWith('GROUP') ? '#F56C6C' : type === 'CONTENT_AUDIT' ? '#67C23A' : '#E6A23C'
 }
 
 async function handleClick(n) {
@@ -112,4 +149,9 @@ onMounted(fetchList)
 .notif-time { font-size: 11px; color: #c0c4cc; margin-top: 4px; }
 .pagination-wrapper { display: flex; justify-content: center; margin-top: 24px; }
 .loading-wrapper { padding: 40px 0; }
+.notif-tabs { display: flex; gap: 0; border-bottom: 2px solid #e4e7ed; margin-bottom: 16px; }
+.tab-item { padding: 8px 16px; cursor: pointer; color: #606266; font-size: 13px; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .2s; }
+.tab-item:hover { color: #409eff; }
+.tab-item.active { color: #409eff; border-bottom-color: #409eff; font-weight: 500; }
+.notif-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
 </style>
