@@ -127,12 +127,15 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const token = getToken()
+
   if (to.meta.requiresAuth && !token) {
     next('/login')
   } else if (to.meta.guest && token) {
     next('/')
+  } else if (token && to.meta.requiresAuth) {
+    next()
   } else {
     next()
   }

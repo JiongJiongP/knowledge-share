@@ -1,54 +1,46 @@
 <template>
-  <div class="favorites-page">
-    <AppHeader>
-      <template #center>
-        <span class="page-title">我的收藏</span>
-      </template>
-    </AppHeader>
+  <PageCard title="我的收藏">
+    <template #header>
+      <select class="filter-select" v-model="filterType" @change="onFilterChange">
+        <option value="">全部类型</option>
+        <option value="MARKDOWN">Markdown</option>
+        <option value="PPT_FILE">PPT文件</option>
+        <option value="EXTERNAL_URL">外部链接</option>
+        <option value="INTERNAL_REF">内部引用</option>
+      </select>
+    </template>
 
-    <div class="main-layout">
-      <div v-if="loading" class="loading-wrapper">
-        <el-skeleton :rows="3" animated />
-      </div>
+    <div v-if="loading" class="loading-wrapper">
+      <el-skeleton :rows="3" animated />
+    </div>
 
-      <div v-if="!loading" class="filter-bar">
-        <el-select v-model="filterType" placeholder="全部类型" size="small" style="width:140px;" @change="onFilterChange">
-          <el-option label="全部类型" value="" />
-          <el-option label="Markdown" value="MARKDOWN" />
-          <el-option label="PPT文件" value="PPT_FILE" />
-          <el-option label="外部链接" value="EXTERNAL_URL" />
-        </el-select>
-      </div>
+    <el-empty v-else-if="list.length === 0" description="还没有收藏任何内容" />
 
-      <el-empty v-else-if="list.length === 0" description="还没有收藏任何内容" />
-
-      <div v-else class="fav-list">
-        <div v-for="fav in list" :key="fav.id" class="fav-item" @click="goContent(fav.contentId)">
-          <div class="fav-info">
-            <span class="fav-content-id">
-              <span v-if="fav.contentType" :class="['type-badge', badgeClass(fav.contentType)]">{{ typeLabel(fav.contentType) }}</span>
-              {{ fav.contentTitle || '内容 #' + fav.contentId }}
-            </span>
-            <span class="fav-time">{{ formatTime(fav.createdAt) }}</span>
+    <div v-else class="fav-list">
+      <div v-for="fav in list" :key="fav.id" class="content-list-item" @click="goContent(fav.contentId)">
+        <div class="content-item-main">
+          <div class="content-item-title">{{ fav.contentTitle || '内容 #' + fav.contentId }}</div>
+          <div class="content-item-meta">
+            <span v-if="fav.contentType" :class="['content-type-badge', typeBadgeClass(fav.contentType)]">{{ typeEmoji(fav.contentType) }} {{ typeLabel(fav.contentType) }}</span>
+            <span>👤 {{ fav.authorName || '未知' }}</span>
+            <span>⭐ 收藏于 {{ formatDate(fav.createdAt) }}</span>
           </div>
-          <el-button size="small" type="danger" plain @click.stop="handleUnfavorite(fav)">
-            取消收藏
-          </el-button>
         </div>
-      </div>
-
-      <div v-if="total > size" class="pagination-wrapper">
-        <el-pagination
-          v-model:current-page="page"
-          :total="total"
-          :page-size="size"
-          @current-change="fetchList"
-          background
-          layout="prev, pager, next"
-        />
+        <button class="btn btn-text" style="color:#F56C6C;" @click.stop="handleUnfavorite(fav)">取消收藏</button>
       </div>
     </div>
-  </div>
+
+    <div v-if="total > size" class="pagination-wrapper">
+      <el-pagination
+        v-model:current-page="page"
+        :total="total"
+        :page-size="size"
+        @current-change="fetchList"
+        background
+        layout="prev, pager, next"
+      />
+    </div>
+  </PageCard>
 </template>
 
 <script setup>
@@ -56,7 +48,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getFavorites, unfavoriteContent } from '@/api/favorite'
-import AppHeader from '@/components/layout/AppHeader.vue'
+import PageCard from '@/components/common/PageCard.vue'
 
 const router = useRouter()
 const list = ref([])
@@ -72,25 +64,15 @@ async function fetchList() {
     const params = { page: page.value, size: size.value }
     if (filterType.value) params.contentType = filterType.value
     const res = await getFavorites(params)
-    list.value = res.data.records
-    total.value = res.data.total
-  } finally { loading.value = false }
+    list.value = res.data.records || []
+    total.value = res.data.total || 0
+  } catch { /* handled */ }
+  finally { loading.value = false }
 }
 
 function onFilterChange() {
   page.value = 1
   fetchList()
-}
-
-function typeLabel(t) {
-  return { MARKDOWN: '📝', PPT_FILE: '📊', EXTERNAL_URL: '🔗', INTERNAL_REF: '📎' }[t] || ''
-}
-
-function badgeClass(t) {
-  return {
-    MARKDOWN: 'type-markdown', PPT_FILE: 'type-ppt',
-    EXTERNAL_URL: 'type-link', INTERNAL_REF: 'type-ref'
-  }[t] || ''
 }
 
 function goContent(contentId) {
@@ -99,43 +81,51 @@ function goContent(contentId) {
 
 async function handleUnfavorite(fav) {
   try {
-    await unfavoriteContent(fav.contentId)
+    await unfavoriteContent(fav.id)
     ElMessage.success('已取消收藏')
-    await fetchList()
+    fetchList()
   } catch { /* handled */ }
 }
 
-function formatTime(dateStr) {
-  if (!dateStr) return ''
-  const d = new Date(dateStr)
-  const pad = (n) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+function typeBadgeClass(type) {
+  const map = { MARKDOWN: 'type-markdown', PPT_FILE: 'type-ppt', EXTERNAL_URL: 'type-link', INTERNAL_REF: 'type-ref' }
+  return map[type] || ''
+}
+
+function typeEmoji(type) {
+  const map = { MARKDOWN: '📝', PPT_FILE: '📊', EXTERNAL_URL: '🔗', INTERNAL_REF: '📎' }
+  return map[type] || '📄'
+}
+
+function typeLabel(type) {
+  const map = { MARKDOWN: 'Markdown', PPT_FILE: 'PPT文件', EXTERNAL_URL: '外部链接', INTERNAL_REF: '内部引用' }
+  return map[type] || type
+}
+
+function formatDate(d) {
+  if (!d) return ''
+  return new Date(d).toLocaleDateString('zh-CN')
 }
 
 onMounted(fetchList)
 </script>
 
 <style scoped>
-.favorites-page { max-width: 800px; margin: 0 auto; }
-.page-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.08);
-  padding: 24px;
-}
-.page-title { font-size: 14px; color: #909399; }
-.main-layout { max-width: 800px; margin: 0 auto; padding: 20px; }
-.fav-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #fff; border-radius: 8px; margin-bottom: 8px; cursor: pointer; border: 1px solid #ebeef5; }
-.fav-item:hover { border-color: #409eff; }
-.fav-info { display: flex; flex-direction: column; gap: 4px; }
-.fav-content-id { font-size: 15px; color: #303133; font-weight: 500; }
-.fav-time { font-size: 12px; color: #c0c4cc; }
-.pagination-wrapper { display: flex; justify-content: center; margin-top: 24px; }
-.loading-wrapper { padding: 40px 0; }
-.filter-bar { display: flex; gap: 12px; margin-bottom: 16px; }
-.type-badge { display: inline-flex; align-items: center; padding: 1px 6px; border-radius: 3px; font-size: 11px; margin-right: 6px; font-weight: 500; }
+.filter-select { height: 36px; border: 1px solid #DCDFE6; border-radius: 6px; padding: 0 12px; font-size: 13px; outline: none; cursor: pointer; }
+.content-list-item { display: flex; gap: 16px; padding: 20px 0; border-bottom: 1px solid #E4E7ED; cursor: pointer; transition: background .2s; align-items: center; }
+.content-list-item:hover { background: #fafbfc; margin: 0 -24px; padding: 20px 24px; }
+.content-list-item:last-child { border-bottom: none; }
+.content-item-main { flex: 1; min-width: 0; }
+.content-item-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: #303133; }
+.content-item-title:hover { color: #409EFF; }
+.content-item-meta { display: flex; align-items: center; gap: 16px; font-size: 12px; color: #909399; flex-wrap: wrap; }
+.content-type-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
 .type-markdown { background: #e6f7ff; color: #1890ff; }
 .type-ppt { background: #fff7e6; color: #fa8c16; }
 .type-link { background: #f6ffed; color: #52c41a; }
 .type-ref { background: #f9f0ff; color: #722ed1; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid transparent; transition: all .2s; font-family: inherit; }
+.btn-text { background: transparent; border: none; color: #409EFF; padding: 4px 8px; }
+.pagination-wrapper { margin-top: 20px; display: flex; justify-content: center; }
+.loading-wrapper { padding: 20px 0; }
 </style>

@@ -1,9 +1,8 @@
 <template>
-  <div class="page-card">
-    <div class="card-header">
-      <h2 class="card-title">标签管理</h2>
+  <PageCard title="标签管理">
+    <template #header>
       <el-button type="primary" size="small" @click="showAdd">添加标签</el-button>
-    </div>
+    </template>
 
     <el-table :data="tags" style="width: 100%">
       <el-table-column prop="id" label="ID" width="80" />
@@ -42,13 +41,14 @@
         <el-button type="primary" :loading="saving" @click="handleSave">保存</el-button>
       </template>
     </el-dialog>
-  </div>
+  </PageCard>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getTags, createTag, updateTag, deleteTag } from '@/api/tag'
+import PageCard from '@/components/common/PageCard.vue'
 
 const tags = ref([])
 const dialogVisible = ref(false)
@@ -123,23 +123,5 @@ onMounted(fetchTags)
 </script>
 
 <style scoped>
-.page-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.08);
-  padding: 24px;
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-.card-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-  color: #303133;
-}
 .color-block { display: inline-block; width: 16px; height: 16px; border-radius: 4px; vertical-align: middle; margin-right: 4px; }
 </style>

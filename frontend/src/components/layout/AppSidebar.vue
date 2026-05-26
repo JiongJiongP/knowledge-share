@@ -56,8 +56,10 @@ async function fetchUnreadCount() {
 }
 
 onMounted(() => {
-  fetchUnreadCount()
-  pollTimer = setInterval(fetchUnreadCount, 60000)
+  if (userStore.isLoggedIn) {
+    fetchUnreadCount()
+    pollTimer = setInterval(fetchUnreadCount, 60000)
+  }
 })
 
 onUnmounted(() => {

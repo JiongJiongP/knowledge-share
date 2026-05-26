@@ -142,7 +142,9 @@ function handleClickOutside(e) {
 }
 
 onMounted(() => {
-  fetchUnreadCount()
+  if (userStore.isLoggedIn) {
+    fetchUnreadCount()
+  }
   document.addEventListener('click', handleClickOutside)
 })
 onUnmounted(() => document.removeEventListener('click', handleClickOutside))

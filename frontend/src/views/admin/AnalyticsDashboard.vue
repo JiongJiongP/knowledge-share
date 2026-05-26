@@ -1,8 +1,5 @@
 <template>
-  <div class="page-card">
-    <div class="card-header">
-      <h2 class="card-title">数据分析看板</h2>
-    </div>
+  <PageCard title="数据分析看板">
     <el-row :gutter="16" class="stat-cards">
       <el-col :span="6"><el-card><h3>总内容数</h3><div class="number">{{ overview.totalContents }}</div></el-card></el-col>
       <el-col :span="6"><el-card><h3>今日发布</h3><div class="number">{{ overview.todayContents }}</div></el-card></el-col>
@@ -30,13 +27,14 @@
         <el-table-column prop="contentCount" label="内容数量" width="120" />
       </el-table>
     </el-card>
-  </div>
+  </PageCard>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import request from '@/utils/request'
 import { getGroupList } from '@/api/group'
+import PageCard from '@/components/common/PageCard.vue'
 
 const overview = ref({})
 const trend = ref([])
@@ -75,24 +73,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.page-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.08);
-  padding: 24px;
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-.card-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-  color: #303133;
-}
 .stat-cards { margin-bottom: 20px; }
 .stat-cards h3 { font-size: 13px; color: #909399; margin: 0 0 8px; }
 .number { font-size: 28px; font-weight: 700; color: #303133; }

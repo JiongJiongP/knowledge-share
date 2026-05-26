@@ -1,13 +1,12 @@
 <template>
   <div class="create-page">
-    <div class="create-card">
-      <div class="card-header">
-        <div class="card-title">创建新内容</div>
+    <PageCard title="创建新内容">
+      <template #header>
         <div class="btn-group">
           <button class="btn btn-default btn-sm" @click="handleSaveDraft" :disabled="saving">💾 保存草稿</button>
           <button class="btn btn-primary btn-sm" @click="handleSubmit" :disabled="submitting">📤 提交审核</button>
         </div>
-      </div>
+      </template>
 
       <div class="form-group">
         <label class="form-label">内容类型</label>
@@ -68,7 +67,7 @@
         <label class="form-label">定时发布（可选）</label>
         <input class="form-input" type="datetime-local" style="width:260px;" v-model="form.scheduledAt" />
       </div>
-    </div>
+    </PageCard>
   </div>
 </template>
 
@@ -80,6 +79,7 @@ import { createContent, publishContent, schedulePublish } from '@/api/content'
 import { getGroupList } from '@/api/group'
 import TagSelector from '@/components/content/TagSelector.vue'
 import { setContentTags } from '@/api/tag'
+import PageCard from '@/components/common/PageCard.vue'
 
 const router = useRouter()
 
@@ -179,25 +179,6 @@ onMounted(async () => {
 
 <style scoped>
 .create-page { max-width: 900px; margin: 0 auto; }
-
-.create-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.08);
-  padding: 24px;
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-.card-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-  color: #303133;
-}
 .btn-group { display: flex; gap: 8px; }
 
 .form-group { margin-bottom: 18px; }

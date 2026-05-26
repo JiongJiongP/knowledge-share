@@ -46,7 +46,13 @@
       "Bash(git *)",
       "Bash(npx vue-tsc *)",
       "Bash(node -e \"console.log\\(JSON.stringify\\(require\\('./package.json'\\).scripts, null, 2\\)\\)\")",
-      "Bash(npx --package vue-tsc@2 vue-tsc --noEmit)"
+      "Bash(npx --package vue-tsc@2 vue-tsc --noEmit)",
+      "Bash(jar tf *)",
+      "Bash(grep -E \"\\(io/qdrant/client/grpc/Points\\\\$\\)\\(PointId|PointStruct|ScoredPoint|SearchPoints|UpsertPoints|DeletePoints|Filter|Condition|Payload|Value\\)\")",
+      "Bash(javap *)",
+      "Bash(grep -v '\\\\$')",
+      "Bash(grep -E \"\\(\\\\.class\\)$\")",
+      "Bash(grep 'Points$PointStruct')"
     ]
   }
 }

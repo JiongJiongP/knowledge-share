@@ -23,6 +23,7 @@ request.interceptors.response.use(
   (error) => {
     const status = error.response?.status
     const msg = error.response?.data?.message || '请求失败'
+    const showError = error.config?.showError !== false
 
     if (status === 401) {
       removeToken()
@@ -30,11 +31,11 @@ request.interceptors.response.use(
       setTimeout(() => {
         window.location.href = '/login'
       }, 800)
-    } else if (status === 403) {
+    } else if (status === 403 && showError) {
       ElMessage.error('权限不足')
-    } else if (status >= 500) {
+    } else if (status >= 500 && showError) {
       ElMessage.error('服务器异常，请稍后重试')
-    } else {
+    } else if (showError) {
       ElMessage.error(msg)
     }
     return Promise.reject(error)

@@ -1,10 +1,9 @@
 <template>
   <div class="templates-page">
-    <div class="page-card">
-      <div class="card-header">
-        <div class="card-title">内容模板中心</div>
+    <PageCard title="内容模板中心">
+      <template #header>
         <button class="btn btn-primary btn-sm">+ 创建模板</button>
-      </div>
+      </template>
 
       <div class="tpl-grid">
         <div
@@ -19,12 +18,13 @@
           <button class="btn btn-primary btn-sm" style="width:100%">使用模板</button>
         </div>
       </div>
-    </div>
+    </PageCard>
   </div>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
+import PageCard from '@/components/common/PageCard.vue'
 
 const router = useRouter()
 
@@ -59,24 +59,6 @@ function useTemplate(tpl) {
 
 <style scoped>
 .templates-page { max-width: 1000px; margin: 0 auto; }
-.page-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.08);
-  padding: 24px;
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-.card-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-  color: #303133;
-}
 .tpl-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

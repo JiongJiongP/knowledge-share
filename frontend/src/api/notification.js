@@ -5,7 +5,7 @@ export function getNotifications(params) {
 }
 
 export function getUnreadCount() {
-  return request.get('/notifications/unread-count')
+  return request.get('/notifications/unread-count', { showError: false })
 }
 
 export function markRead(id) {

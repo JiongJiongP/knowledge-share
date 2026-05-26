@@ -1,6 +1,10 @@
 <template>
   <div class="notifications-page">
-    <div class="page-card">
+    <PageCard title="通知中心">
+      <template #header>
+        <el-button size="small" @click="handleMarkAllRead">全部已读</el-button>
+      </template>
+
       <div v-if="!loading" class="notif-tabs">
         <span
           v-for="tab in tabs"
@@ -44,7 +48,7 @@
           layout="prev, pager, next"
         />
       </div>
-    </div>
+    </PageCard>
   </div>
 </template>
 
@@ -53,7 +57,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getNotifications, markRead, markAllRead, deleteNotification } from '@/api/notification'
-import AppHeader from '@/components/layout/AppHeader.vue'
+import PageCard from '@/components/common/PageCard.vue'
 
 const router = useRouter()
 const list = ref([])

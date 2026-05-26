@@ -1,12 +1,11 @@
 <template>
-  <div class="page-card">
-    <div class="card-header">
-      <h2 class="card-title">敏感词管理</h2>
+  <PageCard title="敏感词管理">
+    <template #header>
       <div class="header-actions">
         <el-button size="small" @click="showBatch = true">批量导入</el-button>
         <el-button type="primary" size="small" @click="showAdd = true">添加敏感词</el-button>
       </div>
-    </div>
+    </template>
 
     <div class="filter-bar">
       <el-select v-model="filterCategory" placeholder="全部分类" @change="onFilterChange" style="width:160px">
@@ -74,13 +73,14 @@
         <el-button type="primary" :loading="importing" @click="handleBatchImport">导入</el-button>
       </template>
     </el-dialog>
-  </div>
+  </PageCard>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getSensitiveWords, addSensitiveWord, deleteSensitiveWord, batchImportSensitiveWords } from '@/api/sensitive-word'
+import PageCard from '@/components/common/PageCard.vue'
 
 const words = ref([])
 const loading = ref(false)
@@ -179,24 +179,6 @@ onMounted(fetchWords)
 </script>
 
 <style scoped>
-.page-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.08);
-  padding: 24px;
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-.card-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-  color: #303133;
-}
 .header-actions { display: flex; gap: 10px; }
 .filter-bar { display: flex; gap: 12px; margin-bottom: 16px; }
 </style>

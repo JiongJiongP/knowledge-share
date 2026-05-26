@@ -97,12 +97,6 @@ onMounted(fetchGroup)
 
 <style scoped>
 .group-detail-page { max-width: 900px; margin: 0 auto; }
-.page-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.08);
-  padding: 24px;
-}
 .main-layout { max-width: 1200px; margin: 0 auto; padding: 20px; }
 .group-header h2 { margin: 0 0 8px; font-size: 24px; }
 .desc { color: #909399; margin: 0 0 16px; }

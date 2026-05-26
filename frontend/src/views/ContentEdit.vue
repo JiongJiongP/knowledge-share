@@ -1,7 +1,5 @@
 <template>
   <div class="edit-page">
-    <AppHeader />
-
     <div v-if="loading" class="loading-wrapper">
       <el-skeleton :rows="8" animated />
     </div>
@@ -17,17 +15,16 @@
       </template>
     </el-result>
 
-    <div v-else class="edit-layout">
-      <div class="edit-card">
-        <div class="card-header">
-          <h2 class="card-title">编辑内容</h2>
-          <div class="header-actions">
-            <el-button @click="handleUpdate" :loading="saving">💾 保存</el-button>
-            <el-button type="success" @click="handlePublish" :loading="publishing" v-if="form.status === 'DRAFT'">
-              📤 发布
-            </el-button>
-          </div>
+    <div v-else class="page-card">
+      <div class="card-header">
+        <h2 class="card-title">编辑内容</h2>
+        <div class="header-actions">
+          <el-button @click="handleUpdate" :loading="saving">💾 保存</el-button>
+          <el-button type="success" @click="handlePublish" :loading="publishing" v-if="form.status === 'DRAFT'">
+            📤 发布
+          </el-button>
         </div>
+      </div>
 
         <div class="form-group">
           <label class="form-label">内容类型</label>
@@ -80,7 +77,6 @@
           <label class="form-label">定时发布（可选）</label>
           <el-input v-model="form.scheduledAt" type="datetime-local" style="width:260px;" />
         </div>
-      </div>
     </div>
   </div>
 </template>
@@ -209,33 +205,16 @@ async function handlePublish() {
 .edit-page {
   min-height: 100vh;
   background: #f5f7fa;
+  padding: 24px 20px;
 }
 .loading-wrapper {
   max-width: 800px;
   margin: 60px auto;
   padding: 0 20px;
 }
-.edit-layout {
+.page-card {
   max-width: 900px;
   margin: 0 auto;
-  padding: 24px 20px;
-}
-.edit-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 32px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.08);
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-}
-.card-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0;
 }
 .header-actions {
   display: flex;

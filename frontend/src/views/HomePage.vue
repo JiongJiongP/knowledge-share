@@ -1,12 +1,11 @@
 <template>
   <div class="home-page">
-    <div class="page-card">
-      <div class="card-header">
-        <div class="card-title">知识内容流</div>
+    <PageCard title="知识内容流">
+      <template #header>
         <el-button type="primary" size="small" @click="$router.push('/content/create')">
           + 创建内容
         </el-button>
-      </div>
+      </template>
 
       <div class="filter-bar">
         <select class="filter-select" v-model="filterType" @change="onFilterChange">
@@ -75,7 +74,7 @@
           layout="prev, pager, next"
         />
       </div>
-    </div>
+    </PageCard>
   </div>
 </template>
 
@@ -83,6 +82,7 @@
 import { ref, onMounted } from 'vue'
 import { getContentList } from '@/api/content'
 import { getGroupList } from '@/api/group'
+import PageCard from '@/components/common/PageCard.vue'
 import { getTags } from '@/api/tag'
 
 const list = ref([])
@@ -168,24 +168,6 @@ onMounted(async () => {
 
 <style scoped>
 .home-page { max-width: 960px; margin: 0 auto; }
-.page-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.08);
-  padding: 24px;
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-.card-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-  color: #303133;
-}
 .filter-bar {
   display: flex;
   gap: 12px;
