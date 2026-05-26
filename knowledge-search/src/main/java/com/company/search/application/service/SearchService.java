@@ -3,6 +3,7 @@ package com.company.search.application.service;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.*;
+import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
 import co.elastic.clients.elasticsearch.indices.IndexSettings;
@@ -88,6 +89,30 @@ public class SearchService {
             ));
         } catch (IOException e) {
             log.warn("Failed to delete content {} from index: {}", id, e.getMessage());
+        }
+    }
+
+    public void batchIndex(List<Long> ids, List<String> titles, List<String> bodies,
+                           List<String> contentTypes, List<String> createdBys, List<String> publishedAts) {
+        try {
+            List<BulkOperation> operations = new ArrayList<>();
+            for (int i = 0; i < ids.size(); i++) {
+                ContentDocument doc = new ContentDocument();
+                doc.setTitle(titles.get(i));
+                doc.setBody(bodies.get(i));
+                doc.setContentType(contentTypes.get(i));
+                doc.setCreatedBy(createdBys.get(i));
+                doc.setPublishedAt(publishedAts.get(i));
+                final int idx = i;
+                operations.add(BulkOperation.of(op -> op
+                        .index(ix -> ix
+                                .index(INDEX_NAME)
+                                .id(String.valueOf(ids.get(idx)))
+                                .document(doc))));
+            }
+            esClient.bulk(BulkRequest.of(b -> b.operations(operations)));
+        } catch (IOException e) {
+            log.warn("Failed to batch index {} documents: {}", ids.size(), e.getMessage());
         }
     }
 
