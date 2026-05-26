@@ -18,7 +18,8 @@
 
         <h3>待审批申请</h3>
         <el-table :data="pendingMembersList" style="width: 100%">
-          <el-table-column prop="userId" label="用户ID" width="150" />
+          <el-table-column prop="userName" label="用户名" width="120" />
+          <el-table-column prop="userId" label="用户ID" width="80" />
           <el-table-column prop="createdAt" label="申请时间">
             <template #default="{ row }">{{ formatTime(row.createdAt) }}</template>
           </el-table-column>
@@ -35,7 +36,8 @@
 
         <h3>已加入成员</h3>
         <el-table :data="approvedMembers" style="width: 100%">
-          <el-table-column prop="userId" label="用户ID" width="150" />
+          <el-table-column prop="userName" label="用户名" width="120" />
+          <el-table-column prop="userId" label="用户ID" width="80" />
           <el-table-column prop="role" label="角色" width="120">
             <template #default="{ row }">
               <el-tag :type="row.role === 'OWNER' ? 'warning' : 'info'" size="small">

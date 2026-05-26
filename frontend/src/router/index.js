@@ -98,6 +98,24 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/admin/users',
+    name: 'AdminUsers',
+    component: () => import('@/views/admin/UserManage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/admin/departments',
+    name: 'AdminDepartments',
+    component: () => import('@/views/admin/DepartmentManage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/admin/settings',
+    name: 'AdminSettings',
+    component: () => import('@/views/admin/SystemSettings.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFound.vue'),

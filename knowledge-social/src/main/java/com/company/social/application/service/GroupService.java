@@ -2,23 +2,30 @@ package com.company.social.application.service;
 
 import com.company.common.exception.BizException;
 import com.company.common.result.PageResult;
+import com.company.social.application.dto.GroupMemberVO;
 import com.company.social.domain.model.Group;
 import com.company.social.domain.model.GroupMember;
 import com.company.social.domain.repository.GroupRepository;
+import com.company.userauth.domain.model.User;
+import com.company.userauth.infrastructure.mapper.UserMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class GroupService {
 
     private final GroupRepository groupRepository;
+    private final UserMapper userMapper;
 
-    public GroupService(GroupRepository groupRepository) {
+    public GroupService(GroupRepository groupRepository, UserMapper userMapper) {
         this.groupRepository = groupRepository;
+        this.userMapper = userMapper;
     }
 
     public PageResult<Group> listPublic(int page, int size) {
@@ -121,15 +128,38 @@ public class GroupService {
         groupRepository.deleteMember(groupId, userId);
     }
 
-    public List<GroupMember> listMembers(Long groupId) {
-        return groupRepository.findMembers(groupId);
+    public List<GroupMemberVO> listMembers(Long groupId) {
+        return toVOList(groupRepository.findMembers(groupId));
     }
 
-    public List<GroupMember> listPendingMembers(Long groupId, Long ownerId) {
+    public List<GroupMemberVO> listPendingMembers(Long groupId, Long ownerId) {
         Group g = getById(groupId);
         if (!g.getOwnerId().equals(ownerId)) {
             throw BizException.forbidden();
         }
-        return groupRepository.findPendingMembers(groupId);
+        return toVOList(groupRepository.findPendingMembers(groupId));
+    }
+
+    private List<GroupMemberVO> toVOList(List<GroupMember> members) {
+        if (members.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, String> userMap = userMapper.selectList(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<User>()
+                        .in(User::getId, members.stream().map(GroupMember::getUserId).distinct().collect(Collectors.toList()))
+        ).stream().collect(Collectors.toMap(User::getId, User::getUsername, (a, b) -> a));
+
+        return members.stream().map(m -> {
+            GroupMemberVO vo = new GroupMemberVO();
+            vo.setId(m.getId());
+            vo.setGroupId(m.getGroupId());
+            vo.setUserId(m.getUserId());
+            vo.setUserName(userMap.getOrDefault(m.getUserId(), String.valueOf(m.getUserId())));
+            vo.setRole(m.getRole());
+            vo.setStatus(m.getStatus());
+            vo.setJoinedAt(m.getJoinedAt() != null ? m.getJoinedAt().toString() : null);
+            vo.setCreatedAt(m.getCreatedAt() != null ? m.getCreatedAt().toString() : null);
+            return vo;
+        }).collect(Collectors.toList());
     }
 }

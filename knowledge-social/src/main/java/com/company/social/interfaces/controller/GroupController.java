@@ -4,9 +4,9 @@ import com.company.common.result.PageResult;
 import com.company.common.result.Result;
 import com.company.social.application.dto.ApproveMemberRequest;
 import com.company.social.application.dto.CreateGroupRequest;
+import com.company.social.application.dto.GroupMemberVO;
 import com.company.social.application.service.GroupService;
 import com.company.social.domain.model.Group;
-import com.company.social.domain.model.GroupMember;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -47,12 +47,12 @@ public class GroupController {
     }
 
     @GetMapping("/{id}/members")
-    public Result<List<GroupMember>> members(@PathVariable Long id) {
+    public Result<List<GroupMemberVO>> members(@PathVariable Long id) {
         return Result.ok(groupService.listMembers(id));
     }
 
     @GetMapping("/{id}/members/pending")
-    public Result<List<GroupMember>> pendingMembers(@PathVariable Long id, Authentication auth) {
+    public Result<List<GroupMemberVO>> pendingMembers(@PathVariable Long id, Authentication auth) {
         return Result.ok(groupService.listPendingMembers(id, (Long) auth.getPrincipal()));
     }
 
