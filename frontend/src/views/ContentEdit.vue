@@ -91,7 +91,6 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getContent, updateContent, publishContent, schedulePublish } from '@/api/content'
 import { getContentTags, setContentTags } from '@/api/tag'
-import AppHeader from '@/components/layout/AppHeader.vue'
 import TagSelector from '@/components/content/TagSelector.vue'
 
 const route = useRoute()

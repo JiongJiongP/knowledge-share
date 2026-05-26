@@ -1,12 +1,6 @@
 <template>
   <div class="group-detail-page">
-    <AppHeader>
-      <template #right>
-        <el-button size="small" @click="$router.push('/groups')">返回群组列表</el-button>
-      </template>
-    </AppHeader>
-
-    <div v-if="loading" class="main-layout">
+    <div class="page-card">
       <el-skeleton :rows="4" animated />
     </div>
 
@@ -51,7 +45,6 @@ import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getGroup, joinGroup, getGroupMembers } from '@/api/group'
 import { useUserStore } from '@/stores/user'
-import AppHeader from '@/components/layout/AppHeader.vue'
 
 const route = useRoute()
 const userStore = useUserStore()
@@ -103,7 +96,13 @@ onMounted(fetchGroup)
 </script>
 
 <style scoped>
-.group-detail-page { min-height: 100vh; background: #f5f7fa; }
+.group-detail-page { max-width: 900px; margin: 0 auto; }
+.page-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  padding: 24px;
+}
 .main-layout { max-width: 1200px; margin: 0 auto; padding: 20px; }
 .group-header h2 { margin: 0 0 8px; font-size: 24px; }
 .desc { color: #909399; margin: 0 0 16px; }

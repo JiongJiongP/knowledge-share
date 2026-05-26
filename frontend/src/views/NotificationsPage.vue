@@ -1,15 +1,6 @@
 <template>
   <div class="notifications-page">
-    <AppHeader>
-      <template #center>
-        <span class="page-title">通知中心</span>
-      </template>
-      <template #right>
-        <el-button size="small" text @click="handleMarkAllRead">全部已读</el-button>
-      </template>
-    </AppHeader>
-
-    <div class="main-layout">
+    <div class="page-card">
       <div v-if="!loading" class="notif-tabs">
         <span
           v-for="tab in tabs"

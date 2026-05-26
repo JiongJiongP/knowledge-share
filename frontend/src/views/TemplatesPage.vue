@@ -1,25 +1,22 @@
 <template>
   <div class="templates-page">
-    <AppHeader />
+    <div class="page-card">
+      <div class="card-header">
+        <div class="card-title">内容模板中心</div>
+        <button class="btn btn-primary btn-sm">+ 创建模板</button>
+      </div>
 
-    <div class="templates-layout">
-      <div class="templates-card">
-        <div class="card-header">
-          <h2 class="card-title">内容模板中心</h2>
-        </div>
-
-        <div class="tpl-grid">
-          <div
-            v-for="tpl in templates"
-            :key="tpl.id"
-            class="tpl-card"
-            @click="useTemplate(tpl)"
-          >
-            <div class="tpl-icon">{{ tpl.icon }}</div>
-            <div class="tpl-name">{{ tpl.name }}</div>
-            <div class="tpl-desc">{{ tpl.desc }}</div>
-            <el-button type="primary" size="small" style="width:100%">使用模板</el-button>
-          </div>
+      <div class="tpl-grid">
+        <div
+          v-for="tpl in templates"
+          :key="tpl.id"
+          class="tpl-card"
+          @click="useTemplate(tpl)"
+        >
+          <div class="tpl-icon">{{ tpl.icon }}</div>
+          <div class="tpl-name">{{ tpl.name }}</div>
+          <div class="tpl-desc">{{ tpl.desc }}</div>
+          <button class="btn btn-primary btn-sm" style="width:100%">使用模板</button>
         </div>
       </div>
     </div>
@@ -28,7 +25,6 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import AppHeader from '@/components/layout/AppHeader.vue'
 
 const router = useRouter()
 
@@ -62,31 +58,24 @@ function useTemplate(tpl) {
 </script>
 
 <style scoped>
-.templates-page {
-  min-height: 100vh;
-  background: #f5f7fa;
-}
-.templates-layout {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 24px 20px;
-}
-.templates-card {
+.templates-page { max-width: 1000px; margin: 0 auto; }
+.page-card {
   background: #fff;
-  border-radius: 12px;
-  padding: 32px;
+  border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  padding: 24px;
 }
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 .card-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   margin: 0;
+  color: #303133;
 }
 .tpl-grid {
   display: grid;
@@ -94,33 +83,37 @@ function useTemplate(tpl) {
   gap: 16px;
 }
 .tpl-card {
-  border: 1px solid #dcdfe6;
+  border: 1px solid #DCDFE6;
   border-radius: 8px;
-  padding: 24px;
+  padding: 20px;
   cursor: pointer;
   transition: all .2s;
 }
 .tpl-card:hover {
-  border-color: #409eff;
+  border-color: #409EFF;
   box-shadow: 0 2px 12px rgba(0,0,0,.08);
 }
-.tpl-icon {
-  font-size: 32px;
-  margin-bottom: 10px;
+.tpl-icon { font-size: 28px; margin-bottom: 8px; }
+.tpl-name { font-weight: 600; margin-bottom: 4px; font-size: 15px; }
+.tpl-desc { font-size: 12px; color: #909399; margin-bottom: 12px; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all .2s;
+  font-family: inherit;
+  background: none;
 }
-.tpl-name {
-  font-weight: 600;
-  margin-bottom: 6px;
-  font-size: 15px;
-}
-.tpl-desc {
-  font-size: 12px;
-  color: #909399;
-  margin-bottom: 16px;
-}
+.btn-primary { background: #409EFF; color: #fff; border-color: #409EFF; }
+.btn-default { background: #fff; color: #303133; border-color: #DCDFE6; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
 @media (max-width: 768px) {
-  .tpl-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+  .tpl-grid { grid-template-columns: 1fr 1fr; }
 }
 </style>

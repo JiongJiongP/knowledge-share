@@ -116,7 +116,13 @@ onMounted(fetchList)
 </script>
 
 <style scoped>
-.favorites-page { min-height: 100vh; background: #f5f7fa; }
+.favorites-page { max-width: 800px; margin: 0 auto; }
+.page-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  padding: 24px;
+}
 .page-title { font-size: 14px; color: #909399; }
 .main-layout { max-width: 800px; margin: 0 auto; padding: 20px; }
 .fav-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #fff; border-radius: 8px; margin-bottom: 8px; cursor: pointer; border: 1px solid #ebeef5; }

@@ -1,12 +1,6 @@
 <template>
   <div class="group-manage-page">
-    <AppHeader>
-      <template #right>
-        <el-button size="small" @click="$router.push(`/group/${route.params.id}`)">返回群组</el-button>
-      </template>
-    </AppHeader>
-
-    <div v-if="loading" class="main-layout">
+    <div class="page-card">
       <el-skeleton :rows="4" animated />
     </div>
 
@@ -70,7 +64,6 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getGroup, getGroupMembers, getPendingMembers, approveMember, removeMember } from '@/api/group'
-import AppHeader from '@/components/layout/AppHeader.vue'
 
 const route = useRoute()
 
@@ -126,6 +119,12 @@ onMounted(fetchData)
 </script>
 
 <style scoped>
-.group-manage-page { min-height: 100vh; background: #f5f7fa; }
+.group-manage-page { max-width: 900px; margin: 0 auto; }
+.page-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  padding: 24px;
+}
 .main-layout { max-width: 1200px; margin: 0 auto; padding: 20px; }
 </style>

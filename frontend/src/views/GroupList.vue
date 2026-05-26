@@ -140,7 +140,13 @@ onMounted(fetchList)
 </script>
 
 <style scoped>
-.group-page { min-height: 100vh; background: #f5f7fa; }
+.group-page { max-width: 1000px; margin: 0 auto; }
+.page-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  padding: 24px;
+}
 .main-layout { max-width: 1200px; margin: 0 auto; padding: 20px; }
 .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .toolbar h2 { margin: 0; font-size: 20px; }
