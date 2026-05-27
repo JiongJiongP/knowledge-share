@@ -67,6 +67,8 @@ public class AuthService {
             throw BizException.notFound("用户");
         }
         user.setPassword(null);
+        user.setSsoId(null);
+        user.setEmail(null);
         String role = roleMapper.findRoleByUserId(userId);
         user.setRoles(role != null ? List.of(role) : List.of("USER"));
         return user;
