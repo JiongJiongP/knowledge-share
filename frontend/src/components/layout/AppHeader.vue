@@ -6,7 +6,9 @@
         type="text"
         placeholder="搜索知识内容...（全文检索 + 语义搜索 + 标签筛选）"
         class="search-input"
-        @keyup.enter="doSearch"
+        @keydown.enter="onSearchEnter"
+        @compositionstart="composing = true"
+        @compositionend="composing = false"
       />
       <span class="search-icon" @click="doSearch">🔍</span>
     </div>
@@ -66,6 +68,7 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const searchQuery = ref('')
+const composing = ref(false)
 const unreadCount = ref(0)
 const recentNotifs = ref([])
 const showNotifyPanel = ref(false)
@@ -77,6 +80,11 @@ const userInitial = computed(() => {
   const name = userStore.info?.displayName || userStore.info?.username || ''
   return name.charAt(0).toUpperCase()
 })
+
+function onSearchEnter(e) {
+  if (composing.value) return
+  doSearch()
+}
 
 function doSearch() {
   if (!searchQuery.value.trim()) return

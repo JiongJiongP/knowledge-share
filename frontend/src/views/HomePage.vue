@@ -53,12 +53,24 @@
             <div class="content-item-desc">{{ item.summary || item.title }}</div>
             <div class="content-item-meta">
               <span :class="['content-type-badge', typeBadgeClass(item.contentType)]">{{ typeEmoji(item.contentType) }} {{ typeLabel(item.contentType) }}</span>
-              <span>👤 {{ item.createdBy || '匿名' }}</span>
-              <span>📅 {{ formatDate(item.publishedAt || item.createdAt) }}</span>
-              <span>👁️ {{ formatCount(item.viewCount) }}</span>
-              <span>⭐ {{ item.favoriteCount || 0 }}</span>
-              <span>💬 {{ item.commentCount || 0 }}</span>
-              <span v-for="t in (item.tags || []).slice(0, 2)" :key="t.id" class="tag tag-sm" :style="{ background: t.color || '#409EFF' }">{{ t.name }}</span>
+              <el-tooltip content="作者" placement="top">
+                <span>👤 {{ item.createdBy || '匿名' }}</span>
+              </el-tooltip>
+              <el-tooltip :content="formatFullDate(item.publishedAt || item.createdAt)" placement="top">
+                <span>📅 {{ formatDate(item.publishedAt || item.createdAt) }}</span>
+              </el-tooltip>
+              <el-tooltip :content="String(item.viewCount || 0) + ' 次阅读'" placement="top">
+                <span>👁️ {{ formatCount(item.viewCount) }}</span>
+              </el-tooltip>
+              <el-tooltip :content="String(item.favoriteCount || 0) + ' 人收藏'" placement="top">
+                <span>⭐ {{ item.favoriteCount || 0 }}</span>
+              </el-tooltip>
+              <el-tooltip :content="String(item.commentCount || 0) + ' 条评论'" placement="top">
+                <span>💬 {{ item.commentCount || 0 }}</span>
+              </el-tooltip>
+              <el-tooltip v-for="t in (item.tags || []).slice(0, 2)" :key="t.id" :content="t.name" placement="top">
+                <span class="tag tag-sm" :style="{ background: t.color || '#409EFF' }">{{ t.name }}</span>
+              </el-tooltip>
             </div>
           </div>
         </div>
@@ -79,7 +91,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { getContentList } from '@/api/content'
 import { getGroupList } from '@/api/group'
 import PageCard from '@/components/common/PageCard.vue'
@@ -96,6 +109,7 @@ const filterGroup = ref('')
 const groups = ref([])
 const tags = ref([])
 const selectedTagIds = ref([])
+const route = useRoute()
 
 const selectedTagList = computed(() => tags.value.filter(t => selectedTagIds.value.includes(t.id)))
 const availableTags = computed(() => tags.value.filter(t => !selectedTagIds.value.includes(t.id)))
@@ -115,6 +129,12 @@ function formatDate(dateStr) {
   const pad = (n) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
+function formatFullDate(dateStr) {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+}
 function formatCount(n) {
   if (!n) return '0'
   if (n >= 10000) return (n / 10000).toFixed(1) + 'w'
@@ -129,6 +149,7 @@ async function fetchList() {
     if (filterType.value) params.contentType = filterType.value
     if (filterGroup.value) params.groupId = filterGroup.value
     if (selectedTagIds.value.length > 0) params.tagIds = selectedTagIds.value.join(',')
+    if (route.query.q) params.keyword = route.query.q
     const res = await getContentList(params)
     list.value = res.data.records
     total.value = res.data.total
@@ -163,6 +184,11 @@ async function fetchFilters() {
 
 onMounted(async () => {
   await Promise.all([fetchList(), fetchFilters()])
+})
+
+watch(() => route.query.q, () => {
+  page.value = 1
+  fetchList()
 })
 </script>
 
@@ -221,6 +247,9 @@ onMounted(async () => {
   font-size: 12px;
   color: #909399;
   flex-wrap: wrap;
+}
+.content-item-meta .el-tooltip {
+  cursor: help;
 }
 .content-type-badge {
   display: inline-flex;

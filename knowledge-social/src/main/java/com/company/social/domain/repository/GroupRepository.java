@@ -19,4 +19,6 @@ public interface GroupRepository {
     List<GroupMember> findPendingMembers(Long groupId);
     boolean updateMemberStatus(Long memberId, String status);
     void deleteMember(Long groupId, Long userId);
+    long countMembers(Long groupId);
+    java.util.Map<Long, Long> countMembersBatch(List<Long> groupIds);
 }

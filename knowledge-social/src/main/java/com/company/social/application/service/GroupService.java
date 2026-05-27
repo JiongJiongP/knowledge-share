@@ -29,11 +29,9 @@ public class GroupService {
     }
 
     public PageResult<Group> listPublic(int page, int size) {
-        return PageResult.of(
-                groupRepository.findPublic(page, size),
-                groupRepository.countPublic(),
-                page, size
-        );
+        List<Group> groups = groupRepository.findPublic(page, size);
+        enrichGroups(groups);
+        return PageResult.of(groups, groupRepository.countPublic(), page, size);
     }
 
     public Group getById(Long id) {
@@ -41,7 +39,28 @@ public class GroupService {
         if (g == null) {
             throw BizException.notFound("群组");
         }
+        enrichGroups(List.of(g));
         return g;
+    }
+
+    private void enrichGroups(List<Group> groups) {
+        if (groups.isEmpty()) return;
+
+        // Resolve owner names
+        List<Long> ownerIds = groups.stream().map(Group::getOwnerId).distinct().collect(Collectors.toList());
+        Map<Long, String> userMap = userMapper.selectList(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<User>()
+                        .in(User::getId, ownerIds)
+        ).stream().collect(Collectors.toMap(User::getId, User::getUsername, (a, b) -> a));
+
+        // Resolve member counts
+        List<Long> groupIds = groups.stream().map(Group::getId).collect(Collectors.toList());
+        Map<Long, Long> countMap = groupRepository.countMembersBatch(groupIds);
+
+        for (Group g : groups) {
+            g.setOwnerName(userMap.getOrDefault(g.getOwnerId(), "未知"));
+            g.setMemberCount(countMap.getOrDefault(g.getId(), 0L).intValue());
+        }
     }
 
     @Transactional

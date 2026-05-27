@@ -115,4 +115,30 @@ public class GroupRepositoryImpl implements GroupRepository {
                 .eq(GroupMember::getUserId, userId)
         );
     }
+
+    @Override
+    public long countMembers(Long groupId) {
+        return groupMemberMapper.selectCount(
+            new LambdaQueryWrapper<GroupMember>()
+                .eq(GroupMember::getGroupId, groupId)
+                .eq(GroupMember::getStatus, "APPROVED")
+        );
+    }
+
+    @Override
+    public java.util.Map<Long, Long> countMembersBatch(List<Long> groupIds) {
+        java.util.Map<Long, Long> result = new java.util.HashMap<>();
+        for (Long gid : groupIds) {
+            result.put(gid, 0L);
+        }
+        List<GroupMember> members = groupMemberMapper.selectList(
+            new LambdaQueryWrapper<GroupMember>()
+                .in(GroupMember::getGroupId, groupIds)
+                .eq(GroupMember::getStatus, "APPROVED")
+        );
+        for (GroupMember m : members) {
+            result.merge(m.getGroupId(), 1L, Long::sum);
+        }
+        return result;
+    }
 }
