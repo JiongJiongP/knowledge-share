@@ -1,0 +1,147 @@
+<h2>待办列表 — 位置选择</h2>
+<p class="subtitle">首页已有：统计卡片条 + 筛选 + 内容列表。待办放在哪？</p>
+
+<div class="cards">
+  <div class="card" data-choice="sidebar" onclick="toggleSelect(this)">
+    <div class="mockup" style="flex:1;margin:0">
+      <div class="mockup-header">方案 A：右侧待办栏</div>
+      <div class="mockup-body">
+        <div style="display:flex;gap:16px">
+          <div style="flex:2">
+            <div style="display:flex;gap:8px;margin-bottom:12px">
+              <div class="placeholder" style="flex:1;text-align:center;padding:10px;font-size:11px">📄 50.0万<br>总内容</div>
+              <div class="placeholder" style="flex:1;text-align:center;padding:10px;font-size:11px">👥 1,000<br>总用户</div>
+              <div class="placeholder" style="flex:1;text-align:center;padding:10px;font-size:11px">🔥 128<br>今日发布</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:12px">
+              <button class="mock-button" style="font-size:11px">全部类型 ▾</button>
+              <button class="mock-button" style="font-size:11px">全部群组 ▾</button>
+              <button class="mock-button" style="font-size:11px">按发布时间 ▾</button>
+            </div>
+            <div style="display:flex;gap:8px;padding:8px;border-bottom:1px solid #eee"><span style="font-size:12px;font-weight:600;flex:1">📝 深入理解 Spring Boot 自动配置原理</span><span style="font-size:10px;color:#999">2h前</span></div>
+            <div style="display:flex;gap:8px;padding:8px;border-bottom:1px solid #eee"><span style="font-size:12px;font-weight:600;flex:1">📊 微服务架构设计模式总结</span><span style="font-size:10px;color:#999">4h前</span></div>
+            <div style="display:flex;gap:8px;padding:8px;border-bottom:1px solid #eee"><span style="font-size:12px;font-weight:600;flex:1">🔗 K8s 生产环境最佳实践</span><span style="font-size:10px;color:#999">6h前</span></div>
+          </div>
+          <div style="flex:1;background:#fafbfc;border-radius:8px;padding:12px;min-width:180px">
+            <div style="font-size:14px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px">📋 我的待办</div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#fff7e6;border-radius:6px;margin-bottom:6px;cursor:pointer">
+              <span style="font-size:16px">📝</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:500">我的草稿</div><div style="font-size:10px;color:#909399">3 篇待发布</div></div>
+              <span style="color:#409EFF;font-size:11px">→</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#ecf5ff;border-radius:6px;margin-bottom:6px;cursor:pointer">
+              <span style="font-size:16px">👥</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:500">入群审批</div><div style="font-size:10px;color:#909399">5 条待处理</div></div>
+              <span style="color:#409EFF;font-size:11px">→</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#fef0f0;border-radius:6px;margin-bottom:6px;cursor:pointer">
+              <span style="font-size:16px">✅</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:500">内容审核</div><div style="font-size:10px;color:#909399">12 条待审核</div></div>
+              <span style="color:#409EFF;font-size:11px">→</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#f0f9eb;border-radius:6px;cursor:pointer">
+              <span style="font-size:16px">🔔</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:500">未读通知</div><div style="font-size:10px;color:#909399">8 条新消息</div></div>
+              <span style="color:#409EFF;font-size:11px">→</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>右侧待办栏</h3>
+      <p>待办竖排放在内容列表右侧，始终可见。信息密度高，但对移动端不友好，且占用了内容列表空间</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="compact" onclick="toggleSelect(this)">
+    <div class="mockup" style="flex:1;margin:0">
+      <div class="mockup-header">方案 B：紧凑横条（推荐）</div>
+      <div class="mockup-body">
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <div class="placeholder" style="flex:1;text-align:center;padding:10px;font-size:11px">📄 50.0万<br>总内容</div>
+          <div class="placeholder" style="flex:1;text-align:center;padding:10px;font-size:11px">👥 1,000<br>总用户</div>
+          <div class="placeholder" style="flex:1;text-align:center;padding:10px;font-size:11px">🔥 128<br>今日发布</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;padding:10px 14px;background:#fafbfc;border-radius:8px;border:1px solid #E4E7ED;align-items:center">
+          <span style="font-size:14px;font-weight:600;margin-right:8px">📋 待办</span>
+          <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;background:#fff7e6;border-radius:14px;font-size:11px;cursor:pointer;white-space:nowrap">
+            <span>📝</span> 草稿 <strong>3</strong>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;background:#ecf5ff;border-radius:14px;font-size:11px;cursor:pointer;white-space:nowrap">
+            <span>👥</span> 入群审批 <strong>5</strong>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;background:#fef0f0;border-radius:14px;font-size:11px;cursor:pointer;white-space:nowrap">
+            <span>✅</span> 审核 <strong>12</strong>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;background:#f0f9eb;border-radius:14px;font-size:11px;cursor:pointer;white-space:nowrap">
+            <span>🔔</span> 通知 <strong>8</strong>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <button class="mock-button" style="font-size:11px">全部类型 ▾</button>
+          <button class="mock-button" style="font-size:11px">全部群组 ▾</button>
+          <button class="mock-button" style="font-size:11px">按发布时间 ▾</button>
+        </div>
+        <div style="display:flex;gap:8px;padding:8px;border-bottom:1px solid #eee"><span style="font-size:12px;font-weight:600;flex:1">📝 深入理解 Spring Boot 自动配置原理</span><span style="font-size:10px;color:#999">2h前</span></div>
+        <div style="display:flex;gap:8px;padding:8px;border-bottom:1px solid #eee"><span style="font-size:12px;font-weight:600;flex:1">📊 微服务架构设计模式总结</span><span style="font-size:10px;color:#999">4h前</span></div>
+        <div style="display:flex;gap:8px;padding:8px;border-bottom:1px solid #eee"><span style="font-size:12px;font-weight:600;flex:1">🔗 K8s 生产环境最佳实践</span><span style="font-size:10px;color:#999">6h前</span></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>紧凑横条</h3>
+      <p>统计卡片和筛选栏之间，一行胶囊标签展示待办数。极简不占空间，移动端友好，点击跳转对应页面</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="collapsible" onclick="toggleSelect(this)">
+    <div class="mockup" style="flex:1;margin:0">
+      <div class="mockup-header">方案 C：可折叠卡片</div>
+      <div class="mockup-body">
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <div class="placeholder" style="flex:1;text-align:center;padding:10px;font-size:11px">📄 50.0万<br>总内容</div>
+          <div class="placeholder" style="flex:1;text-align:center;padding:10px;font-size:11px">👥 1,000<br>总用户</div>
+          <div class="placeholder" style="flex:1;text-align:center;padding:10px;font-size:11px">🔥 128<br>今日发布</div>
+        </div>
+        <div style="background:#fff;border:1px solid #E4E7ED;border-radius:8px;margin-bottom:12px;overflow:hidden">
+          <div style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:#fafbfc">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:14px;font-weight:600">📋 我的待办</span>
+              <span style="background:#F56C6C;color:#fff;border-radius:10px;padding:1px 8px;font-size:10px">28</span>
+            </div>
+            <span style="color:#909399;font-size:12px">展开 ▾</span>
+          </div>
+          <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5;cursor:pointer">
+              <div style="display:flex;align-items:center;gap:8px"><span>📝</span><span style="font-size:13px">我的草稿</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="background:#fff7e6;border-radius:10px;padding:1px 8px;font-size:11px">3 篇</span><span style="color:#409EFF;font-size:11px">查看 →</span></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5;cursor:pointer">
+              <div style="display:flex;align-items:center;gap:8px"><span>👥</span><span style="font-size:13px">入群审批</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="background:#ecf5ff;border-radius:10px;padding:1px 8px;font-size:11px">5 条</span><span style="color:#409EFF;font-size:11px">处理 →</span></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5;cursor:pointer">
+              <div style="display:flex;align-items:center;gap:8px"><span>✅</span><span style="font-size:13px">内容审核</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="background:#fef0f0;border-radius:10px;padding:1px 8px;font-size:11px">12 条</span><span style="color:#409EFF;font-size:11px">审核 →</span></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;cursor:pointer">
+              <div style="display:flex;align-items:center;gap:8px"><span>🔔</span><span style="font-size:13px">未读通知</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="background:#f0f9eb;border-radius:10px;padding:1px 8px;font-size:11px">8 条</span><span style="color:#409EFF;font-size:11px">查看 →</span></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <button class="mock-button" style="font-size:11px">全部类型 ▾</button>
+          <button class="mock-button" style="font-size:11px">全部群组 ▾</button>
+        </div>
+        <div style="display:flex;gap:8px;padding:8px;border-bottom:1px solid #eee"><span style="font-size:12px;font-weight:600;flex:1">📝 深入理解 Spring Boot 自动配置原理</span><span style="font-size:10px;color:#999">2h前</span></div>
+        <div style="display:flex;gap:8px;padding:8px;border-bottom:1px solid #eee"><span style="font-size:12px;font-weight:600;flex:1">📊 微服务架构设计模式总结</span><span style="font-size:10px;color:#999">4h前</span></div>
+        <div style="display:flex;gap:8px;padding:8px;border-bottom:1px solid #eee"><span style="font-size:12px;font-weight:600;flex:1">🔗 K8s 生产环境最佳实践</span><span style="font-size:10px;color:#999">6h前</span></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>可折叠卡片</h3>
+      <p>一张独立卡片，默认收起只显示总数，点击展开看到详情。信息密度低，但可能被用户忽略</p>
+    </div>
+  </div>
+</div>

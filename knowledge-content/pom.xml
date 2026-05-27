@@ -20,6 +20,10 @@
             <artifactId>knowledge-file</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.company</groupId>
+            <artifactId>knowledge-user-auth</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>

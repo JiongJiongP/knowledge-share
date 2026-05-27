@@ -35,7 +35,7 @@
       <div class="stat-card" style="background: #E4E7ED;"><div class="stat-icon" aria-hidden="true">💬</div><div class="stat-num">-</div><div class="stat-label">总评论</div></div>
     </div>
     <div v-if="hasTodo" class="todo-bar">
-      <div v-if="todo.draftCount > 0" class="todo-pill todo-pill-draft" @click="$router.push('/')">
+      <div v-if="todo.draftCount > 0" class="todo-pill todo-pill-draft" @click="$router.push('/content/create')">
         <span>📝</span> 草稿 <strong>{{ todo.draftCount }}</strong>
       </div>
       <div v-if="todo.pendingApprovalCount > 0" class="todo-pill todo-pill-approval" @click="$router.push(todo.firstPendingGroupId ? `/group/${todo.firstPendingGroupId}/manage` : '/notifications')">
@@ -268,7 +268,12 @@ async function fetchTodo() {
 }
 
 onMounted(async () => {
-  await Promise.all([fetchList(), fetchFilters(), fetchStats(), fetchTodo()])
+  // 优先加载主内容，不阻塞渲染
+  fetchList()
+  // 其他数据后台静默加载
+  fetchFilters()
+  fetchStats()
+  fetchTodo()
 })
 
 watch(() => route.query.q, () => {

@@ -6,18 +6,25 @@ import com.company.content.application.dto.CreateContentRequest;
 import com.company.content.domain.model.KnowledgeContent;
 import com.company.content.domain.model.enums.PublishStatus;
 import com.company.content.domain.repository.ContentRepository;
+import com.company.userauth.domain.model.User;
+import com.company.userauth.infrastructure.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ContentService {
 
     private final ContentRepository contentRepository;
+    private final UserMapper userMapper;
 
-    public ContentService(ContentRepository contentRepository) {
+    public ContentService(ContentRepository contentRepository, UserMapper userMapper) {
         this.contentRepository = contentRepository;
+        this.userMapper = userMapper;
     }
 
     @Transactional
@@ -33,11 +40,21 @@ public class ContentService {
     }
 
     public PageResult<KnowledgeContent> listPublished(int page, int size, String sort, String contentType, String keyword) {
-        return PageResult.of(
-                contentRepository.findPublished(page, size, sort, contentType, keyword),
-                contentRepository.countPublished(contentType, keyword),
-                page, size
-        );
+        List<KnowledgeContent> list = contentRepository.findPublished(page, size, sort, contentType, keyword);
+        enrichCreatedByName(list);
+        return PageResult.of(list, contentRepository.countPublished(contentType, keyword), page, size);
+    }
+
+    private void enrichCreatedByName(List<KnowledgeContent> list) {
+        if (list.isEmpty()) return;
+        List<Long> userIds = list.stream().map(KnowledgeContent::getCreatedBy).distinct().collect(Collectors.toList());
+        Map<Long, String> userNameMap = userMapper.selectList(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<User>()
+                        .in(User::getId, userIds)
+        ).stream().collect(Collectors.toMap(User::getId, u -> u.getDisplayName() != null ? u.getDisplayName() : u.getUsername(), (a, b) -> a));
+        for (KnowledgeContent c : list) {
+            c.setCreatedByName(userNameMap.getOrDefault(c.getCreatedBy(), String.valueOf(c.getCreatedBy())));
+        }
     }
 
     public KnowledgeContent getAccessible(Long id, Long userId) {
@@ -48,6 +65,7 @@ public class ContentService {
         if (c.getStatus() != PublishStatus.PUBLISHED && !c.getCreatedBy().equals(userId)) {
             throw BizException.notFound("内容");
         }
+        enrichCreatedByName(List.of(c));
         return c;
     }
 

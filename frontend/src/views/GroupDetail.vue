@@ -19,7 +19,7 @@
 
         <h3>成员列表 ({{ members.length }})</h3>
         <el-table :data="members" style="width: 100%">
-          <el-table-column prop="userName" label="用户名" width="120" />
+          <el-table-column prop="displayName" label="姓名" width="120" />
           <el-table-column prop="userId" label="用户ID" width="80" />
           <el-table-column prop="role" label="角色" width="120">
             <template #default="{ row }">

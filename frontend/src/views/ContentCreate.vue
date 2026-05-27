@@ -139,9 +139,12 @@ async function handleSaveDraft() {
       if (form.tagIds.length > 0) await setContentTags(id, form.tagIds).catch(() => {})
       ElMessage.success('草稿已保存')
       router.push(`/content/${id}`)
+    } else {
+      ElMessage.warning('保存成功但未返回内容ID')
     }
   } catch (e) {
-    ElMessage.error(e.response?.data?.message || '保存失败')
+    console.error('保存草稿失败:', e)
+    ElMessage.error(e?.response?.data?.message || e?.message || '保存失败')
   } finally { saving.value = false }
 }
 

@@ -9,7 +9,7 @@
     <p class="excerpt">{{ excerpt }}</p>
     <div class="card-footer">
       <div class="footer-left">
-        <span class="author">{{ content.createdBy }}</span>
+        <span class="author">{{ content.createdByName || content.createdBy }}</span>
         <span class="time">{{ formatTime(content.publishedAt) }}</span>
       </div>
       <div class="footer-stats">

@@ -50,12 +50,12 @@ public class EventPublisher {
         ));
     }
 
-    public void publishGroupJoinRequest(Long groupId, Long applicantId, Long ownerId) {
+    public void publishGroupJoinRequest(Long groupId, Long applicantId, String applicantName, Long ownerId) {
         publish("notification.group", Map.of(
                 "type", "GROUP_JOIN_APPLY",
                 "userId", ownerId,
                 "title", "新的入群申请",
-                "content", "用户 " + applicantId + " 申请加入群组",
+                "content", applicantName + " 申请加入群组",
                 "relatedId", groupId,
                 "relatedType", "GROUP_APPLICATION"
         ));

@@ -8,6 +8,7 @@ public class GroupMemberVO {
     private Long groupId;
     private Long userId;
     private String userName;
+    private String displayName;
     private String role;
     private String status;
     private String joinedAt;

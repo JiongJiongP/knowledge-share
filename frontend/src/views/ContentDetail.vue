@@ -22,7 +22,7 @@
         <div class="detail-meta">
           <span :class="['type-badge', typeBadgeClass]">{{ typeEmoji }} {{ typeLabel }}</span>
           <span v-for="tag in tags" :key="tag.id" class="tag tag-sm" :style="{ background: tag.color || '#409EFF' }">{{ tag.name }}</span>
-          <span class="meta-text">👤 {{ content.createdBy }} · 📅 {{ formatDate(content.publishedAt || content.createdAt) }} · 👁️ {{ formatCount(content.viewCount) }} 阅读</span>
+          <span class="meta-text">👤 {{ content.createdByName || content.createdBy }} · 📅 {{ formatDate(content.publishedAt || content.createdAt) }} · 👁️ {{ formatCount(content.viewCount) }} 阅读</span>
         </div>
 
         <div class="detail-actions">

@@ -6,6 +6,7 @@ import com.company.social.application.dto.GroupMemberVO;
 import com.company.social.domain.model.Group;
 import com.company.social.domain.model.GroupMember;
 import com.company.social.domain.repository.GroupRepository;
+import com.company.social.infrastructure.mq.EventPublisher;
 import com.company.userauth.domain.model.User;
 import com.company.userauth.infrastructure.mapper.UserMapper;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,10 +24,12 @@ public class GroupService {
 
     private final GroupRepository groupRepository;
     private final UserMapper userMapper;
+    private final Optional<EventPublisher> eventPublisher;
 
-    public GroupService(GroupRepository groupRepository, UserMapper userMapper) {
+    public GroupService(GroupRepository groupRepository, UserMapper userMapper, Optional<EventPublisher> eventPublisher) {
         this.groupRepository = groupRepository;
         this.userMapper = userMapper;
+        this.eventPublisher = eventPublisher;
     }
 
     public PageResult<Group> listPublic(int page, int size) {
@@ -48,17 +52,19 @@ public class GroupService {
 
         // Resolve owner names
         List<Long> ownerIds = groups.stream().map(Group::getOwnerId).distinct().collect(Collectors.toList());
-        Map<Long, String> userMap = userMapper.selectList(
+        Map<Long, User> userMap = userMapper.selectList(
                 new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<User>()
                         .in(User::getId, ownerIds)
-        ).stream().collect(Collectors.toMap(User::getId, User::getUsername, (a, b) -> a));
+        ).stream().collect(Collectors.toMap(User::getId, u -> u, (a, b) -> a));
 
         // Resolve member counts
         List<Long> groupIds = groups.stream().map(Group::getId).collect(Collectors.toList());
         Map<Long, Long> countMap = groupRepository.countMembersBatch(groupIds);
 
         for (Group g : groups) {
-            g.setOwnerName(userMap.getOrDefault(g.getOwnerId(), "未知"));
+            User owner = userMap.get(g.getOwnerId());
+            String ownerName = owner != null ? (owner.getDisplayName() != null ? owner.getDisplayName() : owner.getUsername()) : "未知";
+            g.setOwnerName(ownerName);
             g.setMemberCount(countMap.getOrDefault(g.getId(), 0L).intValue());
         }
     }
@@ -86,7 +92,7 @@ public class GroupService {
 
     @Transactional
     public void requestJoin(Long groupId, Long userId) {
-        getById(groupId);
+        Group g = getById(groupId);
         GroupMember existing = groupRepository.findMember(groupId, userId);
         if (existing != null) {
             throw BizException.badRequest("已是群组成员或已提交申请");
@@ -101,6 +107,10 @@ public class GroupService {
         } catch (DataIntegrityViolationException e) {
             throw BizException.badRequest("已是群组成员或已提交申请");
         }
+        // 发送通知给群主
+        User applicant = userMapper.selectById(userId);
+        String applicantName = applicant != null && applicant.getDisplayName() != null ? applicant.getDisplayName() : (applicant != null ? applicant.getUsername() : String.valueOf(userId));
+        eventPublisher.ifPresent(ep -> ep.publishGroupJoinRequest(groupId, userId, applicantName, g.getOwnerId()));
     }
 
     @Transactional
@@ -163,17 +173,19 @@ public class GroupService {
         if (members.isEmpty()) {
             return List.of();
         }
-        Map<Long, String> userMap = userMapper.selectList(
+        Map<Long, User> userMap = userMapper.selectList(
                 new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<User>()
                         .in(User::getId, members.stream().map(GroupMember::getUserId).distinct().collect(Collectors.toList()))
-        ).stream().collect(Collectors.toMap(User::getId, User::getUsername, (a, b) -> a));
+        ).stream().collect(Collectors.toMap(User::getId, u -> u, (a, b) -> a));
 
         return members.stream().map(m -> {
             GroupMemberVO vo = new GroupMemberVO();
+            User user = userMap.get(m.getUserId());
             vo.setId(m.getId());
             vo.setGroupId(m.getGroupId());
             vo.setUserId(m.getUserId());
-            vo.setUserName(userMap.getOrDefault(m.getUserId(), String.valueOf(m.getUserId())));
+            vo.setUserName(user != null ? user.getUsername() : String.valueOf(m.getUserId()));
+            vo.setDisplayName(user != null ? (user.getDisplayName() != null ? user.getDisplayName() : user.getUsername()) : String.valueOf(m.getUserId()));
             vo.setRole(m.getRole());
             vo.setStatus(m.getStatus());
             vo.setJoinedAt(m.getJoinedAt() != null ? m.getJoinedAt().toString() : null);

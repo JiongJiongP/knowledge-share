@@ -1,5 +1,6 @@
 package com.company.content.domain.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.company.common.base.BaseEntity;
@@ -23,4 +24,7 @@ public class KnowledgeContent extends BaseEntity {
 
     @TableLogic
     private Integer isDeleted;
+
+    @TableField(exist = false)
+    private String createdByName;
 }
