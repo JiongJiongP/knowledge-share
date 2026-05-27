@@ -63,7 +63,8 @@
       "Bash(mysql *)",
       "Bash(mvn -pl knowledge-web dependency:build-classpath -q -DincludeScope=runtime -Dmdep.outputFile=/dev/stdout)",
       "Bash(java -cp \"knowledge-web/target/classes;$\\(mvn -pl knowledge-web dependency:build-classpath -q -DincludeScope=runtime -Dmdep.outputFile=/dev/stdout \\)\" -e \"com.company.web.data.VerifyData\")",
-      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d, indent=2, ensure_ascii=False\\)[:800]\\)\")"
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d, indent=2, ensure_ascii=False\\)[:800]\\)\")",
+      "Bash(mvn exec:java -pl knowledge-common -Dexec.mainClass=\"com.company.common.util.SM4Util\" -Dexec.args=\"genkey\" -q)"
     ]
   }
 }
