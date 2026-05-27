@@ -34,6 +34,20 @@
       <div class="stat-card" style="background: #E4E7ED;"><div class="stat-icon" aria-hidden="true">🔥</div><div class="stat-num">-</div><div class="stat-label">今日发布</div></div>
       <div class="stat-card" style="background: #E4E7ED;"><div class="stat-icon" aria-hidden="true">💬</div><div class="stat-num">-</div><div class="stat-label">总评论</div></div>
     </div>
+    <div v-if="todo" class="todo-bar">
+      <div v-if="todo.draftCount > 0" class="todo-pill todo-pill-draft" @click="$router.push('/content/create')">
+        <span>📝</span> 草稿 <strong>{{ todo.draftCount }}</strong>
+      </div>
+      <div v-if="todo.pendingApprovalCount > 0" class="todo-pill todo-pill-approval" @click="$router.push('/notifications')">
+        <span>👥</span> 入群审批 <strong>{{ todo.pendingApprovalCount }}</strong>
+      </div>
+      <div v-if="todo.pendingAuditCount > 0" class="todo-pill todo-pill-audit" @click="$router.push('/admin/audit')">
+        <span>✅</span> 审核 <strong>{{ todo.pendingAuditCount }}</strong>
+      </div>
+      <div v-if="todo.unreadCount > 0" class="todo-pill todo-pill-notify" @click="$router.push('/notifications')">
+        <span>🔔</span> 通知 <strong>{{ todo.unreadCount }}</strong>
+      </div>
+    </div>
     <PageCard title="知识内容流">
       <template #header>
         <el-button type="primary" size="small" @click="$router.push('/content/create')">
@@ -88,7 +102,7 @@
             <div class="content-item-meta">
               <span :class="['content-type-badge', typeBadgeClass(item.contentType)]">{{ typeEmoji(item.contentType) }} {{ typeLabel(item.contentType) }}</span>
               <el-tooltip content="作者" placement="top">
-                <span>👤 {{ item.createdBy || '匿名' }}</span>
+                <span>👤 {{ item.createdByName || item.createdBy || '匿名' }}</span>
               </el-tooltip>
               <el-tooltip :content="formatFullDate(item.publishedAt || item.createdAt)" placement="top">
                 <span>📅 {{ formatDate(item.publishedAt || item.createdAt) }}</span>
@@ -132,6 +146,8 @@ import { getGroupList } from '@/api/group'
 import PageCard from '@/components/common/PageCard.vue'
 import { getTags } from '@/api/tag'
 import { getStatsOverview } from '@/api/stats'
+import { getTodoCounts } from '@/api/todo'
+import { getUnreadCount } from '@/api/notification'
 
 const list = ref([])
 const total = ref(0)
@@ -146,6 +162,7 @@ const tags = ref([])
 const selectedTagIds = ref([])
 const route = useRoute()
 const stats = ref(null)
+const todo = ref(null)
 
 function formatLargeNum(n) {
   if (n == null) return '0'
@@ -231,8 +248,21 @@ async function fetchStats() {
   } catch { /* stats are optional, don't block page */ }
 }
 
+async function fetchTodo() {
+  try {
+    const [todoRes, notifyRes] = await Promise.all([
+      getTodoCounts(),
+      getUnreadCount()
+    ])
+    todo.value = {
+      ...todoRes.data,
+      unreadCount: notifyRes.data?.count || 0
+    }
+  } catch { /* todo is optional */ }
+}
+
 onMounted(async () => {
-  await Promise.all([fetchList(), fetchFilters(), fetchStats()])
+  await Promise.all([fetchList(), fetchFilters(), fetchStats(), fetchTodo()])
 })
 
 watch(() => route.query.q, () => {
@@ -369,4 +399,32 @@ watch(() => route.query.q, () => {
     min-width: calc(50% - 6px);
   }
 }
+
+.todo-bar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fafbfc;
+  border-radius: 8px;
+  border: 1px solid #E4E7ED;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.todo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: opacity .2s;
+  white-space: nowrap;
+}
+.todo-pill:hover { opacity: 0.8; }
+.todo-pill strong { font-size: 13px; }
+.todo-pill-draft { background: #fff7e6; color: #E6A23C; }
+.todo-pill-approval { background: #ecf5ff; color: #409EFF; }
+.todo-pill-audit { background: #fef0f0; color: #F56C6C; }
+.todo-pill-notify { background: #f0f9eb; color: #67C23A; }
 </style>
