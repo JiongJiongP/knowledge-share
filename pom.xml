@@ -19,6 +19,7 @@
         <java.version>17</java.version>
         <mybatis-plus.version>3.5.5</mybatis-plus.version>
         <jjwt.version>0.11.5</jjwt.version>
+        <bouncycastle.version>1.78</bouncycastle.version>
     </properties>
 
     <modules>
@@ -74,6 +75,11 @@
                 <groupId>com.company</groupId>
                 <artifactId>knowledge-analytics</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>${bouncycastle.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
