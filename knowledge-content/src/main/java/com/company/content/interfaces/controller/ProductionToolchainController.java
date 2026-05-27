@@ -1,14 +1,15 @@
 package com.company.content.interfaces.controller;
 
 import com.company.common.result.Result;
+import com.company.content.application.dto.*;
 import com.company.content.application.service.ProductionToolchainService;
 import com.company.content.domain.model.*;
+import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class ProductionToolchainController {
@@ -31,9 +32,9 @@ public class ProductionToolchainController {
     }
 
     @PostMapping("/api/contents/{id}/versions")
-    public Result<ContentVersion> saveVersion(@PathVariable Long id, @RequestBody Map<String, String> body, Authentication auth) {
-        ContentVersion v = toolchainService.saveVersion(id, body.get("title"), body.get("body"),
-                body.get("changeSummary"), (Long) auth.getPrincipal());
+    public Result<ContentVersion> saveVersion(@PathVariable Long id, @Valid @RequestBody SaveVersionRequest req, Authentication auth) {
+        ContentVersion v = toolchainService.saveVersion(id, req.getTitle(), req.getBody(),
+                req.getChangeSummary(), (Long) auth.getPrincipal());
         return Result.ok(v);
     }
 
@@ -50,8 +51,8 @@ public class ProductionToolchainController {
     }
 
     @PostMapping("/api/admin/audit/{id}/reject")
-    public Result<Void> reject(@PathVariable Long id, @RequestBody Map<String, String> body, Authentication auth) {
-        toolchainService.rejectAudit(id, (Long) auth.getPrincipal(), body.get("reason"));
+    public Result<Void> reject(@PathVariable Long id, @Valid @RequestBody RejectAuditRequest req, Authentication auth) {
+        toolchainService.rejectAudit(id, (Long) auth.getPrincipal(), req.getReason());
         return Result.ok(null);
     }
 
@@ -67,9 +68,10 @@ public class ProductionToolchainController {
     }
 
     @PostMapping("/api/templates")
-    public Result<ContentTemplate> createTemplate(@RequestBody Map<String, String> body, Authentication auth) {
-        ContentTemplate t = toolchainService.createTemplate(body.get("name"), body.get("description"),
-                body.getOrDefault("contentType", "MARKDOWN"), body.get("body"), (Long) auth.getPrincipal());
+    public Result<ContentTemplate> createTemplate(@Valid @RequestBody CreateTemplateRequest req, Authentication auth) {
+        String contentType = req.getContentType() != null ? req.getContentType() : "MARKDOWN";
+        ContentTemplate t = toolchainService.createTemplate(req.getName(), req.getDescription(),
+                contentType, req.getBody(), (Long) auth.getPrincipal());
         return Result.ok(t);
     }
 
@@ -81,14 +83,14 @@ public class ProductionToolchainController {
 
     // === Scheduled Publish ===
     @PostMapping("/api/contents/{id}/schedule")
-    public Result<ScheduledPublish> schedule(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        LocalDateTime at = LocalDateTime.parse(body.get("scheduledAt"));
+    public Result<ScheduledPublish> schedule(@PathVariable Long id, @Valid @RequestBody SchedulePublishRequest req) {
+        LocalDateTime at = LocalDateTime.parse(req.getScheduledAt());
         return Result.ok(toolchainService.schedule(id, at));
     }
 
     @DeleteMapping("/api/contents/{id}/schedule")
-    public Result<Void> cancelSchedule(@PathVariable Long id, @RequestBody Map<String, Long> body) {
-        toolchainService.cancelSchedule(body.get("scheduleId"));
+    public Result<Void> cancelSchedule(@PathVariable Long id, @Valid @RequestBody CancelScheduleRequest req) {
+        toolchainService.cancelSchedule(req.getScheduleId());
         return Result.ok(null);
     }
 }
