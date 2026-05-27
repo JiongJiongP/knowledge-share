@@ -2,30 +2,37 @@
   <div class="home-page">
     <div v-if="stats" class="stats-row">
       <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-        <div class="stat-icon">📄</div>
+        <div class="stat-icon" aria-hidden="true">📄</div>
         <div class="stat-num">{{ formatLargeNum(stats.totalContents) }}</div>
         <div class="stat-label">总内容</div>
       </div>
       <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-        <div class="stat-icon">👥</div>
+        <div class="stat-icon" aria-hidden="true">👥</div>
         <div class="stat-num">{{ formatLargeNum(stats.totalUsers) }}</div>
         <div class="stat-label">总用户</div>
       </div>
       <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-        <div class="stat-icon">👥</div>
+        <div class="stat-icon" aria-hidden="true">👥</div>
         <div class="stat-num">{{ formatLargeNum(stats.totalGroups) }}</div>
         <div class="stat-label">群组数</div>
       </div>
       <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-        <div class="stat-icon">🔥</div>
+        <div class="stat-icon" aria-hidden="true">🔥</div>
         <div class="stat-num">{{ formatLargeNum(stats.todayContents) }}</div>
         <div class="stat-label">今日发布</div>
       </div>
       <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-        <div class="stat-icon">💬</div>
+        <div class="stat-icon" aria-hidden="true">💬</div>
         <div class="stat-num">{{ formatLargeNum(stats.totalComments) }}</div>
         <div class="stat-label">总评论</div>
       </div>
+    </div>
+    <div v-else class="stats-row stats-row-placeholder">
+      <div class="stat-card" style="background: #E4E7ED;"><div class="stat-icon" aria-hidden="true">📄</div><div class="stat-num">-</div><div class="stat-label">总内容</div></div>
+      <div class="stat-card" style="background: #E4E7ED;"><div class="stat-icon" aria-hidden="true">👥</div><div class="stat-num">-</div><div class="stat-label">总用户</div></div>
+      <div class="stat-card" style="background: #E4E7ED;"><div class="stat-icon" aria-hidden="true">👥</div><div class="stat-num">-</div><div class="stat-label">群组数</div></div>
+      <div class="stat-card" style="background: #E4E7ED;"><div class="stat-icon" aria-hidden="true">🔥</div><div class="stat-num">-</div><div class="stat-label">今日发布</div></div>
+      <div class="stat-card" style="background: #E4E7ED;"><div class="stat-icon" aria-hidden="true">💬</div><div class="stat-num">-</div><div class="stat-label">总评论</div></div>
     </div>
     <PageCard title="知识内容流">
       <template #header>
@@ -345,6 +352,12 @@ watch(() => route.query.q, () => {
   font-size: 12px;
   opacity: 0.85;
   margin-top: 4px;
+}
+.stats-row-placeholder .stat-card {
+  opacity: 0.5;
+}
+.stats-row-placeholder .stat-num {
+  color: #909399;
 }
 
 @media (max-width: 768px) {
