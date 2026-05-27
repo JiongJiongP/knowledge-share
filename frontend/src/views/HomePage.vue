@@ -80,7 +80,7 @@
           @click="toggleTag(tag)"
         >{{ tag.name }}</span>
         <span
-          v-for="tag in availableTags.slice(0, 6)"
+          v-for="tag in displayedAvailableTags"
           :key="tag.id"
           class="tag tag-sm outline"
           :style="{ color: tag.color, borderColor: tag.color }"
@@ -178,6 +178,7 @@ function formatLargeNum(n) {
 
 const selectedTagList = computed(() => tags.value.filter(t => selectedTagIds.value.includes(t.id)))
 const availableTags = computed(() => tags.value.filter(t => !selectedTagIds.value.includes(t.id)))
+const displayedAvailableTags = computed(() => availableTags.value.slice(0, 6))
 
 function typeLabel(type) {
   return { MARKDOWN: 'Markdown', PPT_FILE: 'PPT文件', EXTERNAL_URL: '外部链接', INTERNAL_REF: '内部引用' }[type] || type

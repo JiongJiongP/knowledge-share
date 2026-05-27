@@ -1,7 +1,28 @@
 import request from '@/utils/request'
 
+let groupListCache = null
+let groupListCacheTime = 0
+const GROUP_LIST_CACHE_TTL = 3 * 60 * 1000 // 3分钟缓存
+
 export function getGroupList(params) {
-  return request.get('/groups', { params })
+  // 只有无参数或默认参数时才使用缓存
+  const isDefaultParams = !params || Object.keys(params).length === 0 || (params.size === 100 && Object.keys(params).length === 1)
+  const now = Date.now()
+  if (isDefaultParams && groupListCache && now - groupListCacheTime < GROUP_LIST_CACHE_TTL) {
+    return Promise.resolve({ data: groupListCache })
+  }
+  return request.get('/groups', { params }).then(res => {
+    if (isDefaultParams) {
+      groupListCache = res.data
+      groupListCacheTime = now
+    }
+    return res
+  })
+}
+
+export function clearGroupListCache() {
+  groupListCache = null
+  groupListCacheTime = 0
 }
 
 export function getGroup(id) {
