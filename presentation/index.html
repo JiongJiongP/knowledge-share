@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 驱动的全栈开发实践 — Knowledge Share</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css" />
+  <style>
+    /* ── Base overrides ── */
+    .reveal {
+      font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    .reveal h1 { font-size: 2.8em; }
+    .reveal h2 { font-size: 2em; color: #64b5f6; }
+    .reveal h3 { font-size: 1.4em; color: #90caf9; }
+    .reveal h4 { font-size: 1.1em; color: #bbdefb; }
+    .reveal li { line-height: 1.7; }
+    .reveal table { font-size: 0.7em; }
+    .reveal th { background: #1e88e5; color: #fff; font-weight: 600; }
+    .reveal td, .reveal th { padding: 8px 14px; border: 1px solid #444; }
+    .reveal .fragment { opacity: 0; transition: opacity 0.4s ease; }
+    .reveal .fragment.visible { opacity: 1; }
+
+    /* ── Slide-specific helpers ── */
+    .slide-title { margin-bottom: 0.15em; }
+    .slide-subtitle { font-size: 0.85em; color: #90caf9; margin-bottom: 0.6em; }
+    .accent-blue { color: #64b5f6; }
+    .accent-green { color: #43e97b; }
+    .accent-orange { color: #ffb74d; }
+    .accent-pink { color: #f06292; }
+    .accent-red { color: #ef5350; }
+
+    .stat-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin: 24px 0; }
+    .stat-card {
+      background: linear-gradient(135deg, #1a237e, #283593);
+      border-radius: 12px; padding: 18px 22px; min-width: 110px; text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    }
+    .stat-card .num { font-size: 1.8em; font-weight: 700; color: #43e97b; display: block; }
+    .stat-card .label { font-size: 0.65em; color: #b0bec5; margin-top: 4px; }
+
+    .three-col { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+    .three-col > div { flex: 1; min-width: 180px; max-width: 300px; }
+    .card {
+      background: rgba(255,255,255,0.06);
+      border-radius: 10px; padding: 18px; text-align: center;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .card h4 { margin-top: 0; }
+
+    .badge { display: inline-block; border-radius: 6px; padding: 2px 10px; font-size: 0.6em; font-weight: 600; }
+    .badge-critical { background: #c62828; color: #fff; }
+    .badge-high   { background: #e65100; color: #fff; }
+    .badge-medium { background: #f9a825; color: #222; }
+
+    .defense-tier {
+      display: inline-block; width: 50px; height: 50px; line-height: 50px;
+      border-radius: 50%; font-weight: 700; font-size: 1.2em;
+      margin-right: 10px; text-align: center; color: #fff;
+    }
+
+    .mermaid { background: rgba(0,0,0,0.25); border-radius: 10px; padding: 12px; }
+    .reveal .mermaid svg { max-height: 420px; }
+
+    .takeaway { font-size: 1.3em; font-weight: 600; padding: 18px 28px; border-left: 5px solid #43e97b; background: rgba(67,233,123,0.08); border-radius: 8px; margin: 10px 0; }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 1 — Cover                                        -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h1 class="slide-title" style="background: linear-gradient(135deg,#64b5f6,#43e97b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+      AI 驱动的全栈开发实践
+    </h1>
+    <p class="slide-subtitle">Knowledge Share 知识共享平台 &mdash; 从需求到上线的 AI 协作之旅</p>
+    <hr style="width:60%; border-color:#444; margin:1.2em auto;" />
+    <p style="font-size:0.7em; color:#78909c;">
+      56 Git Commits &bull; 69 API &bull; 20 张表 &bull; 15 前端页面 &bull; 9 后端模块
+    </p>
+    <aside class="notes">
+      欢迎各位。今天我将分享我们如何借助 AI 技能系统，从零到一构建 Knowledge Share 知识共享平台的全过程。
+    </aside>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 2 — Project Overview                             -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>What is Knowledge Share?</h2>
+    <ul>
+      <li class="fragment">企业级知识管理平台 &mdash; 沉淀、搜索、分享团队知识</li>
+      <li class="fragment"><span class="accent-blue">69</span> 个 API &nbsp;|&nbsp; <span class="accent-blue">20</span> 张数据库表 &nbsp;|&nbsp; <span class="accent-blue">15</span> 个前端页面 &nbsp;|&nbsp; <span class="accent-blue">9</span> 个后端模块</li>
+      <li class="fragment">技术栈：<br/>
+        <span class="accent-orange">Spring Boot 3.2</span> + <span class="accent-orange">Vue 3</span> + <span class="accent-orange">MySQL 8</span><br/>
+        <span class="accent-orange">Elasticsearch</span> + <span class="accent-orange">Qdrant</span> + <span class="accent-orange">RabbitMQ</span>
+      </li>
+      <li class="fragment">100% AI 辅助开发 &mdash; 从需求到上线的完整闭环</li>
+    </ul>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 3 — Agenda                                       -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>议程</h2>
+    <div class="three-col" style="margin-top:1.2em;">
+      <div class="card fragment">
+        <h4><span class="accent-blue">01</span></h4>
+        <p style="font-size:0.8em;">AI 如何参与<br/>全流程开发</p>
+      </div>
+      <div class="card fragment">
+        <h4><span class="accent-green">02</span></h4>
+        <p style="font-size:0.8em;">架构设计亮点</p>
+      </div>
+      <div class="card fragment">
+        <h4><span class="accent-orange">03</span></h4>
+        <p style="font-size:0.8em;">性能与<br/>安全实战</p>
+      </div>
+      <div class="card fragment">
+        <h4><span class="accent-pink">04</span></h4>
+        <p style="font-size:0.8em;">总结与展望</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 4 — AI 协作全景图 (Mermaid)                       -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>AI 协作全景图</h2>
+    <p style="font-size:0.65em; color:#90a4ae; margin-bottom:12px;">每个阶段由对应的 Superpowers Skill 驱动</p>
+    <div class="mermaid">
+      graph LR
+          A[需求分析] --> B[头脑风暴<br/>brainstorming]
+          B --> C[设计文档<br/>writing-plans]
+          C --> D[编码实现<br/>subagent-driven-dev]
+          D --> E[单元测试<br/>test-driven-dev]
+          E --> F[代码审查<br/>code-review]
+          F --> G[安全审查<br/>security-review]
+          G --> H[上线]
+          style A fill:#5c6bc0,color:#fff
+          style H fill:#43a047,color:#fff
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 5 — Skills System                                -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>Superpowers Skills 矩阵</h2>
+    <p style="font-size:0.65em; color:#90a4ae;">Skills 覆盖软件工程全生命周期</p>
+    <table style="font-size:0.55em;">
+      <thead>
+        <tr><th style="width:15%">类别</th><th>Skills</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:#64b5f6;font-weight:600;">流程</td>
+          <td>brainstorming &bull; writing-plans &bull; executing-plans &bull; subagent-driven-development</td>
+        </tr>
+        <tr>
+          <td style="color:#43e97b;font-weight:600;">质量</td>
+          <td>code-review &bull; security-review &bull; verification-before-completion</td>
+        </tr>
+        <tr>
+          <td style="color:#ffb74d;font-weight:600;">方法</td>
+          <td>test-driven-development &bull; systematic-debugging</td>
+        </tr>
+        <tr>
+          <td style="color:#f06292;font-weight:600;">工具</td>
+          <td>wireframe-prototyping &bull; frontend-design &bull; gstack</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="fragment" style="margin-top:18px; font-size:0.8em; color:#b0bec5;">
+      Skills 不是玩具 &mdash; 它们是可重复、可审查的结构化开发流程
+    </p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 6 — Brainstorming-Driven Design                  -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>Brainstorming-Driven Design</h2>
+    <p class="slide-subtitle">真实案例：首页仪表盘设计</p>
+    <ul>
+      <li class="fragment"><strong>触发：</strong>用户提出 "首页太单调"</li>
+      <li class="fragment"><strong>brainstorming skill 介入：</strong>
+        <ul>
+          <li>探索需求 &rarr; 追问问题 &rarr; 生成视觉伴生图</li>
+          <li>提供 <span class="accent-orange">Option A / B / C</span> 三种方案</li>
+        </ul>
+      </li>
+      <li class="fragment"><strong>用户选择方案 A</strong> &mdash; 带统计卡片的仪表盘</li>
+      <li class="fragment"><strong>结果：</strong>设计文档自动提交至 Git，进入下一阶段</li>
+    </ul>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 7 — Plan-Driven Development                      -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>Plan-Driven Development</h2>
+    <p class="slide-subtitle">writing-plans skill 的输出特性</p>
+    <ul>
+      <li class="fragment">每一步都是单一动作（2-5 分钟）</li>
+      <li class="fragment">精确的文件路径 + <strong>完整代码</strong>（无占位符）</li>
+      <li class="fragment">预期命令和输出结果</li>
+      <li class="fragment" style="color:#43e97b;">零歧义 &mdash; 人类或 AI 均可执行</li>
+    </ul>
+    <pre class="fragment" style="font-size:0.45em; margin-top:16px; text-align:left;"><code class="language-plaintext" data-trim>
+Task 1: StatsController
+  Step 1: 创建 Controller → [完整代码块]
+  Step 2: 验证编译 → mvn compile -pl knowledge-web -q
+          Expected: BUILD SUCCESS
+  Step 3: 提交 → git commit -m "feat: add StatsController"
+    </code></pre>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 8 — Subagent-Driven Parallel Development         -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>Subagent-Driven 并行开发</h2>
+    <div class="mermaid">
+      graph TB
+          Controller[Controller Dispatches]
+          T1[Subagent 1: Backend]
+          T2[Subagent 2: API Wrapper]
+          T3[Subagent 3: Frontend UI]
+
+          Controller --> T1
+          Controller --> T2
+          Controller --> T3
+
+          T1 --> R1[Spec Review → Code Review → Fix]
+          T2 --> R2[Spec Review → Code Review → Fix]
+          T3 --> R3[Spec Review → Code Review → Fix]
+
+          R1 --> Merge[Merge All Tasks]
+          R2 --> Merge
+          R3 --> Merge
+
+          style Controller fill:#5c6bc0,color:#fff
+          style Merge fill:#43a047,color:#fff
+    </div>
+    <p style="font-size:0.65em; color:#90a4ae; margin-top:8px;">30+ 次 Subagent 派发，并行度提升 3x</p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 9 — AI-Driven Unit Testing                       -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>AI 驱动的单元测试</h2>
+    <table>
+      <thead><tr><th>模块</th><th>测试数</th><th>覆盖范围</th></tr></thead>
+      <tbody>
+        <tr><td>knowledge-common</td><td>1</td><td>Result 统一响应</td></tr>
+        <tr><td>knowledge-user-auth</td><td>6</td><td>AuthController, AuthService, JWT</td></tr>
+        <tr><td>knowledge-content</td><td>7</td><td>ContentService, TagService, Aho-Corasick</td></tr>
+        <tr><td>knowledge-social</td><td>6</td><td>GroupService, CommentService, FavoriteService</td></tr>
+        <tr><td>knowledge-search</td><td>2</td><td>SearchService</td></tr>
+      </tbody>
+    </table>
+    <p class="fragment" style="font-size:0.7em; margin-top:10px; color:#b0bec5;">
+      共 22 个测试类，覆盖 5 个模块 &bull; AI 自动发现并修复编译期错误
+    </p>
+    <p class="fragment" style="font-size:0.65em; color:#43e97b;">
+      测试失败 &rarr; 实现代码 &rarr; 测试通过 &rarr; 提交 &mdash; TDD 闭环
+    </p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 10 — Automated Review Pipeline                   -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>自动化审查管线</h2>
+    <p class="slide-subtitle">code-review skill 运行机制</p>
+    <ul>
+      <li class="fragment">5 维度并行扫描 &rarr; <code>CONFIRMED / PLAUSIBLE / REFUTED</code> &rarr; 排序 &le; 15 条</li>
+    </ul>
+    <table class="fragment" style="font-size:0.6em; margin-top:14px;">
+      <thead><tr><th>类型</th><th>数量</th></tr></thead>
+      <tbody>
+        <tr><td>代码缺陷</td><td>15</td></tr>
+        <tr><td>编译错误</td><td>2</td></tr>
+        <tr><td>逻辑错误</td><td>3</td></tr>
+        <tr><td style="color:#ef5350;">安全漏洞</td><td>9（3 CRITICAL + 4 HIGH + 2 MEDIUM）</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 11 — AI Impact by the Numbers                    -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>AI 影响数据一览</h2>
+    <div class="stat-grid">
+      <div class="stat-card"><span class="num">56</span><span class="label">Git Commits</span></div>
+      <div class="stat-card"><span class="num">10+</span><span class="label">Skills 使用</span></div>
+      <div class="stat-card"><span class="num">30+</span><span class="label">Subagent 派发</span></div>
+      <div class="stat-card"><span class="num">22</span><span class="label">测试类</span></div>
+      <div class="stat-card"><span class="num">15</span><span class="label">代码缺陷</span></div>
+      <div class="stat-card"><span class="num">9</span><span class="label">安全漏洞修复</span></div>
+      <div class="stat-card"><span class="num">7</span><span class="label">设计文档</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 12 — Architecture Overview (Mermaid)             -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>系统架构总览</h2>
+    <div class="mermaid">
+      graph TB
+          subgraph Frontend[Frontend Vue 3]
+              Views[15 Pages]
+              API[11 API Modules]
+          end
+          subgraph Gateway[Security Gateway]
+              JWT[JWT Filter]
+              ACL[URL ACL]
+          end
+          subgraph Backend[Backend Spring Boot]
+              Ctrl[Controllers 13]
+              Svc[Services 10+]
+          end
+          subgraph Infra[Infrastructure]
+              MySQL[(MySQL)]
+              ES[(Elasticsearch)]
+              Q[(Qdrant)]
+              MQ[(RabbitMQ)]
+              Redis[(Redis)]
+              MinIO[(MinIO)]
+          end
+          Frontend -->|Bearer JWT| Gateway
+          Gateway --> Backend
+          Backend --> Infra
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 13 — Hybrid Search                               -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>RRF 混合搜索</h2>
+    <p class="slide-subtitle">Elasticsearch BM25 + Qdrant 768-dim 向量语义搜索 &rarr; RRF 融合</p>
+    <div class="mermaid">
+      graph LR
+          Q[User Query]
+          ES[ES multi_match<br/>title+body]
+          Qd[Qdrant embed<br/>+ cosine search]
+          BM25[BM25 Ranks]
+          Vec[Vector Ranks]
+          RRF[RRF Fusion<br/>k=60]
+          Result[Paginated Results]
+
+          Q --> ES
+          Q --> Qd
+          ES --> BM25
+          Qd --> Vec
+          BM25 --> RRF
+          Vec --> RRF
+          RRF --> Result
+    </div>
+    <p style="font-size:0.6em; color:#78909c; margin-top:8px;">
+      关键词搜索 + 语义搜索，RFF(k=60) 加权排序
+    </p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 14 — Content Lifecycle & Notifications           -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>内容生命周期 &amp; 通知</h2>
+    <div class="three-col" style="margin-top:10px;">
+      <div class="fragment card">
+        <h4>内容状态机</h4>
+        <p style="font-size:0.7em;">
+          <code>[*]</code> &rarr; <span class="accent-orange">DRAFT</span> &rarr; <span class="accent-green">PUBLISHED</span><br/>
+          审核工作流控制
+        </p>
+      </div>
+      <div class="fragment card">
+        <h4>通知流转</h4>
+        <p style="font-size:0.65em;">
+          User Action &rarr; EventPublisher<br/>
+          &rarr; RabbitMQ &rarr; NotificationConsumer<br/>
+          &rarr; DB &rarr; Frontend Poll
+        </p>
+      </div>
+      <div class="fragment card">
+        <h4>表结构</h4>
+        <p style="font-size:0.6em;">
+          <code>content</code> + <code>content_audit</code><br/>
+          <code>notification</code><br/>
+          状态变迁可追溯
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 15 — Database Evolution                          -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>数据库演化 &mdash; 12 次 Flyway 迁移</h2>
+    <table style="font-size:0.55em;">
+      <thead><tr><th>版本</th><th>变更</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td>V1</td><td>Auth &amp; Identity</td><td>6 张基础表</td></tr>
+        <tr><td>V2-V9</td><td>核心功能</td><td>14 张业务表</td></tr>
+        <tr><td>V10</td><td>统计分析</td><td>3 张分析表</td></tr>
+        <tr><td>V11-V12</td><td>索引优化</td><td>仅索引变更</td></tr>
+        <tr><td style="color:#43e97b;"><strong>合计</strong></td><td colspan="2"><strong>20 张表，渐进式演进</strong></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 16 — Performance Optimization                    -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>性能优化 &mdash; 索引策略</h2>
+    <ol style="font-size:0.75em;">
+      <li class="fragment">EXPLAIN 分析查询模式</li>
+      <li class="fragment">移除低基数索引 <code>idx_is_deleted</code></li>
+      <li class="fragment">创建覆盖索引 <code>idx_status_del_pub(status, is_deleted, published_at)</code><br/><span style="color:#43e97b;font-size:0.8em;">&rarr; 索引仅 COUNT 扫描</span></li>
+      <li class="fragment">高频过滤 + 排序组合添加复合索引</li>
+    </ol>
+    <table class="fragment" style="font-size:0.6em; margin-top:14px;">
+      <thead><tr><th>场景</th><th>优化前</th><th>优化后</th></tr></thead>
+      <tbody>
+        <tr><td>COUNT 查询</td><td>全表扫描 450K 行</td><td style="color:#43e97b;">索引扫描 3-5x 更快</td></tr>
+        <tr><td>内容列表排序</td><td>filesort</td><td style="color:#43e97b;">索引排序</td></tr>
+        <tr><td>群组列表</td><td>全表扫描</td><td style="color:#43e97b;">复合索引命中</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 17 — SM4 National Cryptography Standard          -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>SM4 国密加密实践</h2>
+    <p class="slide-subtitle">秘密配置的透明加解密</p>
+    <div class="three-col" style="margin-top:10px;">
+      <div class="fragment card">
+        <h4 style="color:#ef5350;">问题</h4>
+        <p style="font-size:0.7em;">所有密钥硬编码于<br/><code>application.yml</code><br/>明文提交至 Git</p>
+      </div>
+      <div class="fragment card">
+        <h4 style="color:#ffb74d;">方案</h4>
+        <p style="font-size:0.7em;">SM4/CBC/PKCS7<br/>存储时加密<br/>启动时自动解密</p>
+      </div>
+      <div class="fragment card">
+        <h4 style="color:#43e97b;">实现</h4>
+        <p style="font-size:0.65em;"><code>EncryptedPropertyPostProcessor</code><br/>解析 <code>SM4(...)</code> 模式<br/>Spring Boot 启动期注入</p>
+      </div>
+    </div>
+    <p class="fragment" style="font-size:0.65em; color:#b0bec5; margin-top:14px;">
+      服务器仅需一个环境变量：<code>SM4_KEY</code>
+    </p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 18 — Defense in Depth Security                   -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>纵深防御 &mdash; 三层模型</h2>
+    <div class="three-col" style="margin-bottom:12px;">
+      <div class="fragment card">
+        <p><span class="defense-tier" style="background:#1565c0;">L1</span></p>
+        <h4>URL 模式匹配</h4>
+        <p style="font-size:0.65em;"><code>/api/admin/**</code> &rarr; <code>ROLE_ADMIN</code></p>
+      </div>
+      <div class="fragment card">
+        <p><span class="defense-tier" style="background:#6a1b9a;">L2</span></p>
+        <h4>所有权验证</h4>
+        <p style="font-size:0.65em;">notification.userId == currentUserId</p>
+      </div>
+      <div class="fragment card">
+        <p><span class="defense-tier" style="background:#e65100;">L3</span></p>
+        <h4>输入校验</h4>
+        <p style="font-size:0.65em;"><code>@Valid</code> DTO &bull; <code>@NotBlank</code> &bull; <code>@Size</code></p>
+      </div>
+    </div>
+    <table style="font-size:0.5em;">
+      <thead><tr><th>#</th><th>漏洞</th><th>严重度</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>硬编码 JWT 密钥</td><td><span class="badge badge-critical">CRITICAL</span></td></tr>
+        <tr><td>2</td><td>硬编码数据库密码</td><td><span class="badge badge-critical">CRITICAL</span></td></tr>
+        <tr><td>3</td><td>通知 IDOR</td><td><span class="badge badge-high">HIGH</span></td></tr>
+        <tr><td>4</td><td>SQL stdout 日志</td><td><span class="badge badge-high">HIGH</span></td></tr>
+        <tr><td>5</td><td>ES/Qdrant 未鉴权</td><td><span class="badge badge-high">HIGH</span></td></tr>
+        <tr><td>6-7</td><td>缺少参数校验（2 个 Controller）</td><td><span class="badge badge-high">HIGH</span></td></tr>
+        <tr><td>8</td><td>JWT 存储于 localStorage</td><td><span class="badge badge-medium">MEDIUM</span></td></tr>
+        <tr><td>9</td><td>SSO ID 泄漏 /auth/me</td><td><span class="badge badge-medium">MEDIUM</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 19 — Frontend Technical Highlights               -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>前端技术亮点</h2>
+    <div class="three-col">
+      <div class="fragment card" style="min-width:160px;">
+        <h4>框架</h4>
+        <p style="font-size:0.65em;">Vue 3 Composition API<br/>Pinia 状态管理<br/>Element Plus</p>
+      </div>
+      <div class="fragment card" style="min-width:160px;">
+        <h4>安全</h4>
+        <p style="font-size:0.65em;">DOMPurify + marked<br/>安全 Markdown 渲染</p>
+      </div>
+      <div class="fragment card" style="min-width:160px;">
+        <h4>缓存</h4>
+        <p style="font-size:0.65em;">群组列表 3min TTL<br/>标签列表 5min TTL</p>
+      </div>
+      <div class="fragment card" style="min-width:160px;">
+        <h4>体验</h4>
+        <p style="font-size:0.65em;">骨架屏占位符<br/>IME 输入法合成处理<br/>中文输入事件修正</p>
+      </div>
+    </div>
+    <p class="fragment" style="font-size:0.65em; color:#90a4ae;">响应式设计 &bull; 渐变统计卡片 &bull; aria-hidden 无障碍支持</p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 20 — Homepage Final Result                       -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>首页最终效果</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0;">
+      <div class="fragment stat-card" style="background:linear-gradient(135deg,#1a237e,#4a148c);"><span class="num" style="font-size:1.2em;">统计卡片</span><span class="label">5 张渐变卡片行</span></div>
+      <div class="fragment stat-card" style="background:linear-gradient(135deg,#004d40,#00695c);"><span class="num" style="font-size:1.2em;">待办栏</span><span class="label">4 色胶囊计数</span></div>
+      <div class="fragment stat-card" style="background:linear-gradient(135deg,#e65100,#bf360c);"><span class="num" style="font-size:1.2em;">筛选栏</span><span class="label">类型/群组/排序/标签</span></div>
+      <div class="fragment stat-card" style="background:linear-gradient(135deg,#1a237e,#283593);"><span class="num" style="font-size:1.2em;">内容列表</span><span class="label">卡片 + 元数据</span></div>
+      <div class="fragment stat-card" style="background:linear-gradient(135deg,#33691e,#558b2f);"><span class="num" style="font-size:1.2em;">分页</span><span class="label">页导航</span></div>
+    </div>
+    <p class="fragment" style="font-size:0.7em; color:#b0bec5;">
+      Layout: [Stats Cards Row] &rarr; [Todo Bar] &rarr; [Filter Bar] &rarr; [Content List] &rarr; [Pagination]
+    </p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 21 — Full Development Timeline (Mermaid)         -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>开发时间线</h2>
+    <div class="mermaid">
+      timeline
+          title Development Timeline (56 commits)
+          Phase 1 : Scaffold &amp; Auth : DDD modules, JWT, Spring Security
+          Phase 2 : Core Features : Content CRUD, Groups, Tags, Comments, Search
+          Phase 3 : Frontend : 15 pages, Vue 3, Element Plus
+          Phase 4 : Enhancement : Stats Dashboard, Todo Bar, Polish
+          Phase 5 : Optimization : Index strategy, SM4 encryption, Security fixes
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 22 — AI Collaboration Best Practices             -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>AI 协作最佳实践</h2>
+    <div class="three-col" style="gap:14px;">
+      <div class="fragment card" style="border-color:#2e7d32;">
+        <h4 style="color:#43e97b;">何时使用 AI</h4>
+        <ul style="font-size:0.55em; text-align:left; list-style:disc; padding-left:16px;">
+          <li>需求澄清（brainstorming）</li>
+          <li>方案设计（writing-plans）</li>
+          <li>代码生成（subagent）</li>
+          <li>测试编写（TDD）</li>
+          <li>代码审查（code-review）</li>
+          <li>安全审计（security-review）</li>
+        </ul>
+      </div>
+      <div class="fragment card" style="border-color:#c62828;">
+        <h4 style="color:#ef5350;">何时不使用</h4>
+        <ul style="font-size:0.55em; text-align:left; list-style:disc; padding-left:16px;">
+          <li>架构决策（需人工评审）</li>
+          <li>业务规则变更（领域知识）</li>
+          <li>生产调试（环境上下文）</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fragment" style="font-size:0.65em; color:#90a4ae; margin-top:10px;">
+      选择策略：简单任务 &rarr; 直接执行 / 复杂任务 &rarr; brainstorming &rarr; writing-plans &rarr; subagent
+    </p>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 23 — Future Roadmap                              -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>未来路线图</h2>
+    <div class="three-col" style="gap:14px; margin-top:14px;">
+      <div class="fragment card" style="border-color:#1565c0;">
+        <h4 style="color:#64b5f6;">短期</h4>
+        <ul style="font-size:0.6em; text-align:left; padding-left:16px; list-style:disc;">
+          <li>httpOnly Cookie</li>
+          <li>Refresh Token</li>
+          <li>ES / Qdrant 认证</li>
+        </ul>
+      </div>
+      <div class="fragment card" style="border-color:#6a1b9a;">
+        <h4 style="color:#ce93d8;">中期</h4>
+        <ul style="font-size:0.6em; text-align:left; padding-left:16px; list-style:disc;">
+          <li>Kubernetes 部署</li>
+          <li>CI/CD 流水线</li>
+          <li>Grafana 监控</li>
+        </ul>
+      </div>
+      <div class="fragment card" style="border-color:#e65100;">
+        <h4 style="color:#ffb74d;">长期</h4>
+        <ul style="font-size:0.6em; text-align:left; padding-left:16px; list-style:disc;">
+          <li>BGE 中文嵌入模型</li>
+          <li>联邦搜索</li>
+          <li>知识图谱</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 24 — Key Takeaways (fragments)                   -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h2>核心启示</h2>
+    <div style="margin: 24px 0;">
+      <div class="fragment takeaway">
+        &ldquo;AI 不是替代开发者，而是放大开发者能力&rdquo;
+      </div>
+      <div class="fragment takeaway" style="border-left-color:#64b5f6; background:rgba(100,181,246,0.08);">
+        &ldquo;结构化流程（Skills）比自由对话更高效&rdquo;
+      </div>
+      <div class="fragment takeaway" style="border-left-color:#ffb74d; background:rgba(255,183,116,0.08);">
+        &ldquo;设计文档是 AI 协作的质量底线&rdquo;
+      </div>
+    </div>
+    <aside class="notes">
+      逐一展示三条启示，停留片刻，让听众消化。
+    </aside>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 25 — Thank You                                   -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section>
+    <h1 style="background:linear-gradient(135deg,#64b5f6,#43e97b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+      感谢聆听
+    </h1>
+    <p style="font-size:1.2em; margin:24px 0;">Q &amp; A</p>
+    <hr style="width:40%; border-color:#444; margin:1.2em auto;" />
+    <p style="font-size:0.7em;">
+      Project: <strong>github.com/JiongJiongP/knowledge-share</strong>
+    </p>
+    <p style="font-size:0.65em; color:#78909c; margin-top:20px;">
+      <span class="accent-green">AI 驱动的全栈开发实践</span> &mdash; Knowledge Share 知识共享平台
+    </p>
+    <aside class="notes">
+      感谢大家的时间。欢迎提问！
+    </aside>
+  </section>
+
+</div><!-- .slides -->
+</div><!-- .reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  // Mermaid init with dark theme
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'loose',
+    themeVariables: {
+      primaryColor: '#5c6bc0',
+      primaryTextColor: '#fff',
+      primaryBorderColor: '#7c4dff',
+      lineColor: '#64b5f6',
+      secondaryColor: '#00695c',
+      tertiaryColor: '#1a237e'
+    }
+  });
+
+  // Reveal.js init
+  Reveal.initialize({
+    hash: true,
+    controls: true,
+    progress: true,
+    slideNumber: true,
+    keyboard: true,
+    overview: true,
+    center: true,
+    transition: 'slide',
+    plugins: [RevealHighlight, RevealNotes],
+    // Wait for Reveal to be ready then render mermaid
+    dependencies: []
+  });
+
+  // Render mermaid diagrams after Reveal is fully ready
+  Reveal.addEventListener('ready', function () {
+    mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
+  });
+
+  // Re-render mermaid on slide change (for any lazy-loaded content)
+  Reveal.addEventListener('slidechanged', function () {
+    const pending = document.querySelectorAll('.mermaid:not([data-processed])');
+    if (pending.length) {
+      mermaid.run({ nodes: pending });
+    }
+  });
+</script>
+</body>
+</html>
