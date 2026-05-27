@@ -1,5 +1,32 @@
 <template>
   <div class="home-page">
+    <div v-if="stats" class="stats-row">
+      <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="stat-icon">📄</div>
+        <div class="stat-num">{{ formatLargeNum(stats.totalContents) }}</div>
+        <div class="stat-label">总内容</div>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        <div class="stat-icon">👥</div>
+        <div class="stat-num">{{ formatLargeNum(stats.totalUsers) }}</div>
+        <div class="stat-label">总用户</div>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <div class="stat-icon">👥</div>
+        <div class="stat-num">{{ formatLargeNum(stats.totalGroups) }}</div>
+        <div class="stat-label">群组数</div>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-num">{{ formatLargeNum(stats.todayContents) }}</div>
+        <div class="stat-label">今日发布</div>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+        <div class="stat-icon">💬</div>
+        <div class="stat-num">{{ formatLargeNum(stats.totalComments) }}</div>
+        <div class="stat-label">总评论</div>
+      </div>
+    </div>
     <PageCard title="知识内容流">
       <template #header>
         <el-button type="primary" size="small" @click="$router.push('/content/create')">
@@ -97,6 +124,7 @@ import { getContentList } from '@/api/content'
 import { getGroupList } from '@/api/group'
 import PageCard from '@/components/common/PageCard.vue'
 import { getTags } from '@/api/tag'
+import { getStatsOverview } from '@/api/stats'
 
 const list = ref([])
 const total = ref(0)
@@ -110,6 +138,13 @@ const groups = ref([])
 const tags = ref([])
 const selectedTagIds = ref([])
 const route = useRoute()
+const stats = ref(null)
+
+function formatLargeNum(n) {
+  if (n == null) return '0'
+  if (n >= 10000) return (n / 10000).toFixed(1) + '万'
+  return String(n)
+}
 
 const selectedTagList = computed(() => tags.value.filter(t => selectedTagIds.value.includes(t.id)))
 const availableTags = computed(() => tags.value.filter(t => !selectedTagIds.value.includes(t.id)))
@@ -182,8 +217,15 @@ async function fetchFilters() {
   } catch { /* filters are optional */ }
 }
 
+async function fetchStats() {
+  try {
+    const res = await getStatsOverview()
+    stats.value = res.data
+  } catch { /* stats are optional, don't block page */ }
+}
+
 onMounted(async () => {
-  await Promise.all([fetchList(), fetchFilters()])
+  await Promise.all([fetchList(), fetchFilters(), fetchStats()])
 })
 
 watch(() => route.query.q, () => {
@@ -277,4 +319,41 @@ watch(() => route.query.q, () => {
 .tag.sm { padding: 1px 6px; font-size: 11px; }
 .loading-wrapper { padding: 40px 0; }
 .pagination-wrapper { display: flex; justify-content: center; margin-top: 24px; }
+.stats-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  flex: 1;
+  border-radius: 10px;
+  padding: 18px 12px;
+  text-align: center;
+  color: #fff;
+  min-width: 0;
+}
+.stat-icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+.stat-num {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.stat-label {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .stats-row {
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    flex: 1 1 calc(50% - 6px);
+    min-width: calc(50% - 6px);
+  }
+}
 </style>
