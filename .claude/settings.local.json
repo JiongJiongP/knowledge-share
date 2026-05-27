@@ -52,7 +52,18 @@
       "Bash(javap *)",
       "Bash(grep -v '\\\\$')",
       "Bash(grep -E \"\\(\\\\.class\\)$\")",
-      "Bash(grep 'Points$PointStruct')"
+      "Bash(grep 'Points$PointStruct')",
+      "Bash(javap -public -classpath client-1.9.1.jar io.qdrant.client.PointIdFactory)",
+      "Bash(javap -public -classpath client-1.9.1.jar io.qdrant.client.ValueFactory)",
+      "Bash(javap -public -classpath client-1.9.1.jar io.qdrant.client.VectorsFactory)",
+      "Bash(mvn spring-boot:run -pl knowledge-web)",
+      "Bash(netstat -ano)",
+      "Bash(awk '{print $5}')",
+      "Bash(xargs -I{} taskkill //PID {} //F)",
+      "Bash(mysql *)",
+      "Bash(mvn -pl knowledge-web dependency:build-classpath -q -DincludeScope=runtime -Dmdep.outputFile=/dev/stdout)",
+      "Bash(java -cp \"knowledge-web/target/classes;$\\(mvn -pl knowledge-web dependency:build-classpath -q -DincludeScope=runtime -Dmdep.outputFile=/dev/stdout \\)\" -e \"com.company.web.data.VerifyData\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d, indent=2, ensure_ascii=False\\)[:800]\\)\")"
     ]
   }
 }
