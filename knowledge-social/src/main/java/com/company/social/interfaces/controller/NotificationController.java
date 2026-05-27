@@ -34,8 +34,8 @@ public class NotificationController {
     }
 
     @PutMapping("/{id}/read")
-    public Result<Void> markRead(@PathVariable Long id) {
-        notificationService.markRead(id);
+    public Result<Void> markRead(@PathVariable Long id, Authentication auth) {
+        notificationService.markRead(id, (Long) auth.getPrincipal());
         return Result.ok(null);
     }
 
@@ -46,8 +46,8 @@ public class NotificationController {
     }
 
     @DeleteMapping("/{id}")
-    public Result<Void> delete(@PathVariable Long id) {
-        notificationService.delete(id);
+    public Result<Void> delete(@PathVariable Long id, Authentication auth) {
+        notificationService.delete(id, (Long) auth.getPrincipal());
         return Result.ok(null);
     }
 }

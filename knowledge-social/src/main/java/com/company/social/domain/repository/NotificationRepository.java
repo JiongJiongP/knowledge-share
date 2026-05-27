@@ -9,6 +9,7 @@ public interface NotificationRepository {
     List<Notification> findByUser(Long userId, int page, int size);
     long countByUser(Long userId);
     long countUnread(Long userId);
+    Notification findById(Long id);
     void markRead(Long id);
     void markAllRead(Long userId);
     void delete(Long id);

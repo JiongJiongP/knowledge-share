@@ -50,6 +50,11 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     }
 
     @Override
+    public Notification findById(Long id) {
+        return mapper.selectById(id);
+    }
+
+    @Override
     public void markRead(Long id) {
         Notification n = new Notification();
         n.setId(id);
