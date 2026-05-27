@@ -62,10 +62,27 @@ public class TodoService {
             );
         }
 
+        Long firstPendingGroupId = null;
+        if (pendingApprovalCount > 0) {
+            // Find first group with pending members
+            for (var g : myGroups) {
+                long count = groupMemberMapper.selectCount(
+                        new LambdaQueryWrapper<GroupMember>()
+                                .eq(GroupMember::getGroupId, g.getId())
+                                .eq(GroupMember::getStatus, "PENDING")
+                );
+                if (count > 0) {
+                    firstPendingGroupId = g.getId();
+                    break;
+                }
+            }
+        }
+
         return Map.of(
                 "draftCount", draftCount,
                 "pendingApprovalCount", pendingApprovalCount,
-                "pendingAuditCount", pendingAuditCount
+                "pendingAuditCount", pendingAuditCount,
+                "firstPendingGroupId", firstPendingGroupId != null ? firstPendingGroupId : 0
         );
     }
 }

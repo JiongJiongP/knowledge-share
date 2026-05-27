@@ -34,11 +34,11 @@
       <div class="stat-card" style="background: #E4E7ED;"><div class="stat-icon" aria-hidden="true">🔥</div><div class="stat-num">-</div><div class="stat-label">今日发布</div></div>
       <div class="stat-card" style="background: #E4E7ED;"><div class="stat-icon" aria-hidden="true">💬</div><div class="stat-num">-</div><div class="stat-label">总评论</div></div>
     </div>
-    <div v-if="todo" class="todo-bar">
-      <div v-if="todo.draftCount > 0" class="todo-pill todo-pill-draft" @click="$router.push('/content/create')">
+    <div v-if="hasTodo" class="todo-bar">
+      <div v-if="todo.draftCount > 0" class="todo-pill todo-pill-draft" @click="$router.push('/')">
         <span>📝</span> 草稿 <strong>{{ todo.draftCount }}</strong>
       </div>
-      <div v-if="todo.pendingApprovalCount > 0" class="todo-pill todo-pill-approval" @click="$router.push('/notifications')">
+      <div v-if="todo.pendingApprovalCount > 0" class="todo-pill todo-pill-approval" @click="$router.push(todo.firstPendingGroupId ? `/group/${todo.firstPendingGroupId}/manage` : '/notifications')">
         <span>👥</span> 入群审批 <strong>{{ todo.pendingApprovalCount }}</strong>
       </div>
       <div v-if="todo.pendingAuditCount > 0" class="todo-pill todo-pill-audit" @click="$router.push('/admin/audit')">
@@ -163,6 +163,12 @@ const selectedTagIds = ref([])
 const route = useRoute()
 const stats = ref(null)
 const todo = ref(null)
+const hasTodo = computed(() => todo.value && (
+  todo.value.draftCount > 0 ||
+  todo.value.pendingApprovalCount > 0 ||
+  todo.value.pendingAuditCount > 0 ||
+  todo.value.unreadCount > 0
+))
 
 function formatLargeNum(n) {
   if (n == null) return '0'
