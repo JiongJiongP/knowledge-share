@@ -1,0 +1,164 @@
+<h2>首页统计大盘 — 位置选择</h2>
+<p class="subtitle">统计数据放在哪里？要求：不喧宾夺主，内容流仍然是主体</p>
+
+<div class="cards">
+  <div class="card" data-choice="top-banner" onclick="toggleSelect(this)">
+    <div class="mockup" style="flex:1;margin:0">
+      <div class="mockup-header">方案 A：顶部卡片条</div>
+      <div class="mockup-body">
+        <div style="display:flex;gap:12px;margin-bottom:12px">
+          <div class="placeholder" style="flex:1;text-align:center;padding:16px;background:#ecf5ff;border-radius:8px">
+            <div style="font-size:11px;color:#909399">📄 总内容</div>
+            <div style="font-size:22px;font-weight:700;color:#303133">500K</div>
+          </div>
+          <div class="placeholder" style="flex:1;text-align:center;padding:16px;background:#f0f9eb;border-radius:8px">
+            <div style="font-size:11px;color:#909399">👥 总用户</div>
+            <div style="font-size:22px;font-weight:700;color:#303133">1,000</div>
+          </div>
+          <div class="placeholder" style="flex:1;text-align:center;padding:16px;background:#fef0f0;border-radius:8px">
+            <div style="font-size:11px;color:#909399">👥 群组数</div>
+            <div style="font-size:22px;font-weight:700;color:#303133">30</div>
+          </div>
+          <div class="placeholder" style="flex:1;text-align:center;padding:16px;background:#fdf6ec;border-radius:8px">
+            <div style="font-size:11px;color:#909399">🔥 今日发布</div>
+            <div style="font-size:22px;font-weight:700;color:#303133">128</div>
+          </div>
+        </div>
+        <div class="mock-content" style="min-height:300px; align-items:flex-start; display:block;">
+          <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+            <div style="flex:1;font-weight:600;font-size:13px">📝 深入理解 Spring Boot 自动配置原理</div>
+            <div style="color:#909399;font-size:12px">2小时前</div>
+          </div>
+          <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+            <div style="flex:1;font-weight:600;font-size:13px">📊 微服务架构设计模式总结</div>
+            <div style="color:#909399;font-size:12px">4小时前</div>
+          </div>
+          <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+            <div style="flex:1;font-weight:600;font-size:13px">🔗 Kubernetes 生产环境最佳实践</div>
+            <div style="color:#909399;font-size:12px">6小时前</div>
+          </div>
+          <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+            <div style="flex:1;font-weight:600;font-size:13px">🐍 Python 异步编程完全指南</div>
+            <div style="color:#909399;font-size:12px">昨天</div>
+          </div>
+          <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+            <div style="flex:1;font-weight:600;font-size:13px">🔒 OAuth 2.0 与 JWT 实战详解</div>
+            <div style="color:#909399;font-size:12px">昨天</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>顶部卡片条</h3>
+      <p>4 个统计卡片横排放在内容列表上方。简洁、不占空间、一目了然</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="side-panel" onclick="toggleSelect(this)">
+    <div class="mockup" style="flex:1;margin:0">
+      <div class="mockup-header">方案 B：右侧信息栏</div>
+      <div class="mockup-body">
+        <div style="display:flex;gap:16px">
+          <div class="mock-content" style="flex:2;min-height:300px;display:block">
+            <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+              <div style="flex:1;font-weight:600;font-size:13px">📝 深入理解 Spring Boot 自动配置原理</div>
+              <div style="color:#909399;font-size:12px">2小时前</div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+              <div style="flex:1;font-weight:600;font-size:13px">📊 微服务架构设计模式总结</div>
+              <div style="color:#909399;font-size:12px">4小时前</div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+              <div style="flex:1;font-weight:600;font-size:13px">🔗 Kubernetes 生产环境最佳实践</div>
+              <div style="color:#909399;font-size:12px">6小时前</div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+              <div style="flex:1;font-weight:600;font-size:13px">🐍 Python 异步编程完全指南</div>
+              <div style="color:#909399;font-size:12px">昨天</div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+              <div style="flex:1;font-weight:600;font-size:13px">🔒 OAuth 2.0 与 JWT 实战详解</div>
+              <div style="color:#909399;font-size:12px">昨天</div>
+            </div>
+          </div>
+          <div class="mock-sidebar" style="flex:1;min-height:300px;display:flex;flex-direction:column;gap:12px;padding:12px;background:#fafbfc;border-radius:8px">
+            <div style="background:#ecf5ff;padding:12px;border-radius:6px;text-align:center">
+              <div style="font-size:11px;color:#909399">📄 总内容</div>
+              <div style="font-size:20px;font-weight:700;color:#303133">500K</div>
+            </div>
+            <div style="background:#f0f9eb;padding:12px;border-radius:6px;text-align:center">
+              <div style="font-size:11px;color:#909399">👥 总用户</div>
+              <div style="font-size:20px;font-weight:700;color:#303133">1,000</div>
+            </div>
+            <div style="background:#fef0f0;padding:12px;border-radius:6px;text-align:center">
+              <div style="font-size:11px;color:#909399">👥 群组</div>
+              <div style="font-size:20px;font-weight:700;color:#303133">30</div>
+            </div>
+            <div style="background:#fdf6ec;padding:12px;border-radius:6px;text-align:center">
+              <div style="font-size:11px;color:#909399">🔥 今日发布</div>
+              <div style="font-size:20px;font-weight:700;color:#303133">128</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>右侧信息栏</h3>
+      <p>统计卡片竖排在右侧栏，内容列表在左。信息密度高，但对移动端不友好</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="compact" onclick="toggleSelect(this)">
+    <div class="mockup" style="flex:1;margin:0">
+      <div class="mockup-header">方案 C：紧凑嵌入卡片</div>
+      <div class="mockup-body">
+        <div style="display:flex;gap:16px">
+          <div class="mock-content" style="flex:3;min-height:300px;display:block">
+            <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+              <div style="flex:1;font-weight:600;font-size:13px">📝 深入理解 Spring Boot 自动配置原理</div>
+              <div style="color:#909399;font-size:12px">2小时前</div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+              <div style="flex:1;font-weight:600;font-size:13px">📊 微服务架构设计模式总结</div>
+              <div style="color:#909399;font-size:12px">4小时前</div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+              <div style="flex:1;font-weight:600;font-size:13px">🔗 Kubernetes 生产环境最佳实践</div>
+              <div style="color:#909399;font-size:12px">6小时前</div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+              <div style="flex:1;font-weight:600;font-size:13px">🐍 Python 异步编程完全指南</div>
+              <div style="color:#909399;font-size:12px">昨天</div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;border-bottom:1px solid #eee">
+              <div style="flex:1;font-weight:600;font-size:13px">🔒 OAuth 2.0 与 JWT 实战详解</div>
+              <div style="color:#909399;font-size:12px">昨天</div>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+            <div style="background:#ecf5ff;padding:10px;border-radius:6px;display:flex;align-items:center;gap:8px">
+              <span style="font-size:18px">📄</span>
+              <div><div style="font-size:16px;font-weight:700">500K</div><div style="font-size:11px;color:#909399">总内容</div></div>
+            </div>
+            <div style="background:#f0f9eb;padding:10px;border-radius:6px;display:flex;align-items:center;gap:8px">
+              <span style="font-size:18px">👥</span>
+              <div><div style="font-size:16px;font-weight:700">1,000</div><div style="font-size:11px;color:#909399">总用户</div></div>
+            </div>
+            <div style="background:#fef0f0;padding:10px;border-radius:6px;display:flex;align-items:center;gap:8px">
+              <span style="font-size:18px">🏷️</span>
+              <div><div style="font-size:16px;font-weight:700">50</div><div style="font-size:11px;color:#909399">标签数</div></div>
+            </div>
+            <div style="background:#fdf6ec;padding:10px;border-radius:6px;display:flex;align-items:center;gap:8px">
+              <span style="font-size:18px">🔥</span>
+              <div><div style="font-size:16px;font-weight:700">128</div><div style="font-size:11px;color:#909399">今日发布</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>紧凑右侧条</h3>
+      <p>迷你横条卡片放在右侧，左侧内容列表保持全宽。适合窄屏，视觉干扰最小</p>
+    </div>
+  </div>
+</div>
