@@ -21,9 +21,9 @@
         <div class="content-item-main">
           <div class="content-item-title">{{ fav.contentTitle || '内容 #' + fav.contentId }}</div>
           <div class="content-item-meta">
-            <span v-if="fav.contentType" :class="['content-type-badge', typeBadgeClass(fav.contentType)]">{{ typeEmoji(fav.contentType) }} {{ typeLabel(fav.contentType) }}</span>
-            <span>👤 {{ fav.authorName || '未知' }}</span>
-            <span>⭐ 收藏于 {{ formatDate(fav.createdAt) }}</span>
+            <span v-if="fav.contentType" :class="['content-type-badge', typeBadgeClass(fav.contentType)]"><i :class="typeEmoji(fav.contentType)"></i> {{ typeLabel(fav.contentType) }}</span>
+            <span><i class="ri-user-line"></i> {{ fav.authorName || '未知' }}</span>
+            <span><i class="ri-star-line"></i> 收藏于 {{ formatDate(fav.createdAt) }}</span>
           </div>
         </div>
         <button class="btn btn-text" style="color:#F56C6C;" @click.stop="handleUnfavorite(fav)">取消收藏</button>
@@ -93,8 +93,8 @@ function typeBadgeClass(type) {
 }
 
 function typeEmoji(type) {
-  const map = { MARKDOWN: '📝', PPT_FILE: '📊', EXTERNAL_URL: '🔗', INTERNAL_REF: '📎' }
-  return map[type] || '📄'
+  const map = { MARKDOWN: 'ri-file-text-line', PPT_FILE: 'ri-presentation-line', EXTERNAL_URL: 'ri-link', INTERNAL_REF: 'ri-attachment-line' }
+  return map[type] || 'ri-file-text-line'
 }
 
 function typeLabel(type) {

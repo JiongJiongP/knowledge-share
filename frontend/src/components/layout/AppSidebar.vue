@@ -1,38 +1,38 @@
 <template>
   <aside class="app-sidebar">
     <div class="sidebar-logo" @click="$router.push('/')">
-      <div class="logo-icon">📚</div>
+      <div class="logo-icon"><i class="ri-book-open-fill"></i></div>
       <span>知识平台</span>
     </div>
 
     <nav class="sidebar-nav">
       <div class="nav-group-title">内容</div>
-      <router-link to="/" class="nav-item" exact-active-class="active">🏠 首页</router-link>
-      <router-link to="/content/create" class="nav-item" active-class="active">✏️ 创建内容</router-link>
-      <router-link to="/templates" class="nav-item" active-class="active">📋 模板中心</router-link>
+      <router-link to="/" class="nav-item" exact-active-class="active"><i class="ri-home-5-line"></i> 首页</router-link>
+      <router-link to="/content/create" class="nav-item" active-class="active"><i class="ri-edit-line"></i> 创建内容</router-link>
+      <router-link to="/templates" class="nav-item" active-class="active"><i class="ri-file-list-3-line"></i> 模板中心</router-link>
 
       <div class="nav-group-title">群组</div>
-      <router-link to="/groups" class="nav-item" active-class="active">👥 群组列表</router-link>
+      <router-link to="/groups" class="nav-item" active-class="active"><i class="ri-team-line"></i> 群组列表</router-link>
 
       <div class="nav-group-title">个人</div>
-      <router-link to="/favorites" class="nav-item" active-class="active">⭐ 我的收藏</router-link>
+      <router-link to="/favorites" class="nav-item" active-class="active"><i class="ri-star-line"></i> 我的收藏</router-link>
       <router-link to="/notifications" class="nav-item" active-class="active">
-        🔔 通知中心
+        <i class="ri-notification-3-line"></i> 通知中心
         <span v-if="unreadCount > 0" class="badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
       </router-link>
 
       <template v-if="userStore.isAdmin">
         <div class="nav-group-title">管理</div>
         <router-link to="/admin/audit" class="nav-item" active-class="active">
-          ✅ 审核中心
+          <i class="ri-checkbox-circle-line"></i> 审核中心
           <span v-if="auditPending > 0" class="badge">{{ auditPending }}</span>
         </router-link>
-        <router-link to="/admin/tags" class="nav-item" active-class="active">🏷️ 标签管理</router-link>
-        <router-link to="/admin/users" class="nav-item" active-class="active">👤 用户管理</router-link>
-        <router-link to="/admin/sensitive-words" class="nav-item" active-class="active">🚫 敏感词管理</router-link>
-        <router-link to="/admin/analytics" class="nav-item" active-class="active">📊 数据分析</router-link>
-        <router-link to="/admin/departments" class="nav-item" active-class="active">🏢 部门管理</router-link>
-        <router-link to="/admin/settings" class="nav-item" active-class="active">⚙️ 系统设置</router-link>
+        <router-link to="/admin/tags" class="nav-item" active-class="active"><i class="ri-price-tag-3-line"></i> 标签管理</router-link>
+        <router-link to="/admin/users" class="nav-item" active-class="active"><i class="ri-user-line"></i> 用户管理</router-link>
+        <router-link to="/admin/sensitive-words" class="nav-item" active-class="active"><i class="ri-forbid-line"></i> 敏感词管理</router-link>
+        <router-link to="/admin/analytics" class="nav-item" active-class="active"><i class="ri-bar-chart-box-line"></i> 数据分析</router-link>
+        <router-link to="/admin/departments" class="nav-item" active-class="active"><i class="ri-building-line"></i> 部门管理</router-link>
+        <router-link to="/admin/settings" class="nav-item" active-class="active"><i class="ri-settings-3-line"></i> 系统设置</router-link>
       </template>
     </nav>
   </aside>

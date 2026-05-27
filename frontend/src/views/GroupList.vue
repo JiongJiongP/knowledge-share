@@ -17,7 +17,7 @@
       <div v-for="group in list" :key="group.id" class="group-card">
         <div class="group-header">
           <div>
-            <div class="group-name" @click="$router.push(`/group/${group.id}`)">👥 {{ group.name }}</div>
+            <div class="group-name" @click="$router.push(`/group/${group.id}`)"><i class="ri-team-line"></i> {{ group.name }}</div>
             <div class="group-meta">群主：{{ group.ownerName || group.ownerId || '未知' }} · {{ group.memberCount || 0 }} 成员 · {{ group.contentCount || 0 }} 内容</div>
           </div>
           <el-button

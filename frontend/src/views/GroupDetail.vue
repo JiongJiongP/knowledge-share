@@ -1,6 +1,6 @@
 <template>
   <div class="group-detail-page">
-    <div class="page-card">
+    <div v-if="loading" class="page-card">
       <el-skeleton :rows="4" animated />
     </div>
 

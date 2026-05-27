@@ -39,7 +39,7 @@
         <p class="comment-text">{{ comment.body }}</p>
         <div class="comment-actions">
           <el-button size="small" text @click="handleLike(comment)">
-            <el-icon><CaretTop /></el-icon> {{ comment.likeCount || 0 }}
+            <i class="ri-thumb-up-line"></i> {{ comment.likeCount || 0 }}
           </el-button>
           <el-button size="small" text @click="startReply(comment)">回复</el-button>
           <el-button
@@ -57,7 +57,7 @@
             ：{{ reply.body }}
             <span class="reply-time">{{ formatTime(reply.createdAt) }}</span>
             <el-button size="small" text @click="handleLike(reply)" style="margin-left:8px">
-              <el-icon><CaretTop /></el-icon> {{ reply.likeCount || 0 }}
+              <i class="ri-thumb-up-line"></i> {{ reply.likeCount || 0 }}
             </el-button>
             <el-button
               v-if="reply.userId === currentUserId"
@@ -76,7 +76,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { CaretTop } from '@element-plus/icons-vue'
 import { getComments, getReplies, createComment, likeComment, unlikeComment, deleteComment } from '@/api/comment'
 import { useUserStore } from '@/stores/user'
 

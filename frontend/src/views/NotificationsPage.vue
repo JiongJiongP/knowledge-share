@@ -28,7 +28,7 @@
           @click="handleClick(n)"
         >
           <div class="notif-dot" v-if="!n.isRead" />
-          <div class="notif-icon" :style="{ background: iconBg(n.type), color: iconColor(n.type) }">{{ iconEmoji(n.type) }}</div>
+          <div class="notif-icon" :style="{ background: iconBg(n.type), color: iconColor(n.type) }"><i :class="iconClass(n.type)"></i></div>
           <div class="notif-body">
             <div class="notif-title">{{ n.title }}</div>
             <div class="notif-content" v-if="n.content">{{ n.content }}</div>
@@ -91,9 +91,9 @@ function switchTab(val) {
   fetchList()
 }
 
-function iconEmoji(type) {
-  const m = { COMMENT: '💬', COMMENT_REPLY: '💬', COMMENT_MENTION: '💬', GROUP_JOIN: '👥', GROUP_APPROVE: '👥', CONTENT_AUDIT: '✅', SYSTEM: '📢' }
-  return m[type] || '📢'
+function iconClass(type) {
+  const m = { COMMENT: 'ri-chat-3-line', COMMENT_REPLY: 'ri-chat-3-line', COMMENT_MENTION: 'ri-chat-3-line', GROUP_JOIN: 'ri-team-line', GROUP_APPROVE: 'ri-team-line', CONTENT_AUDIT: 'ri-checkbox-circle-line', SYSTEM: 'ri-megaphone-line' }
+  return m[type] || 'ri-megaphone-line'
 }
 function iconBg(type) {
   return type?.startsWith('COMMENT') ? '#ecf5ff' : type?.startsWith('GROUP') ? '#fef0f0' : type === 'CONTENT_AUDIT' ? '#f0f9eb' : '#fdf6ec'

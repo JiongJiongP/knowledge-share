@@ -13,9 +13,9 @@
         <span class="time">{{ formatTime(content.publishedAt) }}</span>
       </div>
       <div class="footer-stats">
-        <span class="stat-item" v-if="content.viewCount != null">👁️ {{ content.viewCount }}</span>
-        <span class="stat-item" v-if="content.favoriteCount != null">⭐ {{ content.favoriteCount }}</span>
-        <span class="stat-item" v-if="content.commentCount != null">💬 {{ content.commentCount }}</span>
+        <span class="stat-item" v-if="content.viewCount != null"><i class="ri-eye-line"></i> {{ content.viewCount }}</span>
+        <span class="stat-item" v-if="content.favoriteCount != null"><i class="ri-star-line"></i> {{ content.favoriteCount }}</span>
+        <span class="stat-item" v-if="content.commentCount != null"><i class="ri-chat-3-line"></i> {{ content.commentCount }}</span>
       </div>
     </div>
   </el-card>

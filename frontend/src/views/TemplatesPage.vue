@@ -12,7 +12,7 @@
           class="tpl-card"
           @click="useTemplate(tpl)"
         >
-          <div class="tpl-icon">{{ tpl.icon }}</div>
+          <div class="tpl-icon"><i :class="tpl.icon"></i></div>
           <div class="tpl-name">{{ tpl.name }}</div>
           <div class="tpl-desc">{{ tpl.desc }}</div>
           <button class="btn btn-primary btn-sm" style="width:100%">使用模板</button>
@@ -31,21 +31,21 @@ const router = useRouter()
 const templates = [
   {
     id: 'tech-doc',
-    icon: '📝',
+    icon: 'ri-file-text-line',
     name: '技术文档模板',
     desc: '系统预置 · 包含背景、方案、实现细节等结构',
     type: 'MARKDOWN'
   },
   {
     id: 'product-doc',
-    icon: '📋',
+    icon: 'ri-file-list-3-line',
     name: '产品说明模板',
     desc: '系统预置 · 包含功能概述、使用指南、FAQ',
     type: 'MARKDOWN'
   },
   {
     id: 'meeting-notes',
-    icon: '📅',
+    icon: 'ri-calendar-line',
     name: '会议纪要模板',
     desc: '系统预置 · 包含议题、决议、待办事项',
     type: 'MARKDOWN'

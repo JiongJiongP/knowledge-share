@@ -20,18 +20,18 @@
         <h1 class="detail-title">{{ content.title }}</h1>
 
         <div class="detail-meta">
-          <span :class="['type-badge', typeBadgeClass]">{{ typeEmoji }} {{ typeLabel }}</span>
+          <span :class="['type-badge', typeBadgeClass]"><i :class="typeEmoji"></i> {{ typeLabel }}</span>
           <span v-for="tag in tags" :key="tag.id" class="tag tag-sm" :style="{ background: tag.color || '#409EFF' }">{{ tag.name }}</span>
-          <span class="meta-text">👤 {{ content.createdByName || content.createdBy }} · 📅 {{ formatDate(content.publishedAt || content.createdAt) }} · 👁️ {{ formatCount(content.viewCount) }} 阅读</span>
+          <span class="meta-text"><i class="ri-user-line"></i> {{ content.createdBy }} · <i class="ri-calendar-line"></i> {{ formatDate(content.publishedAt || content.createdAt) }} · <i class="ri-eye-line"></i> {{ formatCount(content.viewCount) }} 阅读</span>
         </div>
 
         <div class="detail-actions">
           <button class="btn btn-default btn-sm" @click="toggleFavorite" :disabled="favLoading">
-            ⭐ 收藏 ({{ favCount }})
+            <i class="ri-star-line"></i> 收藏 ({{ favCount }})
           </button>
-          <button class="btn btn-default btn-sm" @click="handleShare">📤 分享</button>
-          <button class="btn btn-default btn-sm" @click="handleDownload">📥 下载</button>
-          <button v-if="canEdit" class="btn btn-default btn-sm" @click="$router.push(`/content/${content.id}/edit`)">✏️ 编辑</button>
+          <button class="btn btn-default btn-sm" @click="handleShare"><i class="ri-share-forward-line"></i> 分享</button>
+          <button class="btn btn-default btn-sm" @click="handleDownload"><i class="ri-download-line"></i> 下载</button>
+          <button v-if="canEdit" class="btn btn-default btn-sm" @click="$router.push(`/content/${content.id}/edit`)"><i class="ri-edit-line"></i> 编辑</button>
         </div>
 
         <div class="detail-divider" />
@@ -83,8 +83,8 @@ const typeLabels = {
   EXTERNAL_URL: '外部链接', INTERNAL_REF: '内部引用'
 }
 const typeEmojis = {
-  MARKDOWN: '📝', PPT_FILE: '📊',
-  EXTERNAL_URL: '🔗', INTERNAL_REF: '📎'
+  MARKDOWN: 'ri-file-text-line', PPT_FILE: 'ri-presentation-line',
+  EXTERNAL_URL: 'ri-link', INTERNAL_REF: 'ri-attachment-line'
 }
 const typeBadgeClasses = {
   MARKDOWN: 'type-markdown', PPT_FILE: 'type-ppt',
@@ -92,7 +92,7 @@ const typeBadgeClasses = {
 }
 
 const typeLabel = computed(() => typeLabels[content.value.contentType] || 'Markdown')
-const typeEmoji = computed(() => typeEmojis[content.value.contentType] || '📝')
+const typeEmoji = computed(() => typeEmojis[content.value.contentType] || 'ri-file-text-line')
 const typeBadgeClass = computed(() => typeBadgeClasses[content.value.contentType] || 'type-markdown')
 const canEdit = computed(() => {
   return userStore.info?.id === content.value.createdBy ||

@@ -3,8 +3,8 @@
     <PageCard title="创建新内容">
       <template #header>
         <div class="btn-group">
-          <button class="btn btn-default btn-sm" @click="handleSaveDraft" :disabled="saving">💾 保存草稿</button>
-          <button class="btn btn-primary btn-sm" @click="handleSubmit" :disabled="submitting">📤 提交审核</button>
+          <button class="btn btn-default btn-sm" @click="handleSaveDraft" :disabled="saving"><i class="ri-save-line"></i> 保存草稿</button>
+          <button class="btn btn-primary btn-sm" @click="handleSubmit" :disabled="submitting"><i class="ri-send-plane-line"></i> 提交审核</button>
         </div>
       </template>
 
@@ -16,7 +16,7 @@
             :key="t.value"
             :class="['btn', form.contentType === t.value ? 'btn-primary' : 'btn-default', 'btn-sm']"
             @click="form.contentType = t.value"
-          >{{ t.emoji }} {{ t.label }}</button>
+          ><i :class="t.emoji"></i> {{ t.label }}</button>
         </div>
       </div>
 
@@ -33,10 +33,10 @@
             <button class="btn btn-default btn-sm" @click="insertMarkdown('*', '*')"><i>I</i></button>
             <button class="btn btn-default btn-sm" @click="insertMarkdown('\n## ', '')">H</button>
             <button class="btn btn-default btn-sm" @click="insertMarkdown('`', '`')">&lt;/&gt;</button>
-            <button class="btn btn-default btn-sm" @click="insertMarkdown('[', '](url)')">🔗</button>
-            <button class="btn btn-default btn-sm" @click="insertMarkdown('![alt](', ')')">🖼️</button>
-            <button class="btn btn-default btn-sm" @click="insertMarkdown('\n| Col1 | Col2 |\n|-----|-----|\n| ', ' |')">📊</button>
-            <button class="btn btn-default btn-sm" @click="insertMarkdown('\n> ', '')">❝</button>
+            <button class="btn btn-default btn-sm" @click="insertMarkdown('[', '](url)')"><i class="ri-link"></i></button>
+            <button class="btn btn-default btn-sm" @click="insertMarkdown('![alt](', ')')"><i class="ri-image-line"></i></button>
+            <button class="btn btn-default btn-sm" @click="insertMarkdown('\n| Col1 | Col2 |\n|-----|-----|\n| ', ' |')"><i class="ri-table-line"></i></button>
+            <button class="btn btn-default btn-sm" @click="insertMarkdown('\n> ', '')"><i class="ri-double-quotes-l"></i></button>
           </div>
           <textarea
             v-model="form.body"
@@ -84,10 +84,10 @@ import PageCard from '@/components/common/PageCard.vue'
 const router = useRouter()
 
 const contentTypes = [
-  { value: 'MARKDOWN', label: 'Markdown', emoji: '📝' },
-  { value: 'PPT_FILE', label: 'PPT文件', emoji: '📊' },
-  { value: 'EXTERNAL_URL', label: '外部链接', emoji: '🔗' },
-  { value: 'INTERNAL_REF', label: '内部引用', emoji: '📎' }
+  { value: 'MARKDOWN', label: 'Markdown', emoji: 'ri-file-text-line' },
+  { value: 'PPT_FILE', label: 'PPT文件', emoji: 'ri-presentation-line' },
+  { value: 'EXTERNAL_URL', label: '外部链接', emoji: 'ri-link' },
+  { value: 'INTERNAL_REF', label: '内部引用', emoji: 'ri-attachment-line' }
 ]
 
 const form = reactive({

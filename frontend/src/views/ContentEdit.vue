@@ -19,9 +19,9 @@
       <div class="card-header">
         <h2 class="card-title">编辑内容</h2>
         <div class="header-actions">
-          <el-button @click="handleUpdate" :loading="saving">💾 保存</el-button>
+          <el-button @click="handleUpdate" :loading="saving"><i class="ri-save-line"></i> 保存</el-button>
           <el-button type="success" @click="handlePublish" :loading="publishing" v-if="form.status === 'DRAFT'">
-            📤 发布
+            <i class="ri-send-plane-line"></i> 发布
           </el-button>
         </div>
       </div>
@@ -35,7 +35,7 @@
               :type="form.contentType === t.value ? 'primary' : 'default'"
               size="small"
               @click="form.contentType = t.value"
-            >{{ t.emoji }} {{ t.label }}</el-button>
+            ><i :class="t.emoji"></i> {{ t.label }}</el-button>
           </div>
         </div>
 
@@ -52,10 +52,10 @@
               <el-button size="small" text @click="insertMarkdown('*', '*')"><i>I</i></el-button>
               <el-button size="small" text @click="insertMarkdown('\n## ', '')">H</el-button>
               <el-button size="small" text @click="insertMarkdown('`', '`')">&lt;/&gt;</el-button>
-              <el-button size="small" text @click="insertMarkdown('[', '](url)')">🔗</el-button>
-              <el-button size="small" text @click="insertMarkdown('![alt](', ')')">🖼️</el-button>
-              <el-button size="small" text @click="insertMarkdown('\n| Col1 | Col2 |\n|-----|-----|\n| ', ' |')">📊</el-button>
-              <el-button size="small" text @click="insertMarkdown('\n> ', '')">❝</el-button>
+              <el-button size="small" text @click="insertMarkdown('[', '](url)')"><i class="ri-link"></i></el-button>
+              <el-button size="small" text @click="insertMarkdown('![alt](', ')')"><i class="ri-image-line"></i></el-button>
+              <el-button size="small" text @click="insertMarkdown('\n| Col1 | Col2 |\n|-----|-----|\n| ', ' |')"><i class="ri-table-line"></i></el-button>
+              <el-button size="small" text @click="insertMarkdown('\n> ', '')"><i class="ri-double-quotes-l"></i></el-button>
             </div>
             <el-input
               v-model="form.body"
@@ -93,10 +93,10 @@ const route = useRoute()
 const router = useRouter()
 
 const contentTypes = [
-  { value: 'MARKDOWN', label: 'Markdown', emoji: '📝' },
-  { value: 'PPT_FILE', label: 'PPT文件', emoji: '📊' },
-  { value: 'EXTERNAL_URL', label: '外部链接', emoji: '🔗' },
-  { value: 'INTERNAL_REF', label: '内部引用', emoji: '📎' }
+  { value: 'MARKDOWN', label: 'Markdown', emoji: 'ri-file-text-line' },
+  { value: 'PPT_FILE', label: 'PPT文件', emoji: 'ri-presentation-line' },
+  { value: 'EXTERNAL_URL', label: '外部链接', emoji: 'ri-link' },
+  { value: 'INTERNAL_REF', label: '内部引用', emoji: 'ri-attachment-line' }
 ]
 
 const form = reactive({

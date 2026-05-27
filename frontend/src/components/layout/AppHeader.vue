@@ -10,13 +10,13 @@
         @compositionstart="composing = true"
         @compositionend="composing = false"
       />
-      <span class="search-icon" @click="doSearch">🔍</span>
+      <span class="search-icon" @click="doSearch"><i class="ri-search-line"></i></span>
     </div>
 
     <div class="header-actions">
       <div class="dropdown" ref="notifyRef">
         <div class="header-btn" @click="toggleNotify">
-          🔔
+          <i class="ri-notification-3-line"></i>
           <span v-if="unreadCount > 0" class="dot" />
         </div>
         <div v-if="showNotifyPanel" class="notification-panel">
@@ -32,7 +32,7 @@
               :class="{ unread: !n.isRead }"
               @click="goNotification(n)"
             >
-              <div class="notification-icon" :style="{ background: iconBg(n.type), color: iconColor(n.type) }">{{ iconEmoji(n.type) }}</div>
+              <div class="notification-icon" :style="{ background: iconBg(n.type), color: iconColor(n.type) }"><i :class="iconClass(n.type)"></i></div>
               <div class="notification-content">
                 <div class="notification-title">{{ n.title }}</div>
                 <div class="notification-time">{{ formatTime(n.createdAt) }}</div>
@@ -49,9 +49,9 @@
       <div class="dropdown" ref="userRef">
         <div class="header-avatar" @click="toggleUserMenu">{{ userInitial }}</div>
         <div v-if="showUserMenu" class="dropdown-menu">
-          <div class="dropdown-item" @click="$router.push('/profile'); showUserMenu = false">👤 个人信息</div>
-          <div class="dropdown-item" @click="$router.push('/settings'); showUserMenu = false">⚙️ 账号设置</div>
-          <div class="dropdown-item" style="color:#F56C6C;" @click="handleLogout">🚪 退出登录</div>
+          <div class="dropdown-item" @click="$router.push('/profile'); showUserMenu = false"><i class="ri-user-line"></i> 个人信息</div>
+          <div class="dropdown-item" @click="$router.push('/settings'); showUserMenu = false"><i class="ri-settings-3-line"></i> 账号设置</div>
+          <div class="dropdown-item" style="color:#F56C6C;" @click="handleLogout"><i class="ri-logout-box-r-line"></i> 退出登录</div>
         </div>
       </div>
     </div>
@@ -127,9 +127,9 @@ function handleLogout() {
   userStore.logout()
 }
 
-function iconEmoji(type) {
-  const m = { COMMENT: '💬', COMMENT_REPLY: '💬', COMMENT_MENTION: '💬', GROUP_JOIN: '👥', GROUP_APPROVE: '👥', CONTENT_AUDIT: '✅', SYSTEM: '📢' }
-  return m[type] || '📢'
+function iconClass(type) {
+  const m = { COMMENT: 'ri-chat-3-line', COMMENT_REPLY: 'ri-chat-3-line', COMMENT_MENTION: 'ri-chat-3-line', GROUP_JOIN: 'ri-team-line', GROUP_APPROVE: 'ri-team-line', CONTENT_AUDIT: 'ri-checkbox-circle-line', SYSTEM: 'ri-megaphone-line' }
+  return m[type] || 'ri-megaphone-line'
 }
 function iconBg(type) {
   return type?.startsWith('COMMENT') ? '#ecf5ff' : type?.startsWith('GROUP') ? '#fef0f0' : type === 'CONTENT_AUDIT' ? '#f0f9eb' : '#fdf6ec'
