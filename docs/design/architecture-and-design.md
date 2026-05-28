@@ -1,6 +1,6 @@
 # Knowledge Share 知识共享平台 — 架构与设计文档
 
-> **版本:** 2026-05-27 | **状态:** 当前
+> **版本:** 2026-05-28 | **状态:** 当前（含国密数据加密改造）
 
 ---
 
@@ -619,6 +619,91 @@ sequenceDiagram
 | `GET /api/todo/counts` | — | ✅ (仅本人数据) | ✅ |
 | `GET /api/notifications` | — | 仅本人 | 仅本人 |
 | `PUT /api/notifications/{id}/read` | — | 仅本人 | 仅本人 |
+
+### 7.7 SM4 数据库字段加密（国密改造）
+
+**问题:** `user` 表的 `email`、`username`、`displayName` 字段包含个人信息，以明文存储。数据库泄露将直接暴露所有用户数据。
+
+**方案:** 基于 MyBatis-Plus TypeHandler 实现透明的字段级 SM4 加解密，对业务代码零侵入。
+
+#### 加密策略
+
+| 字段 | 模式 | IV 策略 | 原因 |
+|------|------|---------|------|
+| `username` | 确定性加密 | IV = SHA-256(plaintext)[0:16] | UNIQUE 索引 + WHERE eq 查询 |
+| `email` | 确定性加密 | IV = SHA-256(plaintext)[0:16] | 预留查询需求 |
+| `displayName` | 随机 IV | SecureRandom | 仅展示，不做查询条件 |
+
+确定性加密确保同一明文产生同一密文，UNIQUE 索引和精确匹配查询依然有效。不同明文使用不同 IV（由自身散列派生），无模式泄露风险。
+
+#### 核心组件
+
+```
+SM4Util
+  ├── encrypt(plaintext, key)        → 随机 IV 加密
+  ├── decrypt(ciphertext, key)       → 解密
+  ├── encryptDeterministic(text, key) → IV = SHA-256(text)[0:16]
+  └── decryptDeterministic(text, key) → 同 decrypt
+
+Sm4Config (@Configuration)
+  └── @Value("${sm4.data-key}") → static key holder
+
+SM4DeterministicTypeHandler extends BaseTypeHandler<String>
+  ├── setNonNullParameter → encryptDeterministic()
+  └── getNullableResult   → decryptDeterministic()
+
+SM4EncryptTypeHandler extends BaseTypeHandler<String>
+  ├── setNonNullParameter → encrypt()
+  └── getNullableResult   → decrypt()
+
+DataEncryptInitializer implements ApplicationRunner
+  └── 启动时检测并加密存量明文数据（JdbcTemplate 绕过 TypeHandler）
+```
+
+#### 数据流
+
+```mermaid
+sequenceDiagram
+    participant App as 应用层
+    participant TH as TypeHandler
+    participant SM4 as SM4Util
+    participant DB as MySQL
+
+    Note over App,DB: INSERT/UPDATE 流程
+    App->>TH: setNonNullParameter(明文)
+    TH->>SM4: encryptDeterministic(plaintext, key)
+    SM4-->>TH: Base64(IV + ciphertext)
+    TH->>DB: 写入密文
+
+    Note over App,DB: SELECT 流程
+    DB-->>TH: 读取密文
+    TH->>SM4: decrypt(ciphertext, key)
+    SM4-->>TH: 明文
+    TH-->>App: return 明文
+
+    Note over App,DB: WHERE 条件 (手动加密)
+    App->>SM4: encryptDeterministic("admin", key)
+    SM4-->>App: 密文
+    App->>DB: WHERE username = '密文'
+```
+
+#### 存量数据迁移
+
+`DataEncryptInitializer` 在应用启动时自动执行：
+
+1. JdbcTemplate 直连查询所有 user 记录（绕过 TypeHandler）
+2. 尝试 SM4 解密 username：失败 → 明文 → 加密后 UPDATE；成功 → 已加密 → 跳过
+3. 幂等设计，多次启动安全
+
+#### DDL 变更
+
+V13 迁移扩展字段长度以容纳密文（SM4 CBC: 16B IV + 密文 → Base64 编码）：
+
+| 字段 | 原长度 | 新长度 |
+|------|--------|--------|
+| `username` | VARCHAR(64) | VARCHAR(256) |
+| `email` | VARCHAR(128) | VARCHAR(256) |
+| `display_name` | VARCHAR(64) | VARCHAR(256) |
 
 ---
 

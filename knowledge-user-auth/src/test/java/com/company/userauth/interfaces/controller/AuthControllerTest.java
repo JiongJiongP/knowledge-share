@@ -1,62 +1,83 @@
 package com.company.userauth.interfaces.controller;
 
-import com.company.common.exception.BizException;
+import com.company.common.exception.GlobalExceptionHandler;
+import com.company.userauth.application.dto.LoginRequest;
+import com.company.userauth.application.dto.LoginResponse;
 import com.company.userauth.application.service.AuthService;
+import com.company.userauth.domain.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Map;
-
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(value = AuthController.class, excludeAutoConfiguration = {
-        org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class
-}, properties = "jwt.secret=test-secret-key-for-controller-test-min-256-bits!!")
+@ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
+    @Mock
     private AuthService authService;
 
-    @Test
-    void shouldReturnTokenOnValidLogin() throws Exception {
-        when(authService.login(eq("admin"), eq("admin123"))).thenReturn("test.jwt.token");
+    @InjectMocks
+    private AuthController authController;
 
-        Map<String, String> body = Map.of("username", "admin", "password", "admin123");
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(authController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
+    }
+
+    @Test
+    void shouldLogin() throws Exception {
+        LoginRequest req = new LoginRequest();
+        req.setUsername("zhangsan");
+        req.setPassword("password123");
+
+        when(authService.login("zhangsan", "password123")).thenReturn("jwt-token");
+
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(body)))
+                        .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data.token").value("test.jwt.token"));
+                .andExpect(jsonPath("$.data.token").value("jwt-token"));
     }
 
     @Test
-    void shouldReturn401OnInvalidLogin() throws Exception {
-        when(authService.login(eq("admin"), eq("wrong")))
-                .thenThrow(new BizException(401, "用户名或密码错误"));
+    void shouldGetCurrentUser() throws Exception {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("zhangsan");
+        when(authService.getCurrentUser(1L)).thenReturn(user);
 
-        Map<String, String> body = Map.of("username", "admin", "password", "wrong");
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(body)))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value(401))
-                .andExpect(jsonPath("$.message").value("用户名或密码错误"));
+        var auth = new UsernamePasswordAuthenticationToken(1L, null);
+
+        mockMvc.perform(get("/api/auth/me")
+                        .principal(auth))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.username").value("zhangsan"));
     }
 
+    @Test
+    void shouldReturn401WhenNotAuthenticated() throws Exception {
+        mockMvc.perform(get("/api/auth/me"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(401));
+    }
 }

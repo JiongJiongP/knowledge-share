@@ -1,10 +1,14 @@
 package com.company.userauth.application.service;
 
+import com.company.common.config.Sm4Config;
 import com.company.common.exception.BizException;
 import com.company.userauth.domain.model.User;
+import com.company.userauth.infrastructure.mapper.DepartmentMapper;
 import com.company.userauth.infrastructure.mapper.RoleMapper;
 import com.company.userauth.infrastructure.mapper.UserMapper;
+import com.company.userauth.infrastructure.mapper.UserRoleMapper;
 import com.company.userauth.infrastructure.security.JwtUtil;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,15 +31,26 @@ class AuthServiceTest {
     private RoleMapper roleMapper;
 
     @Mock
+    private UserRoleMapper userRoleMapper;
+
+    @Mock
+    private DepartmentMapper departmentMapper;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     private JwtUtil jwtUtil;
     private AuthService authService;
 
+    @BeforeAll
+    static void initSm4() {
+        Sm4Config.initializeForTest("0123456789abcdef0123456789abcdef");
+    }
+
     @BeforeEach
     void setUp() {
         jwtUtil = new JwtUtil("test-secret-key-for-unit-test-min-256-bits!!", 3600000L);
-        authService = new AuthService(userMapper, roleMapper, passwordEncoder, jwtUtil);
+        authService = new AuthService(userMapper, roleMapper, userRoleMapper, departmentMapper, passwordEncoder, jwtUtil);
     }
 
     @Test

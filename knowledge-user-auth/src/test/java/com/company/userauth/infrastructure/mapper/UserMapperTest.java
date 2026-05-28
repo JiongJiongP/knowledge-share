@@ -1,6 +1,9 @@
 package com.company.userauth.infrastructure.mapper;
 
+import com.company.common.config.Sm4Config;
+import com.company.common.util.SM4Util;
 import com.company.userauth.domain.model.User;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -18,7 +21,7 @@ class UserMapperTest {
     private UserMapper userMapper;
 
     @Test
-    void shouldInsertAndSelectUserById() {
+    void shouldInsertAndSelectUserById() throws Exception {
         User user = new User();
         user.setUsername("zhangsan");
         user.setPassword("encoded_password");
@@ -33,13 +36,13 @@ class UserMapperTest {
 
         User found = userMapper.selectById(user.getId());
         assertThat(found).isNotNull();
-        assertThat(found.getUsername()).isEqualTo("zhangsan");
-        assertThat(found.getDisplayName()).isEqualTo("张三");
-        assertThat(found.getEmail()).isEqualTo("zhangsan@company.com");
+        assertThat(SM4Util.decryptDeterministic(found.getUsername(), Sm4Config.getDataKey())).isEqualTo("zhangsan");
+        assertThat(SM4Util.decryptDeterministic(found.getDisplayName(), Sm4Config.getDataKey())).isEqualTo("张三");
+        assertThat(SM4Util.decryptDeterministic(found.getEmail(), Sm4Config.getDataKey())).isEqualTo("zhangsan@company.com");
     }
 
     @Test
-    void shouldSelectUserByUsername() {
+    void shouldSelectUserByUsername() throws Exception {
         User user = new User();
         user.setUsername("lisi");
         user.setPassword("encoded_password");
@@ -48,13 +51,13 @@ class UserMapperTest {
         user.setStatus("ACTIVE");
         userMapper.insert(user);
 
-        // Using LambdaQueryWrapper to query by username
+        String encrypted = SM4Util.encryptDeterministic("lisi", Sm4Config.getDataKey());
         var wrapper = new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<User>()
-                .eq(User::getUsername, "lisi");
+                .eq(User::getUsername, encrypted);
         User found = userMapper.selectOne(wrapper);
 
         assertThat(found).isNotNull();
-        assertThat(found.getDisplayName()).isEqualTo("李四");
+        assertThat(SM4Util.decryptDeterministic(found.getDisplayName(), Sm4Config.getDataKey())).isEqualTo("李四");
     }
 
     @Test

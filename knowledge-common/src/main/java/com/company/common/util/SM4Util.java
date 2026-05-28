@@ -7,6 +7,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Base64;
@@ -79,6 +80,39 @@ public class SM4Util {
         byte[] decrypted = cipher.doFinal(ciphertext);
 
         return new String(decrypted, "UTF-8");
+    }
+
+    /** Deterministic encryption: IV = SHA-256(plaintext)[0:16]. Same plaintext → same ciphertext. */
+    public static String encryptDeterministic(String plaintext, String keyHex) throws Exception {
+        byte[] keyBytes = hexToBytes(keyHex);
+        SecretKeySpec key = new SecretKeySpec(keyBytes, ALGORITHM);
+
+        byte[] iv = deriveIV(plaintext);
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
+
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION, BouncyCastleProvider.PROVIDER_NAME);
+        cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
+        byte[] encrypted = cipher.doFinal(plaintext.getBytes("UTF-8"));
+
+        byte[] combined = new byte[IV_LENGTH + encrypted.length];
+        System.arraycopy(iv, 0, combined, 0, IV_LENGTH);
+        System.arraycopy(encrypted, 0, combined, IV_LENGTH, encrypted.length);
+
+        return Base64.getEncoder().encodeToString(combined);
+    }
+
+    /** Decrypt deterministic ciphertext. Same as decrypt(). */
+    public static String decryptDeterministic(String encrypted, String keyHex) throws Exception {
+        return decrypt(encrypted, keyHex);
+    }
+
+    /** Derive 16-byte IV from plaintext using SHA-256 */
+    private static byte[] deriveIV(String plaintext) throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(plaintext.getBytes("UTF-8"));
+        byte[] iv = new byte[IV_LENGTH];
+        System.arraycopy(hash, 0, iv, 0, IV_LENGTH);
+        return iv;
     }
 
     private static String bytesToHex(byte[] bytes) {

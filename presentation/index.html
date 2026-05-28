@@ -4,12 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI 驱动的全栈开发实践 — Knowledge Share</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css" />
+  <link rel="stylesheet" href="lib/reveal.js/dist/reset.css" />
+  <link rel="stylesheet" href="lib/reveal.js/dist/reveal.css" />
+  <link rel="stylesheet" href="lib/reveal.js/dist/theme/black.css" />
+  <link rel="stylesheet" href="lib/reveal.js/plugin/highlight/monokai.css" />
   <style>
-    /* ── Base overrides ── */
     .reveal {
       font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
     }
@@ -18,13 +17,12 @@
     .reveal h3 { font-size: 1.4em; color: #90caf9; }
     .reveal h4 { font-size: 1.1em; color: #bbdefb; }
     .reveal li { line-height: 1.7; }
-    .reveal table { font-size: 0.7em; }
+    .reveal table { font-size: 0.7em; margin: 0 auto; }
     .reveal th { background: #1e88e5; color: #fff; font-weight: 600; }
     .reveal td, .reveal th { padding: 8px 14px; border: 1px solid #444; }
     .reveal .fragment { opacity: 0; transition: opacity 0.4s ease; }
     .reveal .fragment.visible { opacity: 1; }
 
-    /* ── Slide-specific helpers ── */
     .slide-title { margin-bottom: 0.15em; }
     .slide-subtitle { font-size: 0.85em; color: #90caf9; margin-bottom: 0.6em; }
     .accent-blue { color: #64b5f6; }
@@ -43,13 +41,17 @@
     .stat-card .label { font-size: 0.65em; color: #b0bec5; margin-top: 4px; }
 
     .three-col { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
-    .three-col > div { flex: 1; min-width: 180px; max-width: 300px; }
+    .three-col > div { flex: 1; min-width: 180px; max-width: 320px; }
+    .two-col { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+    .two-col > div { flex: 1; min-width: 240px; max-width: 480px; }
+
     .card {
       background: rgba(255,255,255,0.06);
       border-radius: 10px; padding: 18px; text-align: center;
       border: 1px solid rgba(255,255,255,0.08);
     }
     .card h4 { margin-top: 0; }
+    .card-left { text-align: left; }
 
     .badge { display: inline-block; border-radius: 6px; padding: 2px 10px; font-size: 0.6em; font-weight: 600; }
     .badge-critical { background: #c62828; color: #fff; }
@@ -65,77 +67,79 @@
     .mermaid { background: rgba(0,0,0,0.25); border-radius: 10px; padding: 12px; }
     .reveal .mermaid svg { max-height: 420px; }
 
-    .takeaway { font-size: 1.3em; font-weight: 600; padding: 18px 28px; border-left: 5px solid #43e97b; background: rgba(67,233,123,0.08); border-radius: 8px; margin: 10px 0; }
+    .takeaway { font-size: 1.15em; font-weight: 600; padding: 16px 24px; border-left: 5px solid #43e97b; background: rgba(67,233,123,0.08); border-radius: 8px; margin: 10px 0; }
+
+    .pain-card {
+      background: rgba(239,83,80,0.08);
+      border: 1px solid rgba(239,83,80,0.25);
+      border-radius: 10px; padding: 16px 18px; text-align: left;
+    }
+    .pain-card h4 { color: #ef5350; margin-top: 0; font-size: 1em; }
+
+    .arch-layer {
+      background: rgba(255,255,255,0.04);
+      border-radius: 8px; padding: 10px 16px; margin: 6px 0;
+      border-left: 4px solid #64b5f6;
+      text-align: left;
+    }
+
+    .compare-table th:first-child { background: transparent; color: #90caf9; }
+    .compare-table td { font-size: 0.75em; }
+    .compare-table .win { color: #43e97b; font-weight: 600; }
+    .compare-table .lose { color: #ef5350; }
+
+    .sm4-flow { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; font-size: 0.65em; }
+    .sm4-flow .node { background: rgba(255,255,255,0.06); border-radius: 8px; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.1); }
+    .sm4-flow .arrow { color: #64b5f6; font-size: 1.4em; }
   </style>
 </head>
 <body>
 <div class="reveal">
 <div class="slides">
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 1 — Cover                                        -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 1 — Cover ═══════════ -->
   <section>
     <h1 class="slide-title" style="background: linear-gradient(135deg,#64b5f6,#43e97b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
       AI 驱动的全栈开发实践
     </h1>
-    <p class="slide-subtitle">Knowledge Share 知识共享平台 &mdash; 从需求到上线的 AI 协作之旅</p>
+    <p class="slide-subtitle">Knowledge Share 知识共享平台 — 从需求到上线的 AI 协作之旅</p>
     <hr style="width:60%; border-color:#444; margin:1.2em auto;" />
     <p style="font-size:0.7em; color:#78909c;">
-      56 Git Commits &bull; 69 API &bull; 20 张表 &bull; 15 前端页面 &bull; 9 后端模块
+      69 API &bull; 20 张表 &bull; 15 前端页面 &bull; 9 后端模块 &bull; 56 Git Commits
     </p>
-    <aside class="notes">
-      欢迎各位。今天我将分享我们如何借助 AI 技能系统，从零到一构建 Knowledge Share 知识共享平台的全过程。
-    </aside>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 2 — Project Overview                             -->
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <section>
-    <h2>What is Knowledge Share?</h2>
-    <ul>
-      <li class="fragment">企业级知识管理平台 &mdash; 沉淀、搜索、分享团队知识</li>
-      <li class="fragment"><span class="accent-blue">69</span> 个 API &nbsp;|&nbsp; <span class="accent-blue">20</span> 张数据库表 &nbsp;|&nbsp; <span class="accent-blue">15</span> 个前端页面 &nbsp;|&nbsp; <span class="accent-blue">9</span> 个后端模块</li>
-      <li class="fragment">技术栈：<br/>
-        <span class="accent-orange">Spring Boot 3.2</span> + <span class="accent-orange">Vue 3</span> + <span class="accent-orange">MySQL 8</span><br/>
-        <span class="accent-orange">Elasticsearch</span> + <span class="accent-orange">Qdrant</span> + <span class="accent-orange">RabbitMQ</span>
-      </li>
-      <li class="fragment">100% AI 辅助开发 &mdash; 从需求到上线的完整闭环</li>
-    </ul>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 3 — Agenda                                       -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 2 — Agenda ═══════════ -->
   <section>
     <h2>议程</h2>
-    <div class="three-col" style="margin-top:1.2em;">
-      <div class="card fragment">
+    <div style="display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-top:1.4em;">
+      <div class="fragment card" style="min-width:140px;">
         <h4><span class="accent-blue">01</span></h4>
-        <p style="font-size:0.8em;">AI 如何参与<br/>全流程开发</p>
+        <p style="font-size:0.75em;">痛点与平台架构</p>
       </div>
-      <div class="card fragment">
+      <div class="fragment card" style="min-width:140px;">
         <h4><span class="accent-green">02</span></h4>
-        <p style="font-size:0.8em;">架构设计亮点</p>
+        <p style="font-size:0.75em;">DDD 领域驱动设计</p>
       </div>
-      <div class="card fragment">
+      <div class="fragment card" style="min-width:140px;">
         <h4><span class="accent-orange">03</span></h4>
-        <p style="font-size:0.8em;">性能与<br/>安全实战</p>
+        <p style="font-size:0.75em;">混合搜索与数据设计</p>
       </div>
-      <div class="card fragment">
+      <div class="fragment card" style="min-width:140px;">
         <h4><span class="accent-pink">04</span></h4>
-        <p style="font-size:0.8em;">总结与展望</p>
+        <p style="font-size:0.75em;">AI 全流程协作</p>
+      </div>
+      <div class="fragment card" style="min-width:140px;">
+        <h4><span class="accent-blue">05</span></h4>
+        <p style="font-size:0.75em;">安全与性能实战</p>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 4 — AI 协作全景图 (Mermaid)                       -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 3 — AI 协作全景图 ═══════════ -->
   <section>
     <h2>AI 协作全景图</h2>
-    <p style="font-size:0.65em; color:#90a4ae; margin-bottom:12px;">每个阶段由对应的 Superpowers Skill 驱动</p>
+    <p style="font-size:0.65em; color:#90a4ae; margin-bottom:10px;">Superpowers Skills 覆盖软件工程全生命周期</p>
     <div class="mermaid">
       graph LR
           A[需求分析] --> B[头脑风暴<br/>brainstorming]
@@ -148,103 +152,345 @@
           style A fill:#5c6bc0,color:#fff
           style H fill:#43a047,color:#fff
     </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 5 — Skills System                                -->
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <section>
-    <h2>Superpowers Skills 矩阵</h2>
-    <p style="font-size:0.65em; color:#90a4ae;">Skills 覆盖软件工程全生命周期</p>
-    <table style="font-size:0.55em;">
-      <thead>
-        <tr><th style="width:15%">类别</th><th>Skills</th></tr>
-      </thead>
+    <table style="font-size:0.5em; margin-top:12px; width:85%;">
+      <thead><tr><th style="width:15%">类别</th><th>Skills</th><th style="width:12%">使用次数</th></tr></thead>
       <tbody>
-        <tr>
-          <td style="color:#64b5f6;font-weight:600;">流程</td>
-          <td>brainstorming &bull; writing-plans &bull; executing-plans &bull; subagent-driven-development</td>
-        </tr>
-        <tr>
-          <td style="color:#43e97b;font-weight:600;">质量</td>
-          <td>code-review &bull; security-review &bull; verification-before-completion</td>
-        </tr>
-        <tr>
-          <td style="color:#ffb74d;font-weight:600;">方法</td>
-          <td>test-driven-development &bull; systematic-debugging</td>
-        </tr>
-        <tr>
-          <td style="color:#f06292;font-weight:600;">工具</td>
-          <td>wireframe-prototyping &bull; frontend-design &bull; gstack</td>
-        </tr>
+        <tr><td style="color:#64b5f6;">流程</td><td>brainstorming · writing-plans · executing-plans · subagent-dev</td><td>30+</td></tr>
+        <tr><td style="color:#43e97b;">质量</td><td>code-review · security-review · verification-before-completion</td><td>15+</td></tr>
+        <tr><td style="color:#ffb74d;">方法</td><td>test-driven-development · systematic-debugging</td><td>10+</td></tr>
+        <tr><td style="color:#f06292;">工具</td><td>wireframe-prototyping · frontend-design · gstack</td><td>8+</td></tr>
       </tbody>
     </table>
-    <p class="fragment" style="margin-top:18px; font-size:0.8em; color:#b0bec5;">
-      Skills 不是玩具 &mdash; 它们是可重复、可审查的结构化开发流程
+  </section>
+
+  <!-- ═══════════ PART 2: 痛点与平台架构 ═══════════ -->
+
+  <!-- ═══════════ SLIDE 4 — 痛点 ═══════════ -->
+  <section>
+    <h2>痛点：搜不到 = 不存在</h2>
+    <p class="slide-subtitle">传统知识管理平台的三大困境</p>
+    <div class="three-col" style="margin-top:14px;">
+      <div class="fragment pain-card">
+        <h4>关键词匹配陷阱</h4>
+        <p style="font-size:0.65em; color:#b0bec5;">
+          搜索 <span style="color:#ffb74d;">"微服务性能优化"</span><br/>
+          找不到 <span style="color:#43e97b;">"服务网格调优指南"</span>
+        </p>
+        <p style="font-size:0.55em; color:#78909c; margin-top:6px;">
+          纯 BM25 字面匹配，无法理解语义关联<br/>查准率高但<span style="color:#ef5350;">查全率极低</span>
+        </p>
+      </div>
+      <div class="fragment pain-card">
+        <h4>排序机制单一</h4>
+        <p style="font-size:0.65em; color:#b0bec5;">
+          仅按<span style="color:#ffb74d;">时间 / 阅读量</span>排序
+        </p>
+        <p style="font-size:0.55em; color:#78909c; margin-top:6px;">
+          高质量深度长文沉底<br/>碎片化内容反而排前面<br/>缺乏<span style="color:#ef5350;">内容质量权重</span>
+        </p>
+      </div>
+      <div class="fragment pain-card">
+        <h4>知识孤岛效应</h4>
+        <p style="font-size:0.65em; color:#b0bec5;">
+          跨团队、跨部门知识<span style="color:#ef5350;">无法打通</span>
+        </p>
+        <p style="font-size:0.55em; color:#78909c; margin-top:6px;">
+          同一问题多团队重复踩坑<br/>内容沉淀了但<span style="color:#ef5350;">利用率极低</span>
+        </p>
+      </div>
+    </div>
+    <p class="fragment" style="font-size:0.7em; color:#90a4ae; margin-top:18px;">
+      结论：<span style="color:#43e97b;">语义搜索 + 智能排序 + 全域打通</span> 是知识平台的核心壁垒
     </p>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 6 — Brainstorming-Driven Design                  -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 5 — 平台总览 ═══════════ -->
   <section>
-    <h2>Brainstorming-Driven Design</h2>
-    <p class="slide-subtitle">真实案例：首页仪表盘设计</p>
-    <ul>
-      <li class="fragment"><strong>触发：</strong>用户提出 "首页太单调"</li>
-      <li class="fragment"><strong>brainstorming skill 介入：</strong>
-        <ul>
-          <li>探索需求 &rarr; 追问问题 &rarr; 生成视觉伴生图</li>
-          <li>提供 <span class="accent-orange">Option A / B / C</span> 三种方案</li>
-        </ul>
-      </li>
-      <li class="fragment"><strong>用户选择方案 A</strong> &mdash; 带统计卡片的仪表盘</li>
-      <li class="fragment"><strong>结果：</strong>设计文档自动提交至 Git，进入下一阶段</li>
-    </ul>
+    <h2>Knowledge Share 平台总览</h2>
+    <p class="slide-subtitle">基于 DDD 的微服务知识管理平台</p>
+    <div class="mermaid">
+      graph TB
+          subgraph Frontend["Frontend · Vue 3"]
+              Views["15 页面 · 11 API 模块"]
+          end
+          subgraph Gateway["Security Gateway"]
+              JWT["JWT Filter"]
+              ACL["URL ACL"]
+          end
+          subgraph Domains["DDD 领域模块 · Spring Boot 3.2"]
+              Auth["user-auth"]
+              Content["content"]
+              Social["social"]
+              Search["search"]
+              File["file"]
+              Notif["notification"]
+              Analytics["analytics"]
+          end
+          subgraph Infra["Infrastructure"]
+              MySQL[(MySQL 8)]
+              ES[(Elasticsearch)]
+              Qdrant[(Qdrant · 768d)]
+              MQ[(RabbitMQ)]
+              Redis[(Redis)]
+              MinIO[(MinIO)]
+          end
+          Frontend -->|Bearer JWT| Gateway
+          Gateway --> Domains
+          Domains --> Infra
+          style Frontend fill:#1a237e,color:#fff
+          style Gateway fill:#b71c1c,color:#fff
+          style Domains fill:#1b5e20,color:#fff
+          style Infra fill:#4a148c,color:#fff
+    </div>
+    <p style="font-size:0.6em; color:#78909c; margin-top:8px;">
+      9 个限界上下文 · 69 API · 20 张表 · DDD 四层架构 · CQRS 读写分离
+    </p>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 7 — Plan-Driven Development                      -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 6 — DDD 四层架构 ═══════════ -->
   <section>
-    <h2>Plan-Driven Development</h2>
-    <p class="slide-subtitle">writing-plans skill 的输出特性</p>
-    <ul>
-      <li class="fragment">每一步都是单一动作（2-5 分钟）</li>
-      <li class="fragment">精确的文件路径 + <strong>完整代码</strong>（无占位符）</li>
-      <li class="fragment">预期命令和输出结果</li>
-      <li class="fragment" style="color:#43e97b;">零歧义 &mdash; 人类或 AI 均可执行</li>
-    </ul>
-    <pre class="fragment" style="font-size:0.45em; margin-top:16px; text-align:left;"><code class="language-plaintext" data-trim>
-Task 1: StatsController
-  Step 1: 创建 Controller → [完整代码块]
-  Step 2: 验证编译 → mvn compile -pl knowledge-web -q
-          Expected: BUILD SUCCESS
-  Step 3: 提交 → git commit -m "feat: add StatsController"
-    </code></pre>
+    <h2>DDD 四层架构设计</h2>
+    <p class="slide-subtitle">Interface → Application → Domain → Infrastructure</p>
+    <!-- 四层卡片：全宽单行 -->
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
+      <div class="fragment arch-layer" style="flex:1; border-left-color:#64b5f6; font-size:0.6em;">
+        <strong style="color:#64b5f6;">Interface · 接口层</strong><br/>
+        <span style="color:#90a4ae;">Controllers · DTOs · Validators</span><br/>
+        <span style="color:#78909c;">协议适配，不含业务逻辑</span>
+      </div>
+      <div class="fragment arch-layer" style="flex:1; border-left-color:#43e97b; font-size:0.6em;">
+        <strong style="color:#43e97b;">Application · 应用层</strong><br/>
+        <span style="color:#90a4ae;">Services · Event Publishers</span><br/>
+        <span style="color:#78909c;">编排领域对象，驱动用例</span>
+      </div>
+      <div class="fragment arch-layer" style="flex:1; border-left-color:#ffb74d; font-size:0.6em;">
+        <strong style="color:#ffb74d;">Domain · 领域层</strong><br/>
+        <span style="color:#90a4ae;">Entities · Value Objects · Domain Services</span><br/>
+        <span style="color:#78909c;">业务规则核心，零外部依赖</span>
+      </div>
+      <div class="fragment arch-layer" style="flex:1; border-left-color:#f06292; font-size:0.6em;">
+        <strong style="color:#f06292;">Infrastructure · 基础设施层</strong><br/>
+        <span style="color:#90a4ae;">Repository Impl · MyBatis Mappers</span><br/>
+        <span style="color:#78909c;">技术实现细节，可替换可测试</span>
+      </div>
+    </div>
+    <!-- 模块映射表：全宽 -->
+    <div class="fragment" style="font-size:0.52em; margin-top:14px;">
+      <table style="width:90%;">
+        <thead><tr><th>模块</th><th>领域核心</th><th>模块</th><th>领域核心</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="color:#64b5f6;">knowledge-common</td><td>共享工具 · SM4 · 统一响应</td>
+            <td style="color:#f06292;">knowledge-social</td><td>评论 · 收藏 · 群组 · 通知</td>
+          </tr>
+          <tr>
+            <td style="color:#43e97b;">knowledge-user-auth</td><td>User 聚合 · JWT · 权限</td>
+            <td style="color:#64b5f6;">knowledge-search</td><td>ES + Qdrant 混合搜索引擎</td>
+          </tr>
+          <tr>
+            <td style="color:#ffb74d;">knowledge-content</td><td>Content 聚合 · 标签 · 搜索</td>
+            <td style="color:#43e97b;">knowledge-file</td><td>文件存储 · MinIO 适配</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="color:#43e97b; margin-top:6px;">每个模块独立构建 · 独立测试 · 独立部署</p>
+    </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 8 — Subagent-Driven Parallel Development         -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 7 — DDD 实战 Content 领域 ═══════════ -->
+  <section>
+    <h2>DDD 实战：Content 领域建模</h2>
+    <p class="slide-subtitle">以 knowledge-content 模块为例</p>
+    <div class="two-col" style="margin-top:10px;">
+      <div class="fragment" style="font-size:0.65em; text-align:left;">
+        <h4 style="color:#ffb74d;">Aggregate Root · Content</h4>
+        <table style="font-size:0.85em; width:100%;">
+          <tr><td style="color:#78909c;">id</td><td>Long · 聚合根标识</td></tr>
+          <tr><td style="color:#78909c;">title</td><td>String · 全文索引字段</td></tr>
+          <tr><td style="color:#78909c;">body</td><td>Text · Mermaid 渲染管道</td></tr>
+          <tr><td style="color:#78909c;">status</td><td>ContentStatus · 值对象</td></tr>
+          <tr><td style="color:#78909c;">tags</td><td>List&lt;Tag&gt; · 值对象集合</td></tr>
+        </table>
+        <h4 style="color:#64b5f6; margin-top:12px;">Domain Service</h4>
+        <p style="font-size:0.85em; color:#90a4ae;">
+          <code style="color:#ffb74d;">ContentPublishService</code> — 发布时校验标签合法性、触发 <code>ContentPublishedEvent</code>
+        </p>
+      </div>
+      <div class="fragment" style="font-size:0.6em; text-align:left;">
+        <h4 style="color:#43e97b;">领域事件流转</h4>
+        <div class="mermaid">
+          graph TB
+              Publish["Content.publish()"] --> Event["ContentPublishedEvent"]
+              Event --> Search["Search 模块<br/>更新 ES + Qdrant 索引"]
+              Event --> Notif["Notification 模块<br/>推送订阅通知"]
+              Event --> Analytics["Analytics 模块<br/>记录发布统计"]
+              style Publish fill:#ffb74d,color:#222
+              style Event fill:#5c6bc0,color:#fff
+              style Search fill:#43a047,color:#fff
+              style Notif fill:#e65100,color:#fff
+              style Analytics fill:#6a1b9a,color:#fff
+        </div>
+        <h4 style="color:#f06292; margin-top:8px;">Repository 模式</h4>
+        <p style="font-size:0.85em; color:#90a4ae;">
+          接口定义在 <span style="color:#64b5f6;">Domain 层</span> &rarr;
+          实现在 <span style="color:#f06292;">Infrastructure 层</span><br/>
+          <span style="color:#78909c;">MyBatis-Plus + TypeHandler 透明加解密</span>
+        </p>
+      </div>
+    </div>
+    <p class="fragment" style="font-size:0.6em; color:#b0bec5; margin-top:10px;">
+      领域层零框架依赖 &bull; 可纯单测验证业务规则 &bull; 基础设施可替换
+    </p>
+  </section>
+
+  <!-- ═══════════ SLIDE 8 — RRF 混合搜索深度剖析 ═══════════ -->
+  <section>
+    <h2>RRF 混合搜索深度剖析</h2>
+    <p class="slide-subtitle">Elasticsearch BM25 + Qdrant 768d 向量语义搜索 → RRF 融合排序</p>
+    <div class="two-col" style="margin-top:10px;">
+      <div style="font-size:0.6em;">
+        <div class="mermaid">
+          graph LR
+              Q["用户查询"] --> ES["ES multi_match<br/>title^3 + body"]
+              Q --> Qd["Qdrant embedding<br/>cosine similarity"]
+              ES --> BM25["BM25 排序列表"]
+              Qd --> Vec["向量排序列表"]
+              BM25 --> RRF["RRF Fusion k=60"]
+              Vec --> RRF
+              RRF --> Result["融合结果 · 分页返回"]
+              style Q fill:#5c6bc0,color:#fff
+              style RRF fill:#e65100,color:#fff
+              style Result fill:#43a047,color:#fff
+        </div>
+        <p style="font-size:0.85em; color:#78909c; margin-top:6px;">
+          RRF 公式: <code style="color:#ffb74d;">score(d) = Σ 1/(k + rank_i(d))</code>
+        </p>
+      </div>
+      <div style="font-size:0.55em;">
+        <table class="compare-table">
+          <thead><tr><th>搜索方式</th><th>查准率</th><th>查全率</th><th>语义理解</th></tr></thead>
+          <tbody>
+            <tr><td>ES BM25 关键词</td><td class="win">高</td><td class="lose">低</td><td class="lose">无</td></tr>
+            <tr><td>Qdrant 向量语义</td><td class="lose">中</td><td class="win">高</td><td class="win">强</td></tr>
+            <tr><td style="color:#43e97b;">RRF 混合融合</td><td class="win" style="color:#43e97b;">高</td><td class="win" style="color:#43e97b;">高</td><td class="win" style="color:#43e97b;">强</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:10px; text-align:left;">
+          <p style="color:#64b5f6; font-weight:600;">为什么需要混合？</p>
+          <ul style="font-size:0.85em; padding-left:14px; color:#90a4ae;">
+            <li>搜索 <span style="color:#ffb74d;">"K8s 网络排查"</span> → BM25 命中 title</li>
+            <li>搜索 <span style="color:#ffb74d;">"容器编排通信故障"</span> → 向量召回语义相近内容</li>
+            <li>双方互补，<span style="color:#43e97b;">RRF 无需调权</span>即可公平融合</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 9 — 表结构赋能搜索 ═══════════ -->
+  <section>
+    <h2>表结构如何赋能搜索</h2>
+    <p class="slide-subtitle">数据库建模与搜索引擎的深度联动</p>
+    <div class="two-col" style="margin-top:10px;">
+      <div class="fragment" style="font-size:0.55em; text-align:left;">
+        <h4 style="color:#64b5f6;">content 表核心字段</h4>
+        <table style="width:100%;">
+          <thead><tr><th>字段</th><th>类型</th><th>用途</th></tr></thead>
+          <tbody>
+            <tr><td style="color:#43e97b;">id</td><td>BIGINT</td><td>主键 · ES 文档同步标识</td></tr>
+            <tr><td style="color:#ffb74d;">title</td><td>VARCHAR 500</td><td>FULLTEXT 索引 · MySQL + ES 双引擎</td></tr>
+            <tr><td>body</td><td>LONGTEXT</td><td>FULLTEXT · ES 分词 · Qdrant 向量化</td></tr>
+            <tr><td style="color:#64b5f6;">tags</td><td>JSON</td><td>标签数组 · ES 嵌套查询 · 精准过滤</td></tr>
+            <tr><td>category_id</td><td>BIGINT</td><td>分类维度 · ES filter 上下文</td></tr>
+            <tr><td>status</td><td>VARCHAR 20</td><td>审核状态 · WHERE 过滤 + ES 同步条件</td></tr>
+            <tr><td>published_at</td><td>DATETIME</td><td>发布排序 · 覆盖索引组成</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fragment" style="font-size:0.55em; text-align:left;">
+        <h4 style="color:#43e97b;">搜索联动的三个设计决策</h4>
+        <ol style="padding-left:16px; color:#90a4ae;">
+          <li style="margin-bottom:8px;"><strong style="color:#ffb74d;">冗余设计：</strong>content 表同时维护 MySQL FULLTEXT 索引 + ES 索引文档，MySQL 做精准查询，ES 做全文检索</li>
+          <li style="margin-bottom:8px;"><strong style="color:#ffb74d;">覆盖索引：</strong><br/>
+            <code style="color:#64b5f6;">idx_status_del_pub(status, is_deleted, published_at)</code><br/>
+            <span style="color:#78909c;">列表查询仅扫描索引，不回表</span>
+          </li>
+          <li style="margin-bottom:8px;"><strong style="color:#ffb74d;">渐进式迁移：</strong>12 次 Flyway 迁移，字段随着搜索需求逐步扩展，非一次设计到位</li>
+        </ol>
+        <h4 style="color:#f06292; margin-top:10px;">索引策略与搜索效率</h4>
+        <table style="width:100%; font-size:0.85em;">
+          <tr><td>COUNT(*)</td><td style="color:#ef5350;">450K 行全表扫描</td><td style="color:#43e97b;">→ 索引仅扫描</td></tr>
+          <tr><td>排序查询</td><td style="color:#ef5350;">filesort 临时表</td><td style="color:#43e97b;">→ 索引排序</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ PART 3: AI 全流程协作 ═══════════ -->
+
+  <!-- ═══════════ SLIDE 10 — AI 驱动开发流程 ═══════════ -->
+  <section>
+    <h2>AI 驱动的开发流程</h2>
+    <p class="slide-subtitle">Brainstorming → Plan → Execute — 结构化三阶段</p>
+    <div class="three-col" style="margin-top:14px;">
+      <div class="fragment card">
+        <h4 style="color:#64b5f6;">阶段 1 · 头脑风暴</h4>
+        <p style="font-size:0.6em; text-align:left; color:#90a4ae;">
+          真实案例：首页仪表盘设计<br/>
+          <span style="color:#78909c;">"首页太单调"</span> → brainstorming skill 介入<br/>
+          → 探索需求 → 追问 → 提供 <span class="accent-orange">Option A/B/C</span><br/>
+          → 用户选择 → 设计文档提交 Git
+        </p>
+      </div>
+      <div class="fragment card">
+        <h4 style="color:#43e97b;">阶段 2 · 计划生成</h4>
+        <p style="font-size:0.6em; text-align:left; color:#90a4ae;">
+          writing-plans skill 输出：<br/>
+          ✓ 精确文件路径 + <span style="color:#43e97b;">完整代码</span><br/>
+          ✓ 预期命令和输出<br/>
+          ✓ 每步 2-5 分钟<br/>
+          <span style="color:#43e97b;">零歧义</span> — 人类或 AI 均可执行
+        </p>
+      </div>
+      <div class="fragment card">
+        <h4 style="color:#ffb74d;">阶段 3 · 并行执行</h4>
+        <p style="font-size:0.6em; text-align:left; color:#90a4ae;">
+          Subagent 并行派发：<br/>
+          Backend + API + Frontend<br/>
+          各自 Code Review → Fix → Merge<br/>
+          <span style="color:#43e97b;">30+ 次派发</span>，并行度提升 3x
+        </p>
+      </div>
+    </div>
+    <div class="fragment" style="margin-top:14px;">
+      <div class="mermaid">
+        graph LR
+            B[brainstorming] --> P[writing-plans] --> E[subagent-dev] --> T[TDD] --> CR[code-review] --> SR[security-review]
+            style B fill:#5c6bc0,color:#fff
+            style SR fill:#43a047,color:#fff
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 11 — Subagent 并行开发 ═══════════ -->
   <section>
     <h2>Subagent-Driven 并行开发</h2>
     <div class="mermaid">
       graph TB
-          Controller[Controller Dispatches]
-          T1[Subagent 1: Backend]
-          T2[Subagent 2: API Wrapper]
-          T3[Subagent 3: Frontend UI]
+          Controller["Controller Dispatches"]
+          T1["Subagent 1: Backend"]
+          T2["Subagent 2: API Wrapper"]
+          T3["Subagent 3: Frontend UI"]
 
           Controller --> T1
           Controller --> T2
           Controller --> T3
 
-          T1 --> R1[Spec Review → Code Review → Fix]
-          T2 --> R2[Spec Review → Code Review → Fix]
-          T3 --> R3[Spec Review → Code Review → Fix]
+          T1 --> R1["Spec Review → Code Review → Fix"]
+          T2 --> R2["Spec Review → Code Review → Fix"]
+          T3 --> R3["Spec Review → Code Review → Fix"]
 
-          R1 --> Merge[Merge All Tasks]
+          R1 --> Merge["Merge All Tasks"]
           R2 --> Merge
           R3 --> Merge
 
@@ -254,52 +500,43 @@ Task 1: StatsController
     <p style="font-size:0.65em; color:#90a4ae; margin-top:8px;">30+ 次 Subagent 派发，并行度提升 3x</p>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 9 — AI-Driven Unit Testing                       -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 12 — AI 测试与审查 ═══════════ -->
   <section>
-    <h2>AI 驱动的单元测试</h2>
-    <table>
-      <thead><tr><th>模块</th><th>测试数</th><th>覆盖范围</th></tr></thead>
-      <tbody>
-        <tr><td>knowledge-common</td><td>1</td><td>Result 统一响应</td></tr>
-        <tr><td>knowledge-user-auth</td><td>6</td><td>AuthController, AuthService, JWT</td></tr>
-        <tr><td>knowledge-content</td><td>7</td><td>ContentService, TagService, Aho-Corasick</td></tr>
-        <tr><td>knowledge-social</td><td>6</td><td>GroupService, CommentService, FavoriteService</td></tr>
-        <tr><td>knowledge-search</td><td>2</td><td>SearchService</td></tr>
-      </tbody>
-    </table>
-    <p class="fragment" style="font-size:0.7em; margin-top:10px; color:#b0bec5;">
-      共 22 个测试类，覆盖 5 个模块 &bull; AI 自动发现并修复编译期错误
-    </p>
-    <p class="fragment" style="font-size:0.65em; color:#43e97b;">
-      测试失败 &rarr; 实现代码 &rarr; 测试通过 &rarr; 提交 &mdash; TDD 闭环
-    </p>
+    <h2>AI 驱动的测试与审查</h2>
+    <div class="two-col" style="margin-top:10px;">
+      <div class="fragment" style="font-size:0.6em;">
+        <h4 style="color:#43e97b;">单元测试覆盖</h4>
+        <table>
+          <thead><tr><th>模块</th><th>测试数</th><th>覆盖范围</th></tr></thead>
+          <tbody>
+            <tr><td>knowledge-common</td><td>1</td><td>Result 统一响应</td></tr>
+            <tr><td>knowledge-user-auth</td><td>6</td><td>AuthController, AuthService, JWT</td></tr>
+            <tr><td>knowledge-content</td><td>7</td><td>ContentService, TagService, Aho-Corasick</td></tr>
+            <tr><td>knowledge-social</td><td>6</td><td>GroupService, CommentService, Favorite</td></tr>
+            <tr><td>knowledge-search</td><td>2</td><td>混合搜索 Service</td></tr>
+            <tr><td style="color:#43e97b;">合计</td><td style="color:#43e97b;">22</td><td>5 模块 · TDD 闭环</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fragment" style="font-size:0.6em;">
+        <h4 style="color:#f06292;">代码审查发现</h4>
+        <table>
+          <thead><tr><th>类型</th><th>数量</th></tr></thead>
+          <tbody>
+            <tr><td>代码缺陷</td><td>15</td></tr>
+            <tr><td>编译错误</td><td>2</td></tr>
+            <tr><td>逻辑错误</td><td>3</td></tr>
+            <tr><td style="color:#ef5350;">安全漏洞</td><td>9（3 CRITICAL + 4 HIGH + 2 MEDIUM）</td></tr>
+          </tbody>
+        </table>
+        <p style="color:#64b5f6; font-size:0.85em; margin-top:8px;">
+          5 维度并行扫描 → CONFIRMED / PLAUSIBLE / REFUTED
+        </p>
+      </div>
+    </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 10 — Automated Review Pipeline                   -->
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <section>
-    <h2>自动化审查管线</h2>
-    <p class="slide-subtitle">code-review skill 运行机制</p>
-    <ul>
-      <li class="fragment">5 维度并行扫描 &rarr; <code>CONFIRMED / PLAUSIBLE / REFUTED</code> &rarr; 排序 &le; 15 条</li>
-    </ul>
-    <table class="fragment" style="font-size:0.6em; margin-top:14px;">
-      <thead><tr><th>类型</th><th>数量</th></tr></thead>
-      <tbody>
-        <tr><td>代码缺陷</td><td>15</td></tr>
-        <tr><td>编译错误</td><td>2</td></tr>
-        <tr><td>逻辑错误</td><td>3</td></tr>
-        <tr><td style="color:#ef5350;">安全漏洞</td><td>9（3 CRITICAL + 4 HIGH + 2 MEDIUM）</td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 11 — AI Impact by the Numbers                    -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 13 — AI 影响数据 ═══════════ -->
   <section>
     <h2>AI 影响数据一览</h2>
     <div class="stat-grid">
@@ -313,173 +550,64 @@ Task 1: StatsController
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 12 — Architecture Overview (Mermaid)             -->
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <section>
-    <h2>系统架构总览</h2>
-    <div class="mermaid">
-      graph TB
-          subgraph Frontend[Frontend Vue 3]
-              Views[15 Pages]
-              API[11 API Modules]
-          end
-          subgraph Gateway[Security Gateway]
-              JWT[JWT Filter]
-              ACL[URL ACL]
-          end
-          subgraph Backend[Backend Spring Boot]
-              Ctrl[Controllers 13]
-              Svc[Services 10+]
-          end
-          subgraph Infra[Infrastructure]
-              MySQL[(MySQL)]
-              ES[(Elasticsearch)]
-              Q[(Qdrant)]
-              MQ[(RabbitMQ)]
-              Redis[(Redis)]
-              MinIO[(MinIO)]
-          end
-          Frontend -->|Bearer JWT| Gateway
-          Gateway --> Backend
-          Backend --> Infra
-    </div>
-  </section>
+  <!-- ═══════════ PART 4: 安全与性能实战 ═══════════ -->
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 13 — Hybrid Search                               -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 14 — SM4 全栈加密 ═══════════ -->
   <section>
-    <h2>RRF 混合搜索</h2>
-    <p class="slide-subtitle">Elasticsearch BM25 + Qdrant 768-dim 向量语义搜索 &rarr; RRF 融合</p>
-    <div class="mermaid">
-      graph LR
-          Q[User Query]
-          ES[ES multi_match<br/>title+body]
-          Qd[Qdrant embed<br/>+ cosine search]
-          BM25[BM25 Ranks]
-          Vec[Vector Ranks]
-          RRF[RRF Fusion<br/>k=60]
-          Result[Paginated Results]
+    <h2>SM4 国密全栈加密</h2>
+    <p class="slide-subtitle">配置文件 → 数据库存储 → 传输层，三层 SM4 保护</p>
 
-          Q --> ES
-          Q --> Qd
-          ES --> BM25
-          Qd --> Vec
-          BM25 --> RRF
-          Vec --> RRF
-          RRF --> Result
+    <div style="margin-top:12px;">
+      <!-- Layer 1: Config -->
+      <div class="fragment" style="display:flex; align-items:center; gap:14px; margin-bottom:10px;">
+        <div style="background:#1565c0; border-radius:6px; padding:6px 12px; font-size:0.7em; font-weight:700; min-width:70px;">L1 · 配置</div>
+        <div style="font-size:0.6em; text-align:left; flex:1;">
+          <code style="color:#ffb74d;">EncryptedPropertyPostProcessor</code>
+          解析 <code style="color:#43e97b;">SM4(...)</code> 占位符 → Spring Boot 启动期自动解密注入<br/>
+          <span style="color:#78909c;">服务器仅需一个环境变量：<code>SM4_KEY</code></span>
+        </div>
+      </div>
+      <!-- Layer 2: Database -->
+      <div class="fragment" style="display:flex; align-items:center; gap:14px; margin-bottom:10px;">
+        <div style="background:#6a1b9a; border-radius:6px; padding:6px 12px; font-size:0.7em; font-weight:700; min-width:70px;">L2 · 存储</div>
+        <div style="font-size:0.6em; text-align:left; flex:1;">
+          MyBatis-Plus <code style="color:#ffb74d;">BaseTypeHandler</code> 透明加解密<br/>
+          <span style="color:#43e97b;">确定性加密</span>（username/email，支持 WHERE 等值查询）·
+          <span style="color:#64b5f6;">随机 IV 加密</span>（displayName，仅展示用）
+        </div>
+      </div>
+      <!-- Layer 3: Transport -->
+      <div class="fragment" style="display:flex; align-items:center; gap:14px; margin-bottom:12px;">
+        <div style="background:#e65100; border-radius:6px; padding:6px 12px; font-size:0.7em; font-weight:700; min-width:70px;">L3 · 传输</div>
+        <div style="font-size:0.6em; text-align:left; flex:1;">
+          HTTPS/TLS 1.3 + JWT 签名 + 前端 DOMPurify 防御 XSS
+        </div>
+      </div>
     </div>
-    <p style="font-size:0.6em; color:#78909c; margin-top:8px;">
-      关键词搜索 + 语义搜索，RFF(k=60) 加权排序
+
+    <div class="fragment" style="margin-top:8px;">
+      <table style="font-size:0.55em; width:80%;">
+        <thead><tr><th>字段</th><th>加密模式</th><th>IV 策略</th><th>WHERE 查询</th><th>密文存储</th></tr></thead>
+        <tbody>
+          <tr><td><code>username</code></td><td style="color:#ffb74d;">确定性 SM4/CBC</td><td>SHA-256(明文)[0:16]</td><td>✅ eq 匹配</td><td>VARCHAR 256</td></tr>
+          <tr><td><code>email</code></td><td style="color:#ffb74d;">确定性 SM4/CBC</td><td>SHA-256(明文)[0:16]</td><td>预留</td><td>VARCHAR 256</td></tr>
+          <tr><td><code>displayName</code></td><td style="color:#64b5f6;">随机 IV SM4/CBC</td><td>SecureRandom</td><td>— 仅展示</td><td>VARCHAR 256</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fragment" style="font-size:0.55em; color:#43e97b; margin-top:10px;">
+      对业务代码 0 侵入 — Content / Social / Search 模块无需任何修改
     </p>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 14 — Content Lifecycle & Notifications           -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 15 — 纵深防御 ═══════════ -->
   <section>
-    <h2>内容生命周期 &amp; 通知</h2>
-    <div class="three-col" style="margin-top:10px;">
-      <div class="fragment card">
-        <h4>内容状态机</h4>
-        <p style="font-size:0.7em;">
-          <code>[*]</code> &rarr; <span class="accent-orange">DRAFT</span> &rarr; <span class="accent-green">PUBLISHED</span><br/>
-          审核工作流控制
-        </p>
-      </div>
-      <div class="fragment card">
-        <h4>通知流转</h4>
-        <p style="font-size:0.65em;">
-          User Action &rarr; EventPublisher<br/>
-          &rarr; RabbitMQ &rarr; NotificationConsumer<br/>
-          &rarr; DB &rarr; Frontend Poll
-        </p>
-      </div>
-      <div class="fragment card">
-        <h4>表结构</h4>
-        <p style="font-size:0.6em;">
-          <code>content</code> + <code>content_audit</code><br/>
-          <code>notification</code><br/>
-          状态变迁可追溯
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 15 — Database Evolution                          -->
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <section>
-    <h2>数据库演化 &mdash; 12 次 Flyway 迁移</h2>
-    <table style="font-size:0.55em;">
-      <thead><tr><th>版本</th><th>变更</th><th>内容</th></tr></thead>
-      <tbody>
-        <tr><td>V1</td><td>Auth &amp; Identity</td><td>6 张基础表</td></tr>
-        <tr><td>V2-V9</td><td>核心功能</td><td>14 张业务表</td></tr>
-        <tr><td>V10</td><td>统计分析</td><td>3 张分析表</td></tr>
-        <tr><td>V11-V12</td><td>索引优化</td><td>仅索引变更</td></tr>
-        <tr><td style="color:#43e97b;"><strong>合计</strong></td><td colspan="2"><strong>20 张表，渐进式演进</strong></td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 16 — Performance Optimization                    -->
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <section>
-    <h2>性能优化 &mdash; 索引策略</h2>
-    <ol style="font-size:0.75em;">
-      <li class="fragment">EXPLAIN 分析查询模式</li>
-      <li class="fragment">移除低基数索引 <code>idx_is_deleted</code></li>
-      <li class="fragment">创建覆盖索引 <code>idx_status_del_pub(status, is_deleted, published_at)</code><br/><span style="color:#43e97b;font-size:0.8em;">&rarr; 索引仅 COUNT 扫描</span></li>
-      <li class="fragment">高频过滤 + 排序组合添加复合索引</li>
-    </ol>
-    <table class="fragment" style="font-size:0.6em; margin-top:14px;">
-      <thead><tr><th>场景</th><th>优化前</th><th>优化后</th></tr></thead>
-      <tbody>
-        <tr><td>COUNT 查询</td><td>全表扫描 450K 行</td><td style="color:#43e97b;">索引扫描 3-5x 更快</td></tr>
-        <tr><td>内容列表排序</td><td>filesort</td><td style="color:#43e97b;">索引排序</td></tr>
-        <tr><td>群组列表</td><td>全表扫描</td><td style="color:#43e97b;">复合索引命中</td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 17 — SM4 National Cryptography Standard          -->
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <section>
-    <h2>SM4 国密加密实践</h2>
-    <p class="slide-subtitle">秘密配置的透明加解密</p>
-    <div class="three-col" style="margin-top:10px;">
-      <div class="fragment card">
-        <h4 style="color:#ef5350;">问题</h4>
-        <p style="font-size:0.7em;">所有密钥硬编码于<br/><code>application.yml</code><br/>明文提交至 Git</p>
-      </div>
-      <div class="fragment card">
-        <h4 style="color:#ffb74d;">方案</h4>
-        <p style="font-size:0.7em;">SM4/CBC/PKCS7<br/>存储时加密<br/>启动时自动解密</p>
-      </div>
-      <div class="fragment card">
-        <h4 style="color:#43e97b;">实现</h4>
-        <p style="font-size:0.65em;"><code>EncryptedPropertyPostProcessor</code><br/>解析 <code>SM4(...)</code> 模式<br/>Spring Boot 启动期注入</p>
-      </div>
-    </div>
-    <p class="fragment" style="font-size:0.65em; color:#b0bec5; margin-top:14px;">
-      服务器仅需一个环境变量：<code>SM4_KEY</code>
-    </p>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 18 — Defense in Depth Security                   -->
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <section>
-    <h2>纵深防御 &mdash; 三层模型</h2>
+    <h2>纵深防御 — 三层模型</h2>
     <div class="three-col" style="margin-bottom:12px;">
       <div class="fragment card">
         <p><span class="defense-tier" style="background:#1565c0;">L1</span></p>
         <h4>URL 模式匹配</h4>
-        <p style="font-size:0.65em;"><code>/api/admin/**</code> &rarr; <code>ROLE_ADMIN</code></p>
+        <p style="font-size:0.65em;"><code>/api/admin/**</code> → <code>ROLE_ADMIN</code></p>
       </div>
       <div class="fragment card">
         <p><span class="defense-tier" style="background:#6a1b9a;">L2</span></p>
@@ -489,7 +617,7 @@ Task 1: StatsController
       <div class="fragment card">
         <p><span class="defense-tier" style="background:#e65100;">L3</span></p>
         <h4>输入校验</h4>
-        <p style="font-size:0.65em;"><code>@Valid</code> DTO &bull; <code>@NotBlank</code> &bull; <code>@Size</code></p>
+        <p style="font-size:0.65em;"><code>@Valid</code> DTO · <code>@NotBlank</code> · <code>@Size</code></p>
       </div>
     </div>
     <table style="font-size:0.5em;">
@@ -507,12 +635,61 @@ Task 1: StatsController
     </table>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 19 — Frontend Technical Highlights               -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 16 — 性能优化 ═══════════ -->
+  <section>
+    <h2>性能优化 — 索引策略</h2>
+    <ol style="font-size:0.75em;">
+      <li class="fragment">EXPLAIN 分析查询模式</li>
+      <li class="fragment">移除低基数索引 <code>idx_is_deleted</code></li>
+      <li class="fragment">创建覆盖索引 <code>idx_status_del_pub(status, is_deleted, published_at)</code><br/><span style="color:#43e97b;font-size:0.8em;">→ 索引仅 COUNT 扫描</span></li>
+      <li class="fragment">高频过滤 + 排序组合添加复合索引</li>
+    </ol>
+    <table class="fragment" style="font-size:0.6em; margin-top:14px;">
+      <thead><tr><th>场景</th><th>优化前</th><th>优化后</th></tr></thead>
+      <tbody>
+        <tr><td>COUNT 查询</td><td>全表扫描 450K 行</td><td style="color:#43e97b;">索引扫描 3-5x 更快</td></tr>
+        <tr><td>内容列表排序</td><td>filesort</td><td style="color:#43e97b;">索引排序</td></tr>
+        <tr><td>群组列表</td><td>全表扫描</td><td style="color:#43e97b;">复合索引命中</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ═══════════ SLIDE 17 — 内容生命周期 ═══════════ -->
+  <section>
+    <h2>内容生命周期 & 通知</h2>
+    <div class="three-col" style="margin-top:10px;">
+      <div class="fragment card">
+        <h4>内容状态机</h4>
+        <p style="font-size:0.7em;">
+          <code>[*]</code> → <span class="accent-orange">DRAFT</span> → <span class="accent-green">PUBLISHED</span><br/>
+          审核工作流控制
+        </p>
+      </div>
+      <div class="fragment card">
+        <h4>通知流转</h4>
+        <p style="font-size:0.65em;">
+          User Action → EventPublisher<br/>
+          → RabbitMQ → NotificationConsumer<br/>
+          → DB → Frontend Poll
+        </p>
+      </div>
+      <div class="fragment card">
+        <h4>表结构</h4>
+        <p style="font-size:0.65em;">
+          <code>content</code> + <code>content_audit</code><br/>
+          <code>notification</code><br/>
+          状态变迁可追溯
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ PART 5: 前端与收尾 ═══════════ -->
+
+  <!-- ═══════════ SLIDE 18 — 前端亮点 ═══════════ -->
   <section>
     <h2>前端技术亮点</h2>
-    <div class="three-col">
+    <div style="display:flex; flex-wrap:wrap; gap:14px; justify-content:center;">
       <div class="fragment card" style="min-width:160px;">
         <h4>框架</h4>
         <p style="font-size:0.65em;">Vue 3 Composition API<br/>Pinia 状态管理<br/>Element Plus</p>
@@ -530,12 +707,9 @@ Task 1: StatsController
         <p style="font-size:0.65em;">骨架屏占位符<br/>IME 输入法合成处理<br/>中文输入事件修正</p>
       </div>
     </div>
-    <p class="fragment" style="font-size:0.65em; color:#90a4ae;">响应式设计 &bull; 渐变统计卡片 &bull; aria-hidden 无障碍支持</p>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 20 — Homepage Final Result                       -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 19 — 首页效果 ═══════════ -->
   <section>
     <h2>首页最终效果</h2>
     <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0;">
@@ -546,19 +720,17 @@ Task 1: StatsController
       <div class="fragment stat-card" style="background:linear-gradient(135deg,#33691e,#558b2f);"><span class="num" style="font-size:1.2em;">分页</span><span class="label">页导航</span></div>
     </div>
     <p class="fragment" style="font-size:0.7em; color:#b0bec5;">
-      Layout: [Stats Cards Row] &rarr; [Todo Bar] &rarr; [Filter Bar] &rarr; [Content List] &rarr; [Pagination]
+      Layout: [Stats Cards Row] → [Todo Bar] → [Filter Bar] → [Content List] → [Pagination]
     </p>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 21 — Full Development Timeline (Mermaid)         -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 20 — 开发时间线 ═══════════ -->
   <section>
     <h2>开发时间线</h2>
     <div class="mermaid">
       timeline
           title Development Timeline (56 commits)
-          Phase 1 : Scaffold &amp; Auth : DDD modules, JWT, Spring Security
+          Phase 1 : Scaffold & Auth : DDD modules, JWT, Spring Security
           Phase 2 : Core Features : Content CRUD, Groups, Tags, Comments, Search
           Phase 3 : Frontend : 15 pages, Vue 3, Element Plus
           Phase 4 : Enhancement : Stats Dashboard, Todo Bar, Polish
@@ -566,15 +738,13 @@ Task 1: StatsController
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 22 — AI Collaboration Best Practices             -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 21 — AI 协作最佳实践 ═══════════ -->
   <section>
     <h2>AI 协作最佳实践</h2>
-    <div class="three-col" style="gap:14px;">
-      <div class="fragment card" style="border-color:#2e7d32;">
+    <div class="two-col" style="gap:14px; margin-top:14px;">
+      <div class="fragment card card-left" style="border-color:#2e7d32;">
         <h4 style="color:#43e97b;">何时使用 AI</h4>
-        <ul style="font-size:0.55em; text-align:left; list-style:disc; padding-left:16px;">
+        <ul style="font-size:0.6em; padding-left:16px;">
           <li>需求澄清（brainstorming）</li>
           <li>方案设计（writing-plans）</li>
           <li>代码生成（subagent）</li>
@@ -583,37 +753,35 @@ Task 1: StatsController
           <li>安全审计（security-review）</li>
         </ul>
       </div>
-      <div class="fragment card" style="border-color:#c62828;">
+      <div class="fragment card card-left" style="border-color:#c62828;">
         <h4 style="color:#ef5350;">何时不使用</h4>
-        <ul style="font-size:0.55em; text-align:left; list-style:disc; padding-left:16px;">
+        <ul style="font-size:0.6em; padding-left:16px;">
           <li>架构决策（需人工评审）</li>
           <li>业务规则变更（领域知识）</li>
           <li>生产调试（环境上下文）</li>
         </ul>
       </div>
     </div>
-    <p class="fragment" style="font-size:0.65em; color:#90a4ae; margin-top:10px;">
-      选择策略：简单任务 &rarr; 直接执行 / 复杂任务 &rarr; brainstorming &rarr; writing-plans &rarr; subagent
+    <p class="fragment" style="font-size:0.65em; color:#90a4ae; margin-top:12px;">
+      选择策略：简单任务 → 直接执行 / 复杂任务 → brainstorming → writing-plans → subagent
     </p>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 23 — Future Roadmap                              -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 22 — 未来路线图 ═══════════ -->
   <section>
     <h2>未来路线图</h2>
     <div class="three-col" style="gap:14px; margin-top:14px;">
       <div class="fragment card" style="border-color:#1565c0;">
         <h4 style="color:#64b5f6;">短期</h4>
-        <ul style="font-size:0.6em; text-align:left; padding-left:16px; list-style:disc;">
-          <li>httpOnly Cookie</li>
-          <li>Refresh Token</li>
+        <ul style="font-size:0.6em; text-align:left; padding-left:16px;">
+          <li>httpOnly Cookie JWT</li>
+          <li>Refresh Token 机制</li>
           <li>ES / Qdrant 认证</li>
         </ul>
       </div>
       <div class="fragment card" style="border-color:#6a1b9a;">
         <h4 style="color:#ce93d8;">中期</h4>
-        <ul style="font-size:0.6em; text-align:left; padding-left:16px; list-style:disc;">
+        <ul style="font-size:0.6em; text-align:left; padding-left:16px;">
           <li>Kubernetes 部署</li>
           <li>CI/CD 流水线</li>
           <li>Grafana 监控</li>
@@ -621,7 +789,7 @@ Task 1: StatsController
       </div>
       <div class="fragment card" style="border-color:#e65100;">
         <h4 style="color:#ffb74d;">长期</h4>
-        <ul style="font-size:0.6em; text-align:left; padding-left:16px; list-style:disc;">
+        <ul style="font-size:0.6em; text-align:left; padding-left:16px;">
           <li>BGE 中文嵌入模型</li>
           <li>联邦搜索</li>
           <li>知识图谱</li>
@@ -630,56 +798,37 @@ Task 1: StatsController
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 24 — Key Takeaways (fragments)                   -->
-  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ═══════════ SLIDE 23 — 核心启示 + Q&A ═══════════ -->
   <section>
     <h2>核心启示</h2>
-    <div style="margin: 24px 0;">
+    <div style="margin: 20px 0;">
       <div class="fragment takeaway">
-        &ldquo;AI 不是替代开发者，而是放大开发者能力&rdquo;
+        "AI 不是替代开发者，而是放大开发者能力"
       </div>
       <div class="fragment takeaway" style="border-left-color:#64b5f6; background:rgba(100,181,246,0.08);">
-        &ldquo;结构化流程（Skills）比自由对话更高效&rdquo;
+        "结构化流程（Skills）比自由对话更高效"
       </div>
       <div class="fragment takeaway" style="border-left-color:#ffb74d; background:rgba(255,183,116,0.08);">
-        &ldquo;设计文档是 AI 协作的质量底线&rdquo;
+        "设计文档是 AI 协作的质量底线"
       </div>
     </div>
-    <aside class="notes">
-      逐一展示三条启示，停留片刻，让听众消化。
-    </aside>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SLIDE 25 — Thank You                                   -->
-  <!-- ═══════════════════════════════════════════════════════ -->
-  <section>
-    <h1 style="background:linear-gradient(135deg,#64b5f6,#43e97b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+    <hr style="width:40%; border-color:#444; margin:1em auto;" />
+    <h1 style="background:linear-gradient(135deg,#64b5f6,#43e97b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size:2em;">
       感谢聆听
     </h1>
-    <p style="font-size:1.2em; margin:24px 0;">Q &amp; A</p>
-    <hr style="width:40%; border-color:#444; margin:1.2em auto;" />
-    <p style="font-size:0.7em;">
-      Project: <strong>github.com/JiongJiongP/knowledge-share</strong>
+    <p style="font-size:0.7em; color:#78909c; margin-top:12px;">
+      Q &amp; A · github.com/JiongJiongP/knowledge-share
     </p>
-    <p style="font-size:0.65em; color:#78909c; margin-top:20px;">
-      <span class="accent-green">AI 驱动的全栈开发实践</span> &mdash; Knowledge Share 知识共享平台
-    </p>
-    <aside class="notes">
-      感谢大家的时间。欢迎提问！
-    </aside>
   </section>
 
 </div><!-- .slides -->
 </div><!-- .reveal -->
 
-<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="lib/reveal.js/dist/reveal.js"></script>
+<script src="lib/reveal.js/plugin/highlight/highlight.js"></script>
+<script src="lib/reveal.js/plugin/notes/notes.js"></script>
+<script src="lib/mermaid/dist/mermaid.min.js"></script>
 <script>
-  // Mermaid init with dark theme
   mermaid.initialize({
     startOnLoad: false,
     theme: 'dark',
@@ -694,7 +843,6 @@ Task 1: StatsController
     }
   });
 
-  // Reveal.js init
   Reveal.initialize({
     hash: true,
     controls: true,
@@ -704,17 +852,13 @@ Task 1: StatsController
     overview: true,
     center: true,
     transition: 'slide',
-    plugins: [RevealHighlight, RevealNotes],
-    // Wait for Reveal to be ready then render mermaid
-    dependencies: []
+    plugins: [RevealHighlight, RevealNotes]
   });
 
-  // Render mermaid diagrams after Reveal is fully ready
   Reveal.addEventListener('ready', function () {
     mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
   });
 
-  // Re-render mermaid on slide change (for any lazy-loaded content)
   Reveal.addEventListener('slidechanged', function () {
     const pending = document.querySelectorAll('.mermaid:not([data-processed])');
     if (pending.length) {

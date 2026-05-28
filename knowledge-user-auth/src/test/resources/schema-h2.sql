@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS user (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  username VARCHAR(64) NOT NULL UNIQUE,
+  username VARCHAR(256) NOT NULL UNIQUE,
   password VARCHAR(256) NOT NULL,
-  display_name VARCHAR(64) NOT NULL,
-  email VARCHAR(128),
+  display_name VARCHAR(256) NOT NULL,
+  email VARCHAR(256),
   sso_id VARCHAR(128),
   department_id BIGINT,
   status VARCHAR(16) NOT NULL DEFAULT 'ACTIVE',
@@ -85,9 +85,3 @@ INSERT INTO role_permission (role_id, permission_id)
 SELECT (SELECT id FROM role WHERE code = 'USER'), id FROM permission
 WHERE code IN ('content:view', 'content:create', 'content:edit', 'content:delete');
 
-INSERT INTO user (username, password, display_name, department_id) VALUES
-  ('admin', '$2a$10$KkrV5Vq1WZ.06JZGEar3Jec2SHzZ70tFyldyY1wZWh4cJZmzPW4cu', '管理员', 1),
-  ('lisan', '$2a$10$/mibGlql.jsDNe5C39yVL.wy5eunnU/.gtk7LKwoYEuJdb1JwDxPW', '李三', 2);
-
-INSERT INTO user_role (user_id, role_id) SELECT u.id, r.id FROM user u, role r WHERE u.username = 'admin' AND r.code = 'ADMIN';
-INSERT INTO user_role (user_id, role_id) SELECT u.id, r.id FROM user u, role r WHERE u.username = 'lisan' AND r.code = 'USER';

@@ -7,6 +7,7 @@ import com.company.content.domain.model.KnowledgeContent;
 import com.company.content.domain.model.enums.ContentType;
 import com.company.content.domain.model.enums.PublishStatus;
 import com.company.content.domain.repository.ContentRepository;
+import com.company.userauth.infrastructure.mapper.UserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,9 @@ class ContentServiceTest {
 
     @Mock
     private ContentRepository contentRepository;
+
+    @Mock
+    private UserMapper userMapper;
 
     @InjectMocks
     private ContentService contentService;

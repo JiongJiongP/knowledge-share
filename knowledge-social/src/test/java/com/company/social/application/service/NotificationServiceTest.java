@@ -38,7 +38,11 @@ class NotificationServiceTest {
 
     @Test
     void shouldMarkRead() {
-        notificationService.markRead(1L);
+        Notification n = new Notification();
+        n.setId(1L);
+        n.setUserId(1L);
+        when(notificationRepository.findById(1L)).thenReturn(n);
+        notificationService.markRead(1L, 1L);
         verify(notificationRepository).markRead(1L);
     }
 
@@ -50,7 +54,11 @@ class NotificationServiceTest {
 
     @Test
     void shouldDeleteNotification() {
-        notificationService.delete(1L);
+        Notification n = new Notification();
+        n.setId(1L);
+        n.setUserId(1L);
+        when(notificationRepository.findById(1L)).thenReturn(n);
+        notificationService.delete(1L, 1L);
         verify(notificationRepository).delete(1L);
     }
 

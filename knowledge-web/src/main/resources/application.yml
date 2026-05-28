@@ -53,5 +53,8 @@ minio:
   secret-key: SM4(wVTjbaD4YQKvWQi14781ASli6s6ROtYhtzdAFG5rxKk=)
   bucket: knowledge-files
 
+sm4:
+  data-key: 884b2fb52ee883cb900293902092a3cf
+
 datagenerator:
   enabled: false

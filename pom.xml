@@ -20,7 +20,40 @@
         <mybatis-plus.version>3.5.5</mybatis-plus.version>
         <jjwt.version>0.11.5</jjwt.version>
         <bouncycastle.version>1.78</bouncycastle.version>
+        <jacoco.version>0.8.11</jacoco.version>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/DataGenerator*</exclude>
+                        <exclude>**/DataGenerator$*</exclude>
+                        <exclude>**/*Config*</exclude>
+                        <exclude>**/*Application*</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <modules>
         <module>knowledge-common</module>

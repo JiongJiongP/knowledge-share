@@ -1,7 +1,9 @@
 package com.company.userauth.application.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.company.common.config.Sm4Config;
 import com.company.common.exception.BizException;
+import com.company.common.util.SM4Util;
 import com.company.userauth.application.dto.UserVO;
 import com.company.userauth.domain.model.Department;
 import com.company.userauth.domain.model.Role;
@@ -42,8 +44,9 @@ public class AuthService {
     }
 
     public String login(String username, String password) {
+        String encryptedUsername = encryptDeterministic(username);
         User user = userMapper.selectOne(
-                new LambdaQueryWrapper<User>().eq(User::getUsername, username)
+                new LambdaQueryWrapper<User>().eq(User::getUsername, encryptedUsername)
         );
         if (user == null) {
             throw new BizException(401, "用户名或密码错误");
@@ -102,8 +105,9 @@ public class AuthService {
 
     @Transactional
     public void createUser(String username, String password, String displayName, String email, Long departmentId) {
+        String encryptedUsername = encryptDeterministic(username);
         User exist = userMapper.selectOne(
-                new LambdaQueryWrapper<User>().eq(User::getUsername, username));
+                new LambdaQueryWrapper<User>().eq(User::getUsername, encryptedUsername));
         if (exist != null) {
             throw new BizException(400, "用户名已存在");
         }
@@ -143,5 +147,13 @@ public class AuthService {
         ur.setUserId(userId);
         ur.setRoleId(role.getId());
         userRoleMapper.insert(ur);
+    }
+
+    private String encryptDeterministic(String plaintext) {
+        try {
+            return SM4Util.encryptDeterministic(plaintext, Sm4Config.getDataKey());
+        } catch (Exception e) {
+            throw new RuntimeException("SM4 encrypt failed", e);
+        }
     }
 }

@@ -2,9 +2,13 @@ package com.company.social.application.service;
 
 import com.company.common.exception.BizException;
 import com.company.common.result.PageResult;
+import com.company.social.application.dto.GroupMemberVO;
 import com.company.social.domain.model.Group;
 import com.company.social.domain.model.GroupMember;
 import com.company.social.domain.repository.GroupRepository;
+import com.company.social.infrastructure.mq.EventPublisher;
+import com.company.userauth.domain.model.User;
+import com.company.userauth.infrastructure.mapper.UserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,7 +32,12 @@ class GroupServiceTest {
     @Mock
     private GroupRepository groupRepository;
 
-    @InjectMocks
+    @Mock
+    private UserMapper userMapper;
+
+    @Mock
+    private EventPublisher eventPublisher;
+
     private GroupService groupService;
 
     private Group group;
@@ -34,6 +45,7 @@ class GroupServiceTest {
 
     @BeforeEach
     void setUp() {
+        groupService = new GroupService(groupRepository, userMapper, Optional.of(eventPublisher));
         group = new Group();
         group.setId(1L);
         group.setName("技术分享组");
@@ -196,8 +208,98 @@ class GroupServiceTest {
     void shouldListMembers() {
         when(groupRepository.findMembers(1L)).thenReturn(List.of());
 
-        List<GroupMember> members = groupService.listMembers(1L);
+        List<GroupMemberVO> members = groupService.listMembers(1L);
 
         assertThat(members).isEmpty();
+    }
+
+    @Test
+    void shouldListMembersWithUsers() {
+        GroupMember member = new GroupMember();
+        member.setId(10L);
+        member.setGroupId(1L);
+        member.setUserId(1L);
+        member.setRole("OWNER");
+        member.setStatus("APPROVED");
+
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("zhangsan");
+        user.setDisplayName("张三");
+
+        when(groupRepository.findMembers(1L)).thenReturn(List.of(member));
+        when(userMapper.selectList(any())).thenReturn(List.of(user));
+
+        List<GroupMemberVO> members = groupService.listMembers(1L);
+
+        assertThat(members).hasSize(1);
+        assertThat(members.get(0).getUserName()).isEqualTo("zhangsan");
+        assertThat(members.get(0).getDisplayName()).isEqualTo("张三");
+        assertThat(members.get(0).getRole()).isEqualTo("OWNER");
+    }
+
+    @Test
+    void shouldListPendingMembers() {
+        when(groupRepository.findById(1L)).thenReturn(group);
+        when(groupRepository.findPendingMembers(1L)).thenReturn(List.of());
+
+        List<GroupMemberVO> result = groupService.listPendingMembers(1L, 1L);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void shouldThrowWhenNonOwnerListPendingMembers() {
+        when(groupRepository.findById(1L)).thenReturn(group);
+
+        assertThatThrownBy(() -> groupService.listPendingMembers(1L, 99L))
+                .isInstanceOf(BizException.class)
+                .hasMessageContaining("权限不足");
+    }
+
+    @Test
+    void shouldEnrichGroupsWithOwnerNames() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("zhangsan");
+        user.setDisplayName("张三");
+
+        when(groupRepository.findPublic(1, 12)).thenReturn(List.of(group));
+        when(groupRepository.countPublic()).thenReturn(1L);
+        when(userMapper.selectList(any())).thenReturn(List.of(user));
+        when(groupRepository.countMembersBatch(List.of(1L))).thenReturn(Map.of(1L, 5L));
+
+        PageResult<Group> result = groupService.listPublic(1, 12);
+
+        assertThat(result.getRecords().get(0).getOwnerName()).isEqualTo("张三");
+        assertThat(result.getRecords().get(0).getMemberCount()).isEqualTo(5);
+    }
+
+    @Test
+    void shouldRequestJoinWithNotification() {
+        User applicant = new User();
+        applicant.setId(2L);
+        applicant.setUsername("lisi");
+        applicant.setDisplayName("李四");
+
+        when(groupRepository.findById(1L)).thenReturn(group);
+        when(groupRepository.findMember(1L, 2L)).thenReturn(null);
+        when(userMapper.selectById(2L)).thenReturn(applicant);
+
+        groupService.requestJoin(1L, 2L);
+
+        verify(eventPublisher).publishGroupJoinRequest(1L, 2L, "李四", 1L);
+    }
+
+    @Test
+    void shouldRequestJoinWithoutEventPublisher() {
+        GroupService serviceWithoutPublisher = new GroupService(groupRepository, userMapper, Optional.empty());
+
+        when(groupRepository.findById(1L)).thenReturn(group);
+        when(groupRepository.findMember(1L, 2L)).thenReturn(null);
+
+        serviceWithoutPublisher.requestJoin(1L, 2L);
+
+        verify(groupRepository).insertMember(any());
     }
 }
