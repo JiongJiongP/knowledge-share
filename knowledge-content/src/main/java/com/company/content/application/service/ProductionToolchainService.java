@@ -1,32 +1,50 @@
 package com.company.content.application.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.company.common.exception.BizException;
+import com.company.content.application.dto.AuditRecordVO;
+import com.company.content.domain.event.ContentSubmittedForAuditEvent;
 import com.company.content.domain.model.*;
 import com.company.content.infrastructure.mapper.*;
+import com.company.userauth.domain.model.User;
+import com.company.userauth.infrastructure.mapper.UserMapper;
+import com.company.userauth.infrastructure.util.UserDisplayUtil;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductionToolchainService {
+
+    private static final Map<String, String> TARGET_TYPE_NAMES = Map.of(
+            "CONTENT", "内容", "COMMENT", "评论");
+    private static final Map<String, String> STATUS_NAMES = Map.of(
+            "PENDING", "待审核", "APPROVED", "已通过", "REJECTED", "已驳回");
 
     private final ContentVersionMapper versionMapper;
     private final AuditRecordMapper auditMapper;
     private final ContentTemplateMapper templateMapper;
     private final ScheduledPublishMapper scheduledMapper;
     private final ContentMapper contentMapper;
+    private final UserMapper userMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     public ProductionToolchainService(ContentVersionMapper versionMapper, AuditRecordMapper auditMapper,
                                        ContentTemplateMapper templateMapper, ScheduledPublishMapper scheduledMapper,
-                                       ContentMapper contentMapper) {
+                                       ContentMapper contentMapper, UserMapper userMapper,
+                                       ApplicationEventPublisher eventPublisher) {
         this.versionMapper = versionMapper;
         this.auditMapper = auditMapper;
         this.templateMapper = templateMapper;
         this.scheduledMapper = scheduledMapper;
         this.contentMapper = contentMapper;
+        this.userMapper = userMapper;
+        this.eventPublisher = eventPublisher;
     }
 
     // === Version History ===
@@ -60,7 +78,7 @@ public class ProductionToolchainService {
 
     // === Audit Workflow ===
     @Transactional
-    public AuditRecord submitAudit(String targetType, Long targetId, Long submitterId) {
+    public AuditRecord submitAudit(String targetType, Long targetId, Long submitterId, String submitterName) {
         AuditRecord r = new AuditRecord();
         r.setTargetType(targetType);
         r.setTargetId(targetId);
@@ -68,12 +86,68 @@ public class ProductionToolchainService {
         r.setStatus("PENDING");
         r.setSubmittedAt(LocalDateTime.now());
         auditMapper.insert(r);
+
+        String title = resolveTitle(targetType, targetId);
+        eventPublisher.publishEvent(
+                new ContentSubmittedForAuditEvent(targetId, title, submitterId, submitterName, targetType, r.getId()));
         return r;
     }
 
-    public List<AuditRecord> listPendingAudits() {
-        return auditMapper.selectList(
-            new LambdaQueryWrapper<AuditRecord>().eq(AuditRecord::getStatus, "PENDING"));
+    private String resolveTitle(String targetType, Long targetId) {
+        if ("CONTENT".equals(targetType)) {
+            KnowledgeContent c = contentMapper.selectById(targetId);
+            return c != null ? c.getTitle() : "未知内容";
+        }
+        return "未知";
+    }
+
+    public List<AuditRecordVO> listPendingAudits() {
+        List<AuditRecord> records = auditMapper.selectList(
+                new LambdaQueryWrapper<AuditRecord>().eq(AuditRecord::getStatus, "PENDING"));
+        if (records.isEmpty()) return Collections.emptyList();
+
+        Set<Long> contentIds = new HashSet<>();
+        Set<Long> userIds = new HashSet<>();
+        for (AuditRecord r : records) {
+            if ("CONTENT".equals(r.getTargetType())) contentIds.add(r.getTargetId());
+            if (r.getSubmitterId() != null) userIds.add(r.getSubmitterId());
+            if (r.getReviewerId() != null) userIds.add(r.getReviewerId());
+        }
+
+        Map<Long, String> titleMap = Collections.emptyMap();
+        if (!contentIds.isEmpty()) {
+            titleMap = contentMapper.selectList(
+                    new LambdaQueryWrapper<KnowledgeContent>().in(KnowledgeContent::getId, contentIds))
+                    .stream().collect(Collectors.toMap(KnowledgeContent::getId, KnowledgeContent::getTitle, (a, b) -> a));
+        }
+        Map<Long, String> nameMap = Collections.emptyMap();
+        if (!userIds.isEmpty()) {
+            nameMap = userMapper.selectList(
+                    new LambdaQueryWrapper<User>().in(User::getId, userIds))
+                    .stream().collect(Collectors.toMap(User::getId,
+                            UserDisplayUtil::resolve, (a, b) -> a));
+        }
+
+        List<AuditRecordVO> vos = new ArrayList<>();
+        for (AuditRecord r : records) {
+            AuditRecordVO vo = new AuditRecordVO();
+            vo.setId(r.getId());
+            vo.setTargetType(r.getTargetType());
+            vo.setTargetTypeName(TARGET_TYPE_NAMES.getOrDefault(r.getTargetType(), r.getTargetType()));
+            vo.setTargetId(r.getTargetId());
+            vo.setTargetTitle(titleMap.getOrDefault(r.getTargetId(), String.valueOf(r.getTargetId())));
+            vo.setSubmitterId(r.getSubmitterId());
+            vo.setSubmitterName(nameMap.getOrDefault(r.getSubmitterId(), String.valueOf(r.getSubmitterId())));
+            vo.setReviewerId(r.getReviewerId());
+            vo.setReviewerName(r.getReviewerId() != null ? nameMap.getOrDefault(r.getReviewerId(), String.valueOf(r.getReviewerId())) : null);
+            vo.setStatus(r.getStatus());
+            vo.setStatusName(STATUS_NAMES.getOrDefault(r.getStatus(), r.getStatus()));
+            vo.setRejectReason(r.getRejectReason());
+            vo.setSubmittedAt(r.getSubmittedAt());
+            vo.setReviewedAt(r.getReviewedAt());
+            vos.add(vo);
+        }
+        return vos;
     }
 
     @Transactional

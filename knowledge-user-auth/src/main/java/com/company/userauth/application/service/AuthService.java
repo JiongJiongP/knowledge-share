@@ -13,6 +13,7 @@ import com.company.userauth.infrastructure.mapper.DepartmentMapper;
 import com.company.userauth.infrastructure.mapper.RoleMapper;
 import com.company.userauth.infrastructure.mapper.UserMapper;
 import com.company.userauth.infrastructure.mapper.UserRoleMapper;
+import com.company.userauth.infrastructure.util.UserDisplayUtil;
 import com.company.userauth.infrastructure.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -90,8 +91,9 @@ public class AuthService {
         return users.stream().map(u -> {
             UserVO vo = new UserVO();
             vo.setId(u.getId());
-            vo.setUsername(u.getUsername());
-            vo.setDisplayName(u.getDisplayName());
+            String displayName = UserDisplayUtil.resolve(u);
+            vo.setUsername(displayName);
+            vo.setDisplayName(displayName);
             vo.setEmail(u.getEmail());
             vo.setDepartmentId(u.getDepartmentId());
             vo.setDepartmentName(deptMap.getOrDefault(u.getDepartmentId(), "-"));

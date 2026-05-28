@@ -1,16 +1,24 @@
 package com.company.content.application.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.company.common.config.Sm4Config;
 import com.company.common.exception.BizException;
+import com.company.content.application.dto.AuditRecordVO;
 import com.company.content.domain.model.*;
 import com.company.content.infrastructure.mapper.*;
+import com.company.userauth.domain.model.User;
+import com.company.userauth.infrastructure.mapper.UserMapper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,6 +28,11 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductionToolchainServiceTest {
+
+    @BeforeAll
+    static void initSm4() {
+        Sm4Config.initializeForTest("0123456789abcdef0123456789abcdef");
+    }
 
     @Mock
     private ContentVersionMapper versionMapper;
@@ -35,6 +48,12 @@ class ProductionToolchainServiceTest {
 
     @Mock
     private ContentMapper contentMapper;
+
+    @Mock
+    private UserMapper userMapper;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private ProductionToolchainService service;
@@ -99,24 +118,49 @@ class ProductionToolchainServiceTest {
 
     @Test
     void shouldSubmitAudit() {
+        KnowledgeContent content = new KnowledgeContent();
+        content.setId(1L);
+        content.setTitle("测试文章");
+        when(contentMapper.selectById(1L)).thenReturn(content);
         when(auditMapper.insert(any())).thenReturn(1);
 
-        AuditRecord r = service.submitAudit("CONTENT", 1L, 1L);
+        AuditRecord r = service.submitAudit("CONTENT", 1L, 1L, "lisan");
 
         assertThat(r.getTargetType()).isEqualTo("CONTENT");
         assertThat(r.getTargetId()).isEqualTo(1L);
         assertThat(r.getStatus()).isEqualTo("PENDING");
         assertThat(r.getSubmittedAt()).isNotNull();
+        verify(eventPublisher).publishEvent(any(Object.class));
     }
 
     @Test
     void shouldListPendingAudits() {
         AuditRecord r = new AuditRecord();
+        r.setId(1L);
+        r.setTargetType("CONTENT");
+        r.setTargetId(10L);
+        r.setSubmitterId(100L);
         r.setStatus("PENDING");
-        when(auditMapper.selectList(any())).thenReturn(List.of(r));
+        when(auditMapper.selectList(any(LambdaQueryWrapper.class))).thenReturn(List.of(r));
 
-        List<AuditRecord> result = service.listPendingAudits();
+        KnowledgeContent c = new KnowledgeContent();
+        c.setId(10L);
+        c.setTitle("测试文章");
+        when(contentMapper.selectList(any(LambdaQueryWrapper.class))).thenReturn(List.of(c));
+
+        User user = new User();
+        user.setId(100L);
+        user.setUsername("lisan");
+        user.setDisplayName("李三");
+        when(userMapper.selectList(any(LambdaQueryWrapper.class))).thenReturn(List.of(user));
+
+        List<AuditRecordVO> result = service.listPendingAudits();
         assertThat(result).hasSize(1);
+        AuditRecordVO vo = result.get(0);
+        assertThat(vo.getTargetTypeName()).isEqualTo("内容");
+        assertThat(vo.getTargetTitle()).isEqualTo("测试文章");
+        assertThat(vo.getSubmitterName()).isEqualTo("李三");
+        assertThat(vo.getStatusName()).isEqualTo("待审核");
     }
 
     @Test

@@ -8,6 +8,7 @@ import com.company.content.domain.model.enums.PublishStatus;
 import com.company.content.domain.repository.ContentRepository;
 import com.company.userauth.domain.model.User;
 import com.company.userauth.infrastructure.mapper.UserMapper;
+import com.company.userauth.infrastructure.util.UserDisplayUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +52,7 @@ public class ContentService {
         Map<Long, String> userNameMap = userMapper.selectList(
                 new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<User>()
                         .in(User::getId, userIds)
-        ).stream().collect(Collectors.toMap(User::getId, u -> u.getDisplayName() != null ? u.getDisplayName() : u.getUsername(), (a, b) -> a));
+        ).stream().collect(Collectors.toMap(User::getId, UserDisplayUtil::resolve, (a, b) -> a));
         for (KnowledgeContent c : list) {
             c.setCreatedByName(userNameMap.getOrDefault(c.getCreatedBy(), String.valueOf(c.getCreatedBy())));
         }

@@ -1,9 +1,13 @@
 package com.company.content.interfaces.controller;
 
 import com.company.common.result.Result;
+import com.company.content.application.dto.AuditRecordVO;
 import com.company.content.application.dto.*;
 import com.company.content.application.service.ProductionToolchainService;
 import com.company.content.domain.model.*;
+import com.company.userauth.domain.model.User;
+import com.company.userauth.infrastructure.mapper.UserMapper;
+import com.company.userauth.infrastructure.util.UserDisplayUtil;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +19,11 @@ import java.util.List;
 public class ProductionToolchainController {
 
     private final ProductionToolchainService toolchainService;
+    private final UserMapper userMapper;
 
-    public ProductionToolchainController(ProductionToolchainService toolchainService) {
+    public ProductionToolchainController(ProductionToolchainService toolchainService, UserMapper userMapper) {
         this.toolchainService = toolchainService;
+        this.userMapper = userMapper;
     }
 
     // === Version History ===
@@ -39,8 +45,17 @@ public class ProductionToolchainController {
     }
 
     // === Audit ===
+    @PostMapping("/api/contents/{id}/submit-audit")
+    public Result<AuditRecord> submitAudit(@PathVariable Long id, Authentication auth) {
+        Long userId = (Long) auth.getPrincipal();
+        User user = userMapper.selectById(userId);
+        String submitterName = UserDisplayUtil.resolve(user);
+        AuditRecord r = toolchainService.submitAudit("CONTENT", id, userId, submitterName);
+        return Result.ok(r);
+    }
+
     @GetMapping("/api/admin/audit/pending")
-    public Result<List<AuditRecord>> listPendingAudits() {
+    public Result<List<AuditRecordVO>> listPendingAudits() {
         return Result.ok(toolchainService.listPendingAudits());
     }
 

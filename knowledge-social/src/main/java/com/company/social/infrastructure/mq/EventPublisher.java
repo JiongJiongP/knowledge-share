@@ -50,6 +50,18 @@ public class EventPublisher {
         ));
     }
 
+    public void publishContentSubmittedForAudit(Long adminUserId, Long contentId, String title,
+                                                 Long submitterId, String submitterName, Long auditId) {
+        publish("notification.content", Map.of(
+                "type", "CONTENT_AUDIT_SUBMITTED",
+                "userId", adminUserId,
+                "title", "新内容待审核",
+                "content", submitterName + " 提交了《" + title + "》的审核申请",
+                "relatedId", auditId,
+                "relatedType", "AUDIT"
+        ));
+    }
+
     public void publishGroupJoinRequest(Long groupId, Long applicantId, String applicantName, Long ownerId) {
         publish("notification.group", Map.of(
                 "type", "GROUP_JOIN_APPLY",

@@ -9,12 +9,24 @@
     </div>
     <el-table :data="audits" v-loading="loading">
       <el-table-column prop="id" label="ID" width="80"/>
-      <el-table-column prop="targetType" label="类型" width="100"/>
-      <el-table-column prop="targetId" label="目标ID" width="100"/>
-      <el-table-column prop="submitterId" label="提交人" width="100"/>
-      <el-table-column prop="status" label="状态" width="100">
-        <template #default="{ row }"><el-tag :type="row.status === 'PENDING' ? 'warning' : row.status === 'APPROVED' ? 'success' : 'danger'" size="small">{{ row.status }}</el-tag></template>
+      <el-table-column prop="targetTypeName" label="类型" width="90"/>
+      <el-table-column prop="targetTitle" label="目标内容" min-width="180">
+        <template #default="{ row }">
+          <router-link v-if="row.targetType === 'CONTENT'" :to="`/content/${row.targetId}`" style="color:#409EFF;">
+            {{ row.targetTitle }}
+          </router-link>
+          <span v-else>{{ row.targetTitle }}</span>
+        </template>
       </el-table-column>
+      <el-table-column prop="submitterName" label="提交人" width="100"/>
+      <el-table-column prop="statusName" label="状态" width="90">
+        <template #default="{ row }">
+          <el-tag :type="row.status === 'PENDING' ? 'warning' : row.status === 'APPROVED' ? 'success' : 'danger'" size="small">
+            {{ row.statusName }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="submittedAt" label="提交时间" width="160"/>
       <el-table-column label="操作" width="200">
         <template #default="{ row }">
           <template v-if="row.status === 'PENDING'">

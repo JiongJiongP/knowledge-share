@@ -96,9 +96,13 @@ class ProductionToolchainControllerTest {
 
     @Test
     void shouldListPendingAudits() throws Exception {
-        AuditRecord r = new AuditRecord();
-        r.setId(1L);
-        when(toolchainService.listPendingAudits()).thenReturn(List.of(r));
+        AuditRecordVO vo = new AuditRecordVO();
+        vo.setId(1L);
+        vo.setTargetTypeName("内容");
+        vo.setTargetTitle("测试");
+        vo.setSubmitterName("张三");
+        vo.setStatusName("待审核");
+        when(toolchainService.listPendingAudits()).thenReturn(List.of(vo));
 
         mockMvc.perform(get("/api/admin/audit/pending"))
                 .andExpect(status().isOk())

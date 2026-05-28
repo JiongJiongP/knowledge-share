@@ -2,7 +2,7 @@
   <aside class="app-sidebar">
     <div class="sidebar-logo" @click="$router.push('/')">
       <div class="logo-icon"><i class="ri-book-open-fill"></i></div>
-      <span>知识平台</span>
+      <span>知享平台</span>
     </div>
 
     <nav class="sidebar-nav">

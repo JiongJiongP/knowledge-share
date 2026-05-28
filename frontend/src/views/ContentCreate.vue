@@ -75,7 +75,7 @@
 import { ref, reactive, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { createContent, publishContent, schedulePublish } from '@/api/content'
+import { createContent, submitAudit, schedulePublish } from '@/api/content'
 import { getGroupList } from '@/api/group'
 import TagSelector from '@/components/content/TagSelector.vue'
 import { setContentTags } from '@/api/tag'
@@ -162,7 +162,7 @@ async function handleSubmit() {
     const id = res.data?.id
     if (id) {
       if (form.tagIds.length > 0) await setContentTags(id, form.tagIds).catch(() => {})
-      await publishContent(id).catch(() => ElMessage.warning('发布失败'))
+      await submitAudit(id).catch(() => ElMessage.warning('提交审核失败'))
       if (form.scheduledAt) await schedulePublish(id, form.scheduledAt).catch(() => ElMessage.warning('定时发布设置失败'))
       ElMessage.success('内容已提交审核')
       router.push(`/content/${id}`)

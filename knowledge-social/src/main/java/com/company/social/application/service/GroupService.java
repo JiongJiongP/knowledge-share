@@ -9,6 +9,7 @@ import com.company.social.domain.repository.GroupRepository;
 import com.company.social.infrastructure.mq.EventPublisher;
 import com.company.userauth.domain.model.User;
 import com.company.userauth.infrastructure.mapper.UserMapper;
+import com.company.userauth.infrastructure.util.UserDisplayUtil;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +64,7 @@ public class GroupService {
 
         for (Group g : groups) {
             User owner = userMap.get(g.getOwnerId());
-            String ownerName = owner != null ? (owner.getDisplayName() != null ? owner.getDisplayName() : owner.getUsername()) : "未知";
+            String ownerName = UserDisplayUtil.resolve(owner);
             g.setOwnerName(ownerName);
             g.setMemberCount(countMap.getOrDefault(g.getId(), 0L).intValue());
         }
@@ -109,7 +110,7 @@ public class GroupService {
         }
         // 发送通知给群主
         User applicant = userMapper.selectById(userId);
-        String applicantName = applicant != null && applicant.getDisplayName() != null ? applicant.getDisplayName() : (applicant != null ? applicant.getUsername() : String.valueOf(userId));
+        String applicantName = UserDisplayUtil.resolve(applicant);
         eventPublisher.ifPresent(ep -> ep.publishGroupJoinRequest(groupId, userId, applicantName, g.getOwnerId()));
     }
 
@@ -184,8 +185,9 @@ public class GroupService {
             vo.setId(m.getId());
             vo.setGroupId(m.getGroupId());
             vo.setUserId(m.getUserId());
-            vo.setUserName(user != null ? user.getUsername() : String.valueOf(m.getUserId()));
-            vo.setDisplayName(user != null ? (user.getDisplayName() != null ? user.getDisplayName() : user.getUsername()) : String.valueOf(m.getUserId()));
+            String displayName = UserDisplayUtil.resolve(user);
+            vo.setUserName(displayName);
+            vo.setDisplayName(displayName);
             vo.setRole(m.getRole());
             vo.setStatus(m.getStatus());
             vo.setJoinedAt(m.getJoinedAt() != null ? m.getJoinedAt().toString() : null);

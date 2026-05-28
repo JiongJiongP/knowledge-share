@@ -85,7 +85,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { getContent, updateContent, publishContent, schedulePublish } from '@/api/content'
+import { getContent, updateContent, submitAudit, schedulePublish } from '@/api/content'
 import { getContentTags, setContentTags } from '@/api/tag'
 import TagSelector from '@/components/content/TagSelector.vue'
 
@@ -189,11 +189,11 @@ async function handlePublish() {
     if (form.tagIds.length > 0) {
       await setContentTags(id, form.tagIds).catch(() => ElMessage.warning('标签保存失败'))
     }
-    await publishContent(id).catch(() => ElMessage.warning('发布失败'))
+    await submitAudit(id).catch(() => ElMessage.warning('提交审核失败'))
     if (form.scheduledAt) {
       await schedulePublish(id, form.scheduledAt).catch(() => ElMessage.warning('定时发布设置失败'))
     }
-    ElMessage.success('内容已发布')
+    ElMessage.success('内容已提交审核')
     router.push(`/content/${id}`)
   } catch (e) {
     ElMessage.error(e.response?.data?.message || '发布失败')

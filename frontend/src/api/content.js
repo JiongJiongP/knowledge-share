@@ -20,6 +20,10 @@ export function publishContent(id) {
   return request.post(`/contents/${id}/publish`)
 }
 
+export function submitAudit(id) {
+  return request.post(`/contents/${id}/submit-audit`)
+}
+
 export function saveDraft(id, data) {
   return request.post(`/contents/${id}/draft`, data)
 }
