@@ -181,7 +181,7 @@ h2 {
 }
 
 .login-card :deep(.el-input__wrapper) {
-  background: rgba(255, 255, 255, 0.15);
+  background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 10px;
   box-shadow: none;
@@ -190,17 +190,19 @@ h2 {
 
 .login-card :deep(.el-input__wrapper:hover) {
   border-color: rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.2);
 }
 
 .login-card :deep(.el-input__wrapper.is-focus) {
   border-color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.25);
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
 
 .login-card :deep(.el-input__inner) {
   color: #fff;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.01) inset;
+  box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.01) inset;
+  -webkit-transition: background-color 9999999s ease-in-out 0s;
+  transition: background-color 9999999s ease-in-out 0s;
 }
 
 .login-card :deep(.el-input__inner::placeholder) {
@@ -291,5 +293,22 @@ h2 {
 
 .alt-btn i {
   font-size: 18px;
+}
+</style>
+
+<style>
+.login-card input:-webkit-autofill,
+.login-card input:-webkit-autofill:hover,
+.login-card input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #fff !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.01) inset !important;
+}
+
+.login-card input:-internal-autofill-previewed,
+.login-card input:-internal-autofill-selected {
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #fff !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.01) inset !important;
 }
 </style>
