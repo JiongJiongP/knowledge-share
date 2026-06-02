@@ -30,14 +30,25 @@ export const useTabStore = defineStore('tabs', () => {
 
   const currentPath = ref('/')
 
+  // 单例路由：相同 name 即为同一个 tab，查询参数只是过滤器
+  const SINGLETON_ROUTES = ['Home']
+
   function addTab(route) {
     if (route.meta?.guest) return
     if (route.name === 'NotFound') return
 
     const meta = routeMetaMap[route.name] || { label: route.name || route.path, icon: 'ri-file-line', closable: true }
 
-    const existing = tabs.value.find(t => t.name === route.name && t.path === route.fullPath)
+    // 对于单例路由（如首页），按名称匹配并更新路径，避免每次搜索创建新 tab
+    const existing = tabs.value.find(t => {
+      if (t.name !== route.name) return false
+      if (SINGLETON_ROUTES.includes(route.name)) return true
+      return t.path === route.fullPath
+    })
     if (existing) {
+      if (SINGLETON_ROUTES.includes(route.name)) {
+        existing.path = route.fullPath
+      }
       currentPath.value = route.fullPath
       return
     }
