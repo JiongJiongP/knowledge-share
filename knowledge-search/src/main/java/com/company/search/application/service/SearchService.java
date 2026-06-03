@@ -30,6 +30,8 @@ public class SearchService {
 
     private final ElasticsearchClient esClient;
     private final VectorSearchService vectorSearchService;
+    private volatile boolean esAvailable = true;
+    private volatile long lastSearchTotal = 0;
 
     public SearchService(ElasticsearchClient esClient, VectorSearchService vectorSearchService) {
         this.esClient = esClient;
@@ -135,6 +137,10 @@ public class SearchService {
     }
 
     public List<SearchResult> search(String keyword, int page, int size, String sort) {
+        if (!esAvailable) {
+            log.debug("ES unavailable, skipping search");
+            return Collections.emptyList();
+        }
         try {
             SearchRequest request = SearchRequest.of(s -> s
                     .index(INDEX_NAME)
@@ -156,6 +162,10 @@ public class SearchService {
             if (response == null || response.hits() == null) {
                 return Collections.emptyList();
             }
+            if (response.hits().total() != null) {
+                lastSearchTotal = response.hits().total().value();
+            }
+            esAvailable = true; // ES 正常，标记可用
 
             List<SearchResult> results = new ArrayList<>();
             for (Hit<ContentDocument> hit : response.hits().hits()) {
@@ -164,9 +174,15 @@ public class SearchService {
             }
             return results;
         } catch (Exception e) {
-            log.warn("Search failed: {}", e.getMessage());
+            esAvailable = false; // ES 异常，后续请求直接降级到 MySQL
+            log.warn("ES search failed (circuit open, will fast-fallback to MySQL): {}", e.getMessage());
             return Collections.emptyList();
         }
+    }
+
+    /** 返回最近一次 search() 的 ES 命中总数，避免慢速 MySQL count */
+    public long getLastSearchTotal() {
+        return lastSearchTotal;
     }
 
     public List<SearchResult> hybridSearch(String keyword, int page, int size) {
@@ -205,6 +221,7 @@ public class SearchService {
     }
 
     private Map<Long, Integer> keywordRankedIds(String keyword, int topN) {
+        if (!esAvailable) return Collections.emptyMap();
         Map<Long, Integer> ranks = new HashMap<>();
         try {
             SearchRequest request = SearchRequest.of(s -> s
@@ -221,13 +238,15 @@ public class SearchService {
 
             SearchResponse<ContentDocument> response = esClient.search(request, ContentDocument.class);
             if (response == null || response.hits() == null) return ranks;
+            esAvailable = true;
 
             int rank = 1;
             for (Hit<ContentDocument> hit : response.hits().hits()) {
                 ranks.put(Long.valueOf(hit.id()), rank++);
             }
         } catch (Exception e) {
-            log.warn("Keyword ranking failed: {}", e.getMessage());
+            esAvailable = false;
+            log.warn("Keyword ranking failed (circuit open): {}", e.getMessage());
         }
         return ranks;
     }

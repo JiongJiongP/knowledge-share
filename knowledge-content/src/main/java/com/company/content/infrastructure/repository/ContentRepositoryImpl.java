@@ -49,9 +49,10 @@ public class ContentRepositoryImpl implements ContentRepository {
             qw.eq(KnowledgeContent::getContentType, parseContentType(contentType));
         }
         if (keyword != null && !keyword.isBlank()) {
-            qw.and(w -> w.like(KnowledgeContent::getTitle, keyword)
+            // 优先用 FULLTEXT（比 LIKE 快 10-100 倍），LIKE 作为短词/特殊字符回退
+            qw.and(w -> w.apply("MATCH(title, body) AGAINST({0} IN BOOLEAN MODE)", keyword)
                          .or()
-                         .like(KnowledgeContent::getBody, keyword));
+                         .like(KnowledgeContent::getTitle, keyword));
         }
 
         if ("popular".equals(sort)) {

@@ -80,7 +80,7 @@ public class ContentService {
                             .filter(c -> c != null && c.getStatus() == PublishStatus.PUBLISHED)
                             .collect(Collectors.toList());
 
-                    total = contentRepository.countPublished(contentType, keyword);
+                    total = searchService.getLastSearchTotal(); // 用 ES 命中总数，避免 MySQL title LIKE 慢查询
                     long t3 = System.currentTimeMillis();
 
                     log.info("[listPublished] ES search | keyword={}, esHits={}, dbLoaded={}, findPublished={}ms, loadByIds={}ms, count={}ms, total={}ms",
