@@ -403,6 +403,7 @@ public class DataGenerator implements org.springframework.boot.CommandLineRunner
             List<String> pubTitles = new ArrayList<>();
             List<String> pubBodies = new ArrayList<>();
             List<String> pubTypes = new ArrayList<>();
+            List<String> pubStatuses = new ArrayList<>();
             List<String> pubAuthors = new ArrayList<>();
             List<String> pubDates = new ArrayList<>();
             for (int i = 0; i < batchSize; i++) {
@@ -411,13 +412,14 @@ public class DataGenerator implements org.springframework.boot.CommandLineRunner
                     pubTitles.add(batchTitles.get(i));
                     pubBodies.add(batchBodies.get(i));
                     pubTypes.add(batchContentTypes.get(i));
+                    pubStatuses.add("PUBLISHED");
                     pubAuthors.add(batchCreatedBys.get(i));
                     pubDates.add(batchPublishedAts.get(i));
                 }
             }
             if (!pubIds.isEmpty()) {
                 try {
-                    searchService.batchIndex(pubIds, pubTitles, pubBodies, pubTypes, pubAuthors, pubDates);
+                    searchService.batchIndex(pubIds, pubTitles, pubBodies, pubTypes, pubStatuses, pubAuthors, pubDates);
                     esIndexed += pubIds.size();
                 } catch (Exception e) {
                     log.warn("  ES batch index failed at content batch {}: {}", batch / BATCH, e.getMessage());

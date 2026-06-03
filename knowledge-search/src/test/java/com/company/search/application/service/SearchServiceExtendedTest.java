@@ -35,7 +35,7 @@ class SearchServiceExtendedTest {
         IndexResponse response = mock(IndexResponse.class);
         when(esClient.index(any(IndexRequest.class))).thenReturn(response);
 
-        searchService.indexContent(1L, "标题", "正文", "ARTICLE", "zhangsan", "2025-01-15");
+        searchService.indexContent(1L, "标题", "正文", "ARTICLE", "PUBLISHED", "zhangsan", "2025-01-15");
 
         verify(esClient).index(any(IndexRequest.class));
     }
@@ -44,7 +44,7 @@ class SearchServiceExtendedTest {
     void shouldHandleIndexContentIOException() throws Exception {
         when(esClient.index(any(IndexRequest.class))).thenThrow(new IOException("Connection refused"));
 
-        searchService.indexContent(1L, "标题", "正文", "ARTICLE", "zhangsan", "2025-01-15");
+        searchService.indexContent(1L, "标题", "正文", "ARTICLE", "PUBLISHED", "zhangsan", "2025-01-15");
 
         verify(esClient).index(any(IndexRequest.class));
     }
@@ -78,6 +78,7 @@ class SearchServiceExtendedTest {
                 List.of("标题1", "标题2"),
                 List.of("正文1", "正文2"),
                 List.of("ARTICLE", "TUTORIAL"),
+                List.of("PUBLISHED", "PUBLISHED"),
                 List.of("user1", "user2"),
                 List.of("2025-01-15", "2025-01-16")
         );
@@ -94,6 +95,7 @@ class SearchServiceExtendedTest {
                 List.of("标题1"),
                 List.of("正文1"),
                 List.of("ARTICLE"),
+                List.of("PUBLISHED"),
                 List.of("user1"),
                 List.of("2025-01-15")
         );

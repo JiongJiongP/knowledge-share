@@ -7,6 +7,7 @@ public class ContentDocument {
     private String title;
     private String body;
     private String contentType;
+    private String status;
     private String createdBy;
     private String publishedAt;
 }

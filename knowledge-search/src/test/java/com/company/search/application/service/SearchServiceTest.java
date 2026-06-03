@@ -28,7 +28,7 @@ class SearchServiceTest {
 
     @Test
     void shouldHandleIndexContentGracefully() {
-        searchService.indexContent(1L, "title", "body", "MARKDOWN", "1", "2024-01-01T00:00:00");
+        searchService.indexContent(1L, "title", "body", "MARKDOWN", "PUBLISHED", "1", "2024-01-01T00:00:00");
         // No exception thrown
     }
 

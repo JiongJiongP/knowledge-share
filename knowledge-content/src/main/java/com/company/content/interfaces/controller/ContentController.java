@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/contents")
 public class ContentController {
@@ -64,5 +66,11 @@ public class ContentController {
     public Result<Void> delete(@PathVariable Long id, Authentication auth) {
         contentService.softDelete(id, (Long) auth.getPrincipal());
         return Result.ok(null);
+    }
+
+    @PostMapping("/reindex")
+    public Result<Map<String, Object>> reindex() {
+        contentService.reindexAllPublishedAsync();
+        return Result.ok(Map.of("status", "started", "message", "全量索引同步已在后台启动，查看应用日志跟踪进度"));
     }
 }

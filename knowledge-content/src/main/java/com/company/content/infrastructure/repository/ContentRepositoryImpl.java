@@ -7,12 +7,17 @@ import com.company.content.domain.model.enums.ContentType;
 import com.company.content.domain.model.enums.PublishStatus;
 import com.company.content.domain.repository.ContentRepository;
 import com.company.content.infrastructure.mapper.ContentMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 
 @Repository
 public class ContentRepositoryImpl implements ContentRepository {
+
+    private static final Logger log = LoggerFactory.getLogger(ContentRepositoryImpl.class);
 
     private final ContentMapper mapper;
 
@@ -26,8 +31,18 @@ public class ContentRepositoryImpl implements ContentRepository {
     }
 
     @Override
+    public List<KnowledgeContent> findByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return Collections.emptyList();
+        return mapper.selectBatchIds(ids);
+    }
+
+    @Override
     public List<KnowledgeContent> findPublished(int page, int size, String sort, String contentType, String keyword) {
+        long t0 = System.currentTimeMillis();
+
         LambdaQueryWrapper<KnowledgeContent> qw = new LambdaQueryWrapper<>();
+        // 列表查询排除 body 大字段，大幅减少数据传输量
+        qw.select(KnowledgeContent.class, info -> !"body".equals(info.getColumn()));
         qw.eq(KnowledgeContent::getStatus, PublishStatus.PUBLISHED);
 
         if (contentType != null && !contentType.isBlank()) {
@@ -45,11 +60,16 @@ public class ContentRepositoryImpl implements ContentRepository {
             qw.orderByDesc(KnowledgeContent::getPublishedAt);
         }
 
-        return mapper.selectPage(new Page<>(page, size, false), qw).getRecords();
+        List<KnowledgeContent> records = mapper.selectPage(new Page<>(page, size, false), qw).getRecords();
+        log.info("[findPublished] page={}, size={}, sort={}, contentType={}, keyword={} | records={}, time={}ms",
+                page, size, sort, contentType, keyword, records.size(), System.currentTimeMillis() - t0);
+        return records;
     }
 
     @Override
     public long countPublished(String contentType, String keyword) {
+        long t0 = System.currentTimeMillis();
+
         LambdaQueryWrapper<KnowledgeContent> qw = new LambdaQueryWrapper<>();
         qw.eq(KnowledgeContent::getStatus, PublishStatus.PUBLISHED);
 
@@ -57,12 +77,14 @@ public class ContentRepositoryImpl implements ContentRepository {
             qw.eq(KnowledgeContent::getContentType, parseContentType(contentType));
         }
         if (keyword != null && !keyword.isBlank()) {
-            qw.and(w -> w.like(KnowledgeContent::getTitle, keyword)
-                         .or()
-                         .like(KnowledgeContent::getBody, keyword));
+            // 计数只匹配 title，避免 body TEXT 列全表扫描
+            qw.like(KnowledgeContent::getTitle, keyword);
         }
 
-        return mapper.selectCount(qw);
+        long count = mapper.selectCount(qw);
+        log.info("[countPublished] contentType={}, keyword={} | count={}, time={}ms",
+                contentType, keyword, count, System.currentTimeMillis() - t0);
+        return count;
     }
 
     @Override

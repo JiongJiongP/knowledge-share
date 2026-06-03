@@ -16,10 +16,6 @@
             <artifactId>knowledge-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.company</groupId>
-            <artifactId>knowledge-content</artifactId>
-        </dependency>
-        <dependency>
             <groupId>co.elastic.clients</groupId>
             <artifactId>elasticsearch-java</artifactId>
             <version>8.11.0</version>
@@ -33,6 +29,11 @@
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
             <version>3.25.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.0.0-jre</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

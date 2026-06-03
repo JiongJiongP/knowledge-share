@@ -25,10 +25,20 @@ public class VectorSearchService {
 
     private final QdrantClient qdrantClient;
     private final EmbeddingService embeddingService;
+    private volatile boolean available = true;
 
     public VectorSearchService(QdrantClient qdrantClient, EmbeddingService embeddingService) {
         this.qdrantClient = qdrantClient;
         this.embeddingService = embeddingService;
+    }
+
+    private boolean isAvailable() {
+        if (!available) return false;
+        if (qdrantClient == null) {
+            available = false;
+            return false;
+        }
+        return true;
     }
 
     public void createCollectionIfNotExists() {
@@ -46,12 +56,12 @@ public class VectorSearchService {
                 log.info("Qdrant collection '{}' created", COLLECTION_NAME);
             }
         } catch (Exception e) {
-            log.warn("Failed to create Qdrant collection: {}", e.getMessage());
+            log.debug("Failed to create Qdrant collection: {}", e.getMessage());
         }
     }
 
     public void upsert(Long id, String title, String body) {
-        if (qdrantClient == null) return;
+        if (!isAvailable()) return;
         try {
             float[] vec = embeddingService.embed(title + " " + body);
             PointStruct point = PointStruct.newBuilder()
@@ -62,12 +72,13 @@ public class VectorSearchService {
                     .build();
             qdrantClient.upsertAsync(COLLECTION_NAME, List.of(point)).get();
         } catch (Exception e) {
-            log.warn("Failed to upsert vector for content {}: {}", id, e.getMessage());
+            available = false;
+            log.warn("VectorSearchService disabled — Qdrant unavailable: {}", e.getMessage());
         }
     }
 
     public void batchUpsert(List<Long> ids, List<String> titles, List<String> bodies) {
-        if (qdrantClient == null || ids.isEmpty()) return;
+        if (!isAvailable() || ids.isEmpty()) return;
         try {
             List<PointStruct> points = new ArrayList<>(ids.size());
             for (int i = 0; i < ids.size(); i++) {
@@ -81,21 +92,23 @@ public class VectorSearchService {
             }
             qdrantClient.upsertAsync(COLLECTION_NAME, points).get();
         } catch (Exception e) {
-            log.warn("Failed to batch upsert {} vectors: {}", ids.size(), e.getMessage());
+            available = false;
+            log.warn("VectorSearchService disabled — Qdrant unavailable: {}", e.getMessage());
         }
     }
 
     public void delete(Long id) {
-        if (qdrantClient == null) return;
+        if (!isAvailable()) return;
         try {
             qdrantClient.deleteAsync(COLLECTION_NAME, List.of(PointIdFactory.id(id))).get();
         } catch (Exception e) {
-            log.warn("Failed to delete vector for content {}: {}", id, e.getMessage());
+            available = false;
+            log.warn("VectorSearchService disabled — Qdrant unavailable: {}", e.getMessage());
         }
     }
 
     public List<Long> search(String query, int topK) {
-        if (qdrantClient == null) return Collections.emptyList();
+        if (!isAvailable()) return Collections.emptyList();
         try {
             float[] vec = embeddingService.embed(query);
             SearchPoints.Builder builder = SearchPoints.newBuilder()
@@ -109,7 +122,8 @@ public class VectorSearchService {
                     .map(p -> p.getId().getNum())
                     .toList();
         } catch (Exception e) {
-            log.warn("Vector search failed: {}", e.getMessage());
+            available = false;
+            log.warn("VectorSearchService disabled — Qdrant unavailable: {}", e.getMessage());
             return Collections.emptyList();
         }
     }

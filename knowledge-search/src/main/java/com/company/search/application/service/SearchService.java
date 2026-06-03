@@ -9,6 +9,7 @@ import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
 import co.elastic.clients.elasticsearch.indices.IndexSettings;
 import com.company.search.application.dto.ContentDocument;
 import com.company.search.application.dto.SearchResult;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,20 @@ public class SearchService {
         this.vectorSearchService = vectorSearchService;
     }
 
+    @PostConstruct
+    public void init() {
+        try {
+            createIndexIfNotExists();
+        } catch (Exception e) {
+            log.warn("Failed to initialize ES index on startup (ES may be unavailable): {}", e.getMessage());
+        }
+        try {
+            vectorSearchService.createCollectionIfNotExists();
+        } catch (Exception e) {
+            log.warn("Failed to initialize Qdrant collection on startup: {}", e.getMessage());
+        }
+    }
+
     public void createIndexIfNotExists() {
         try {
             var indices = esClient.indices();
@@ -51,23 +66,25 @@ public class SearchService {
                                 .properties("title", p -> p.text(t -> t.analyzer("ik_max_word").searchAnalyzer("ik_smart")))
                                 .properties("body", p -> p.text(t -> t.analyzer("ik_max_word").searchAnalyzer("ik_smart")))
                                 .properties("contentType", p -> p.keyword(k -> k))
+                                .properties("status", p -> p.keyword(k -> k))
                                 .properties("createdBy", p -> p.keyword(k -> k))
                                 .properties("publishedAt", p -> p.date(d -> d))
                         )
                 ));
                 log.info("Elasticsearch index '{}' created", INDEX_NAME);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.warn("Failed to create Elasticsearch index: {}", e.getMessage());
         }
     }
 
-    public void indexContent(Long id, String title, String body, String contentType, String createdBy, String publishedAt) {
+    public void indexContent(Long id, String title, String body, String contentType, String status, String createdBy, String publishedAt) {
         try {
             ContentDocument doc = new ContentDocument();
             doc.setTitle(title);
             doc.setBody(body);
             doc.setContentType(contentType);
+            doc.setStatus(status);
             doc.setCreatedBy(createdBy);
             doc.setPublishedAt(publishedAt);
 
@@ -93,7 +110,7 @@ public class SearchService {
     }
 
     public void batchIndex(List<Long> ids, List<String> titles, List<String> bodies,
-                           List<String> contentTypes, List<String> createdBys, List<String> publishedAts) {
+                           List<String> contentTypes, List<String> statuses, List<String> createdBys, List<String> publishedAts) {
         try {
             List<BulkOperation> operations = new ArrayList<>();
             for (int i = 0; i < ids.size(); i++) {
@@ -101,6 +118,7 @@ public class SearchService {
                 doc.setTitle(titles.get(i));
                 doc.setBody(bodies.get(i));
                 doc.setContentType(contentTypes.get(i));
+                doc.setStatus(statuses.get(i));
                 doc.setCreatedBy(createdBys.get(i));
                 doc.setPublishedAt(publishedAts.get(i));
                 final int idx = i;
@@ -145,7 +163,7 @@ public class SearchService {
                 results.add(r);
             }
             return results;
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.warn("Search failed: {}", e.getMessage());
             return Collections.emptyList();
         }
